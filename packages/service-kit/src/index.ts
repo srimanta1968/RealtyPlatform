@@ -9,3 +9,5 @@ export {
   requireRole,
   type SessionClaims,
 } from './auth.js';
+export { initTracing, createOtelLogMixin, type TracingHandle } from './tracing.js';
+export { registerMetricsRoute, type MetricsHandle } from './metrics.js';
