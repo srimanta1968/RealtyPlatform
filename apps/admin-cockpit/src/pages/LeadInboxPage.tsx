@@ -34,6 +34,7 @@ export function LeadInboxPage(): JSX.Element {
   const [summary, setSummary] = useState<LeadSourceSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sourceFilter, setSourceFilter] = useState<LeadSource | 'all'>('all');
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -56,8 +57,17 @@ export function LeadInboxPage(): JSX.Element {
 
   const filtered = useMemo(() => {
     if (!leads) return null;
-    return sourceFilter === 'all' ? leads : leads.filter((lead) => lead.source === sourceFilter);
-  }, [leads, sourceFilter]);
+    const trimmed = query.trim().toLowerCase();
+    const bySource =
+      sourceFilter === 'all' ? leads : leads.filter((lead) => lead.source === sourceFilter);
+    if (!trimmed) return bySource;
+    return bySource.filter((lead) => {
+      const haystack = [lead.full_name, lead.email ?? '', lead.phone ?? '']
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(trimmed);
+    });
+  }, [leads, sourceFilter, query]);
 
   if (error) {
     return (
@@ -89,6 +99,20 @@ export function LeadInboxPage(): JSX.Element {
           </Button>
         </Link>
       </header>
+
+      <div className="mb-4">
+        <label htmlFor="lead-search" className="sr-only">
+          Search leads
+        </label>
+        <input
+          id="lead-search"
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by name, email, or phone…"
+          className="w-full rounded-full border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-kiana-primary focus:outline-none focus:ring-2 focus:ring-kiana-primary/30"
+        />
+      </div>
 
       <div className="mb-6 flex flex-wrap gap-2">
         <button
@@ -122,7 +146,9 @@ export function LeadInboxPage(): JSX.Element {
 
       {filtered && filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center text-sm text-slate-500">
-          No leads match this filter yet.
+          {query.trim()
+            ? `No leads match "${query.trim()}".`
+            : 'No leads match this filter yet.'}
         </div>
       ) : (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
