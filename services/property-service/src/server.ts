@@ -2,6 +2,7 @@ import { createDataService } from '@kiana/db-kit';
 import { createServer, loadServiceConfig, type KianaFastify } from '@kiana/service-kit';
 
 import { registerPropertyAdminRoutes } from './api/properties.js';
+import { registerPublicPropertyRoutes } from './api/publicProperties.js';
 import { PropertyDomain } from './domain/properties.js';
 import { createPropertyRepository } from './infra/propertyRepository.js';
 import { properties } from '../db/schema.js';
@@ -31,6 +32,7 @@ export async function buildServer(): Promise<KianaFastify> {
     registerRoutes: async (server) => {
       const domain = new PropertyDomain({ repository });
       await registerPropertyAdminRoutes(server, { domain });
+      await registerPublicPropertyRoutes(server, { domain });
       server.get('/api/properties/_status', async () => ({
         success: true,
         data: {
