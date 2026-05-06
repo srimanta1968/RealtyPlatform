@@ -1,0 +1,32 @@
+{
+  "name": "GET /api/auth/me - Fetch the authenticated user's session",
+  "endpoint": "/api/auth/me",
+  "method": "GET",
+  "taskId": "41162ca7-a829-4e99-8f9e-3d204d3d81bd",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 25,
+  "description": "Returns the canonical user record for the JWT supplied in the Authorization header. Used by the AuthProvider to confirm a cached token still authorizes a session.",
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "auth.me.response.data.user.id": "data.user.id",
+    "auth.me.response.data.user.email": "data.user.email"
+  },
+  "testCases": [
+    {
+      "name": "Resolve session for a freshly registered user",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "user": {
+            "email": "<string>"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -16,6 +16,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
+    "@fastify/jwt": "^8.0.1",
     "@kiana/contracts": "workspace:*",
     "@kiana/db-kit": "workspace:*",
     "@kiana/event-bus": "workspace:*",

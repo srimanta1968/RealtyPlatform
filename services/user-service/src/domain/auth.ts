@@ -96,6 +96,17 @@ export class AuthDomain {
   }
 
   /**
+   * Look up the canonical PublicUser for an authenticated session. Returns
+   * null when the user has been deleted (the JWT was valid but the row is
+   * gone — caller maps to 401).
+   */
+  async getById(userId: string): Promise<PublicUser | null> {
+    const row = await this.options.repository.findById(userId);
+    if (!row) return null;
+    return this.options.repository.toPublic(row);
+  }
+
+  /**
    * Authenticate a registered user. Returns a fresh JWT + the canonical user
    * payload. Throws ZodError on invalid input or InvalidCredentialsError if
    * the email is unknown or the password does not match.

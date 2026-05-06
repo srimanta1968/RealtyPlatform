@@ -52,6 +52,15 @@ export interface VerifyEmailSuccess {
   user: PublicUser;
 }
 
+export interface CurrentSession {
+  user: PublicUser;
+}
+
+export interface LogoutSuccess {
+  /** ISO timestamp the server logged the logout at. */
+  logged_out_at: string;
+}
+
 export interface ResendVerificationSuccess {
   verification: VerificationDetails;
 }

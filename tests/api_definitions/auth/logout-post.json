@@ -1,0 +1,27 @@
+{
+  "name": "POST /api/auth/logout - Terminate the current session",
+  "endpoint": "/api/auth/logout",
+  "method": "POST",
+  "taskId": "41162ca7-a829-4e99-8f9e-3d204d3d81bd",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 90,
+  "description": "Stateless JWT logout — the server acknowledges; the client discards its token. A token-revocation list is a Phase-2 addition (see services/user-service/openapi.yaml).",
+  "dependsOn": ["POST /api/auth/register"],
+  "testCases": [
+    {
+      "name": "Sign out the user issued by /api/auth/register",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {},
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "logged_out_at": "<string>"
+        }
+      }
+    }
+  ]
+}

@@ -26,11 +26,39 @@ function loadBackendUrls(): BackendUrls {
   };
 }
 
-/** Build a Fastify proxy handler that forwards the request body to a downstream client. */
-function makeProxyHandler(client: ServiceClient, path: string, successStatus: number) {
+/** Forward the caller's Authorization header so downstream services see the user JWT. */
+function forwardAuthHeaders(request: FastifyRequest): Record<string, string> {
+  const auth = request.headers.authorization;
+  return auth ? { Authorization: auth } : {};
+}
+
+type ProxyMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+
+function makeProxyHandler(
+  client: ServiceClient,
+  method: ProxyMethod,
+  path: string,
+  successStatus: number,
+) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const result = await client.post<unknown>(path, request.body);
+      const headers = forwardAuthHeaders(request);
+      const init = { headers };
+      let result: unknown;
+      switch (method) {
+        case 'GET':
+          result = await client.get(path, init);
+          break;
+        case 'POST':
+          result = await client.post(path, request.body, init);
+          break;
+        case 'PATCH':
+          result = await client.patch(path, request.body, init);
+          break;
+        case 'DELETE':
+          result = await client.delete(path, init);
+          break;
+      }
       return reply.code(successStatus).send(result);
     } catch (err) {
       const status = (err as { status?: number }).status ?? 500;
@@ -60,12 +88,17 @@ export async function buildServer(): Promise<KianaFastify> {
     config,
     version: '0.1.0',
     registerRoutes: async (app) => {
-      app.post('/api/auth/register', makeProxyHandler(userClient, '/api/auth/register', 201));
-      app.post('/api/auth/login', makeProxyHandler(userClient, '/api/auth/login', 200));
-      app.post('/api/auth/verify-email', makeProxyHandler(userClient, '/api/auth/verify-email', 200));
+      app.post('/api/auth/register', makeProxyHandler(userClient, 'POST', '/api/auth/register', 201));
+      app.post('/api/auth/login', makeProxyHandler(userClient, 'POST', '/api/auth/login', 200));
+      app.get('/api/auth/me', makeProxyHandler(userClient, 'GET', '/api/auth/me', 200));
+      app.post('/api/auth/logout', makeProxyHandler(userClient, 'POST', '/api/auth/logout', 200));
+      app.post(
+        '/api/auth/verify-email',
+        makeProxyHandler(userClient, 'POST', '/api/auth/verify-email', 200),
+      );
       app.post(
         '/api/auth/resend-verification',
-        makeProxyHandler(userClient, '/api/auth/resend-verification', 200),
+        makeProxyHandler(userClient, 'POST', '/api/auth/resend-verification', 200),
       );
     },
   });

@@ -9,6 +9,7 @@ import {
   UserNotFoundError,
   type AuthDomain,
 } from '../domain/auth.js';
+import { authenticate, getSessionPayload } from '../middleware/authenticate.js';
 
 export interface AuthRoutesOptions {
   domain: AuthDomain;
@@ -79,6 +80,30 @@ export async function registerAuthRoutes(
       app.log.error({ err }, 'Email verification failed');
       return reply.code(500).send({ success: false, error: 'Internal Server Error' });
     }
+  });
+
+  app.get('/api/auth/me', { preHandler: authenticate }, async (request, reply) => {
+    try {
+      const payload = getSessionPayload(request);
+      const user = await domain.getById(payload.sub);
+      if (!user) {
+        return reply.code(401).send({ success: false, error: 'Session no longer valid.' });
+      }
+      return reply.code(200).send({ success: true, data: { user } });
+    } catch (err) {
+      app.log.error({ err }, 'Session lookup failed');
+      return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+    }
+  });
+
+  app.post('/api/auth/logout', { preHandler: authenticate }, async (_request, reply) => {
+    // Stateless JWT: nothing to invalidate server-side in Phase 1. The client
+    // discards the token. A token-revocation list lands when sessions move
+    // server-side (Phase 2 — see services/user-service/openapi.yaml).
+    return reply.code(200).send({
+      success: true,
+      data: { logged_out_at: new Date().toISOString() },
+    });
   });
 
   app.post('/api/auth/resend-verification', async (request, reply) => {

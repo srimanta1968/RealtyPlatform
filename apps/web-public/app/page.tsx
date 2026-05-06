@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { UserMenu } from '../components/UserMenu';
+
 interface Feature {
   title: string;
   body: string;
@@ -29,15 +31,7 @@ export default function HomePage(): JSX.Element {
             Kiana Realty
           </Link>
           <nav className="flex items-center gap-3 text-sm">
-            <Link href="/login" className="hidden sm:inline-block text-white/80 hover:text-white">
-              Sign in
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-full bg-kiana-accent px-4 py-2 font-semibold text-slate-900 hover:opacity-90"
-            >
-              Get started
-            </Link>
+            <UserMenu />
           </nav>
         </div>
       </header>

@@ -1,7 +1,9 @@
 import type {
   ApiResponse,
   AuthSuccess,
+  CurrentSession,
   LoginRequest,
+  LogoutSuccess,
   RegisterRequest,
   ResendVerificationRequest,
   ResendVerificationSuccess,
@@ -31,6 +33,21 @@ export class AuthClient {
       method: 'POST',
       body: input,
       authenticated: false,
+    });
+    return unwrap(response);
+  }
+
+  /** GET /api/auth/me — fetch the canonical user record for the current session. */
+  async me(): Promise<CurrentSession> {
+    const response = await this.http.request<ApiResponse<CurrentSession>>('/api/auth/me');
+    return unwrap(response);
+  }
+
+  /** POST /api/auth/logout — terminate the current session (stateless JWT in Phase 1). */
+  async logout(): Promise<LogoutSuccess> {
+    const response = await this.http.request<ApiResponse<LogoutSuccess>>('/api/auth/logout', {
+      method: 'POST',
+      body: {},
     });
     return unwrap(response);
   }
