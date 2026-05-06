@@ -1,0 +1,29 @@
+{
+  "name": "GET /api/leads - List captured leads for the admin lead inbox",
+  "endpoint": "/api/leads",
+  "method": "GET",
+  "taskId": "809859b7-e3a1-472c-b48e-31420f75e2cc",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 40,
+  "description": "Operator-facing endpoint behind the admin-cockpit Lead Inbox. Returns every captured lead in creation-time order so presales can triage what just landed. Cursor pagination + server-side filtering arrives in later phases (P2).",
+  "dependsOn": ["POST /api/auth/register", "POST /api/leads"],
+  "captureResponse": {
+    "leads.list.response.data.leads": "data.leads"
+  },
+  "testCases": [
+    {
+      "name": "List captured leads after at least one /api/leads POST has landed",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "leads": "<array>"
+        }
+      }
+    }
+  ]
+}
