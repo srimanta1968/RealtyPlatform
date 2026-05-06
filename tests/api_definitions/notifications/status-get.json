@@ -1,0 +1,26 @@
+{
+  "name": "GET /api/notifications/_status - notification-service readiness + subscription state",
+  "endpoint": "/api/notifications/_status",
+  "method": "GET",
+  "taskId": "422220a1-7ae1-497f-a738-1c48cba8d635",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": false,
+  "priority": 5,
+  "description": "Operator-readable status route. Reports whether the lead.created subscriber is wired up (depends on EVENT_BUS_REDIS_URL being set) and whether the email transport is in log-only mode (Phase-1 default). Phase-1 leaves no auth on this route — the BFF restricts access.",
+  "testCases": [
+    {
+      "name": "Service reports ready with subscription state",
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "service": "<string>",
+          "logOnly": "<boolean>",
+          "subscriptions": {
+            "lead.created": "<string>"
+          }
+        }
+      }
+    }
+  ]
+}
