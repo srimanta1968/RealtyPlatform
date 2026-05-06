@@ -61,6 +61,7 @@ export async function buildServer(): Promise<KianaFastify> {
     version: '0.1.0',
     registerRoutes: async (app) => {
       app.post('/api/auth/register', makeProxyHandler(userClient, '/api/auth/register', 201));
+      app.post('/api/auth/login', makeProxyHandler(userClient, '/api/auth/login', 200));
       app.post('/api/auth/verify-email', makeProxyHandler(userClient, '/api/auth/verify-email', 200));
       app.post(
         '/api/auth/resend-verification',

@@ -17,6 +17,11 @@ export async function registerUser(email: string, password: string): Promise<Aut
   return authClient.register({ email, password });
 }
 
+/** Authenticate with registered credentials and return the issued JWT + user. */
+export async function loginUser(email: string, password: string): Promise<AuthSuccess> {
+  return authClient.login({ email, password });
+}
+
 /** Consume a verification token from the email link and mark the user verified. */
 export async function verifyEmail(token: string): Promise<VerifyEmailSuccess> {
   return authClient.verifyEmail({ token });

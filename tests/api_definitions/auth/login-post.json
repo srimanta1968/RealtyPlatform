@@ -1,0 +1,35 @@
+{
+  "name": "POST /api/auth/login - Authenticate with registered credentials",
+  "endpoint": "/api/auth/login",
+  "method": "POST",
+  "taskId": "96878f5e-4345-4b75-82e2-1e923cd86277",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": false,
+  "priority": 20,
+  "description": "Authenticate a previously-registered user. Re-uses the email captured from /api/auth/register and the static test password to obtain a fresh JWT.",
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "auth.login.response.data.token": "data.token",
+    "auth.login.response.data.user.id": "data.user.id",
+    "auth.login.response.data.user.email": "data.user.email"
+  },
+  "testCases": [
+    {
+      "name": "Login with the credentials issued by /api/auth/register",
+      "payload": {
+        "email": "{{cache:auth.register.response.data.user.email}}",
+        "password": "{{static:KianaTest_2025!}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "token": "<string>",
+          "user": {
+            "email": "<string>"
+          }
+        }
+      }
+    }
+  ]
+}

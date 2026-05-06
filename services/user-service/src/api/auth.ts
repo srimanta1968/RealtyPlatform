@@ -4,6 +4,7 @@ import { ZodError } from 'zod';
 import {
   AlreadyVerifiedError,
   EmailTakenError,
+  InvalidCredentialsError,
   InvalidVerificationTokenError,
   UserNotFoundError,
   type AuthDomain,
@@ -42,6 +43,23 @@ export async function registerAuthRoutes(
         return reply.code(409).send({ success: false, error: err.message, field: 'email' });
       }
       app.log.error({ err }, 'Registration failed');
+      return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+    }
+  });
+
+  app.post('/api/auth/login', async (request, reply) => {
+    try {
+      const result = await domain.login(request.body);
+      return reply.code(200).send({ success: true, data: result });
+    } catch (err) {
+      if (err instanceof ZodError) {
+        const { status, body } = zodErrorReply(err, 'Invalid login payload.');
+        return reply.code(status).send(body);
+      }
+      if (err instanceof InvalidCredentialsError) {
+        return reply.code(401).send({ success: false, error: err.message });
+      }
+      app.log.error({ err }, 'Login failed');
       return reply.code(500).send({ success: false, error: 'Internal Server Error' });
     }
   });

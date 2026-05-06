@@ -4,9 +4,10 @@ import { compare, hash } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 import {
+  LoginRequestSchema,
   RegisterRequestSchema,
-  VerifyEmailRequestSchema,
   ResendVerificationRequestSchema,
+  VerifyEmailRequestSchema,
   type AuthSuccess,
   type PublicUser,
   type ResendVerificationSuccess,
@@ -41,6 +42,17 @@ export class AlreadyVerifiedError extends Error {
   constructor() {
     super('This email address is already verified.');
     this.name = 'AlreadyVerifiedError';
+  }
+}
+
+/**
+ * Thrown for both "no such email" and "wrong password" so the API never
+ * reveals which case applied — that prevents account enumeration.
+ */
+export class InvalidCredentialsError extends Error {
+  constructor() {
+    super('Email or password is incorrect.');
+    this.name = 'InvalidCredentialsError';
   }
 }
 
@@ -84,6 +96,29 @@ export class AuthDomain {
   }
 
   /**
+   * Authenticate a registered user. Returns a fresh JWT + the canonical user
+   * payload. Throws ZodError on invalid input or InvalidCredentialsError if
+   * the email is unknown or the password does not match.
+   */
+  async login(input: unknown): Promise<AuthSuccess> {
+    const parsed = LoginRequestSchema.parse(input);
+    const email = parsed.email.toLowerCase();
+
+    const record = await this.options.repository.findByEmail(email);
+    if (!record) {
+      throw new InvalidCredentialsError();
+    }
+
+    const ok = await compare(parsed.password, record.passwordHash);
+    if (!ok) {
+      throw new InvalidCredentialsError();
+    }
+
+    const publicUser = this.options.repository.toPublic(record);
+    return this.issueSession(publicUser);
+  }
+
+  /**
    * Consume an email-verification token. Marks the user verified and burns the
    * token so it cannot be reused. Throws InvalidVerificationTokenError on
    * expired / unknown / already-used tokens.
@@ -104,8 +139,9 @@ export class AuthDomain {
 
   /**
    * Issue a fresh verification token for an existing user and re-dispatch the
-   * email. No-ops (with AlreadyVerifiedError) if the user is already verified
-   * — callers map that to a 200 to avoid leaking which emails are registered.
+   * email. Throws AlreadyVerifiedError if the user is already verified;
+   * UserNotFoundError if the email is not registered (the API maps that to a
+   * 200 to avoid leaking which addresses are on file).
    */
   async resendVerification(input: unknown): Promise<ResendVerificationSuccess> {
     const parsed = ResendVerificationRequestSchema.parse(input);
@@ -122,15 +158,6 @@ export class AuthDomain {
     const publicUser = this.options.repository.toPublic(existing);
     const verification = await this.issueVerification(publicUser);
     return { verification };
-  }
-
-  /** Verify password against the stored bcrypt hash. */
-  async verifyCredentials(email: string, password: string): Promise<PublicUser | null> {
-    const record = await this.options.repository.findByEmail(email.toLowerCase());
-    if (!record) return null;
-    const ok = await compare(password, record.passwordHash);
-    if (!ok) return null;
-    return this.options.repository.toPublic(record);
   }
 
   private async issueVerification(user: PublicUser) {
