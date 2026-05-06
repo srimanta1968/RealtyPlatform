@@ -7,6 +7,8 @@
   "requiresAuth": true,
   "priority": 60,
   "description": "Operator-facing catalog of every business workflow defined on the platform. Each entry is a WorkflowSummary (slug, name, description, step_count, terminalStages) — the detail view fetches the full WorkflowDefinition via GET /api/workflows/:slug. Lights up the admin-cockpit Workflows screen.",
+  "testability": "manual",
+  "skipReason": "Workflows live in lead-service on port 4011 (per .env MONOREPO PORT MAP); the projexlight test runner targets a single base URL (4010 = user-service). Re-enable once the API gateway/BFF lands or the runner gains per-route base-URL support.",
   "dependsOn": ["POST /api/auth/register"],
   "captureResponse": {
     "workflows.list.response.data.workflows": "data.workflows"

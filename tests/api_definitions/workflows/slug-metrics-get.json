@@ -7,6 +7,8 @@
   "requiresAuth": true,
   "priority": 75,
   "description": "Operator-facing analytics endpoint. Aggregates the live leads table (count by stage) against the workflow definition to produce per-step funnel counts, cumulative reach counts, conversion rate, and loss rate. Read-only, recomputed on every call — when the analytics-service lands, this same shape can be hydrated from materialized views without a contract change. Powers the Metrics panel on the admin-cockpit Workflows screen.",
+  "testability": "manual",
+  "skipReason": "Workflows live in lead-service on port 4011 (per .env MONOREPO PORT MAP); the projexlight test runner targets a single base URL (4010 = user-service). Re-enable once the API gateway/BFF lands or the runner gains per-route base-URL support.",
   "dependsOn": ["POST /api/auth/register", "POST /api/leads"],
   "testCases": [
     {
