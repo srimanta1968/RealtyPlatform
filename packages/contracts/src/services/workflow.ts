@@ -126,6 +126,40 @@ export interface WorkflowExecutionState {
 }
 
 /**
+ * Per-step metric inside a workflow funnel. `count_at` is leads currently at
+ * exactly this step's stage; `count_reached` is the cumulative count of leads
+ * at this step or any later step (i.e. how far down the funnel they got);
+ * `reach_rate` is count_reached / total_leads (0 when total is 0). Lost leads
+ * are excluded from the cumulative count because the dataset doesn't record
+ * the step at which they dropped out.
+ */
+export interface WorkflowStepMetric {
+  step_key: string;
+  stage: LeadStage;
+  count_at: number;
+  count_reached: number;
+  reach_rate: number;
+}
+
+/**
+ * Aggregate metrics for one workflow at a point in time. Composed from the
+ * raw per-stage lead counts plus the workflow definition; recomputed on
+ * every read. No persistence — when the platform graduates to a real
+ * analytics-service, this shape can be hydrated from materialized views
+ * without a contract change.
+ */
+export interface WorkflowMetrics {
+  workflow_slug: string;
+  total_leads: number;
+  active_leads: number;
+  converted: number;
+  lost: number;
+  conversion_rate: number;
+  loss_rate: number;
+  steps: WorkflowStepMetric[];
+}
+
+/**
  * Pure function — given a workflow definition and a lead stage, compute the
  * execution cursor. No I/O, no DB. Server uses it to power
  * GET /api/leads/:id/execution; clients can mirror it for optimistic UI.

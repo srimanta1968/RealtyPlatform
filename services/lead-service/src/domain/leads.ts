@@ -132,6 +132,15 @@ export class LeadDomain {
   }
 
   /**
+   * Raw per-stage lead counts, used by the workflow metrics endpoint to
+   * compose funnel statistics. Delegates straight to the repository — kept
+   * on the domain so the route handler doesn't reach past it into infra.
+   */
+  async countByStage() {
+    return this.options.repository.countByStage();
+  }
+
+  /**
    * Read-only view of a lead alongside its computed workflow execution cursor.
    * `slug` selects which workflow to compute against; defaults to the
    * lead-to-customer pipeline.

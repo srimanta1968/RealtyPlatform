@@ -62,6 +62,11 @@ export interface LeadSourceCount {
   count: number;
 }
 
+export interface LeadStageCount {
+  stage: LeadStage;
+  count: number;
+}
+
 export interface LeadSourceSummary {
   all_sources: LeadSource[];
   sources: LeadSourceCount[];

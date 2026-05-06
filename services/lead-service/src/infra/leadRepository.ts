@@ -8,6 +8,7 @@ import {
   type LeadSource,
   type LeadSourceCount,
   type LeadStage,
+  type LeadStageCount,
 } from '@kiana/contracts';
 
 import { leads, type LeadInsert, type LeadRow } from '../../db/schema.js';
@@ -17,6 +18,7 @@ export interface LeadRepository {
   findById(id: string): Promise<LeadRecord | null>;
   list(): Promise<LeadRecord[]>;
   countBySource(): Promise<LeadSourceCount[]>;
+  countByStage(): Promise<LeadStageCount[]>;
   updateStage(id: string, stage: LeadStage): Promise<LeadRecord | null>;
 }
 
@@ -70,6 +72,20 @@ export function createLeadRepository(db: Db): LeadRepository {
         .groupBy(leads.source);
       return rows.map((row) => ({
         source: row.source as LeadSource,
+        count: Number(row.count),
+      }));
+    },
+
+    async countByStage() {
+      const rows = await db
+        .select({
+          stage: leads.stage,
+          count: sql<number>`count(*)::int`,
+        })
+        .from(leads)
+        .groupBy(leads.stage);
+      return rows.map((row) => ({
+        stage: row.stage as LeadStage,
         count: Number(row.count),
       }));
     },

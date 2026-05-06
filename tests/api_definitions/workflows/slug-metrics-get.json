@@ -1,0 +1,38 @@
+{
+  "name": "GET /api/workflows/:slug/metrics - Aggregate funnel metrics for a workflow",
+  "endpoint": "/api/workflows/:slug/metrics",
+  "method": "GET",
+  "taskId": "e5df1563-4433-41fc-b65b-82387151f1f9",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 75,
+  "description": "Operator-facing analytics endpoint. Aggregates the live leads table (count by stage) against the workflow definition to produce per-step funnel counts, cumulative reach counts, conversion rate, and loss rate. Read-only, recomputed on every call — when the analytics-service lands, this same shape can be hydrated from materialized views without a contract change. Powers the Metrics panel on the admin-cockpit Workflows screen.",
+  "dependsOn": ["POST /api/auth/register", "POST /api/leads"],
+  "testCases": [
+    {
+      "name": "Fetch metrics for the lead-to-customer workflow",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "pathParams": {
+        "slug": "{{static:lead-to-customer}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "metrics": {
+            "workflow_slug": "<string>",
+            "total_leads": "<number>",
+            "active_leads": "<number>",
+            "converted": "<number>",
+            "lost": "<number>",
+            "conversion_rate": "<number>",
+            "loss_rate": "<number>",
+            "steps": "<array>"
+          }
+        }
+      }
+    }
+  ]
+}

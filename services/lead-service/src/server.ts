@@ -30,7 +30,7 @@ export async function buildServer(): Promise<KianaFastify> {
     registerRoutes: async (server) => {
       const domain = new LeadDomain({ repository });
       await registerLeadRoutes(server, { domain });
-      await registerWorkflowRoutes(server);
+      await registerWorkflowRoutes(server, { leadDomain: domain });
     },
   });
 

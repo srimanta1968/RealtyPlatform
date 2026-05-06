@@ -11,6 +11,7 @@ import type {
   LeadSourceSummary,
   LeadStage,
   WorkflowDefinition,
+  WorkflowMetrics,
   WorkflowSummary,
 } from '@kiana/contracts';
 
@@ -51,6 +52,11 @@ export async function listWorkflows(): Promise<WorkflowSummary[]> {
 /** GET /api/workflows/:slug — fetch a workflow definition with its full step list. */
 export async function fetchWorkflow(slug: string): Promise<WorkflowDefinition> {
   return workflowClient.get(slug);
+}
+
+/** GET /api/workflows/:slug/metrics — funnel + conversion stats for one workflow. */
+export async function fetchWorkflowMetrics(slug: string): Promise<WorkflowMetrics> {
+  return workflowClient.getMetrics(slug);
 }
 
 /** GET /api/leads/:id/execution — read a lead's workflow execution cursor. */

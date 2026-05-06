@@ -1,4 +1,9 @@
-import type { ApiResponse, WorkflowDefinition, WorkflowSummary } from '@kiana/contracts';
+import type {
+  ApiResponse,
+  WorkflowDefinition,
+  WorkflowMetrics,
+  WorkflowSummary,
+} from '@kiana/contracts';
 
 import { HttpClient } from '../../core/http-client.js';
 import { SdkError } from '../../core/errors.js';
@@ -20,6 +25,14 @@ export class WorkflowClient {
       `/api/workflows/${encodeURIComponent(slug)}`,
     );
     return unwrap(response).workflow;
+  }
+
+  /** GET /api/workflows/:slug/metrics — funnel + conversion stats for the workflow. */
+  async getMetrics(slug: string): Promise<WorkflowMetrics> {
+    const response = await this.http.request<ApiResponse<{ metrics: WorkflowMetrics }>>(
+      `/api/workflows/${encodeURIComponent(slug)}/metrics`,
+    );
+    return unwrap(response).metrics;
   }
 }
 
