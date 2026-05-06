@@ -1,4 +1,13 @@
-import type { ApiResponse, AuthSuccess, LoginRequest, RegisterRequest } from '@kiana/contracts';
+import type {
+  ApiResponse,
+  AuthSuccess,
+  LoginRequest,
+  RegisterRequest,
+  ResendVerificationRequest,
+  ResendVerificationSuccess,
+  VerifyEmailRequest,
+  VerifyEmailSuccess,
+} from '@kiana/contracts';
 
 import { HttpClient } from '../../core/http-client.js';
 import { SdkError } from '../../core/errors.js';
@@ -6,7 +15,7 @@ import { SdkError } from '../../core/errors.js';
 export class AuthClient {
   constructor(private readonly http: HttpClient) {}
 
-  /** POST /api/auth/register — create a new account and return JWT + public user. */
+  /** POST /api/auth/register — create a new account, return JWT + verification token. */
   async register(input: RegisterRequest): Promise<AuthSuccess> {
     const response = await this.http.request<ApiResponse<AuthSuccess>>('/api/auth/register', {
       method: 'POST',
@@ -23,6 +32,24 @@ export class AuthClient {
       body: input,
       authenticated: false,
     });
+    return unwrap(response);
+  }
+
+  /** POST /api/auth/verify-email — consume a verification token, mark user verified. */
+  async verifyEmail(input: VerifyEmailRequest): Promise<VerifyEmailSuccess> {
+    const response = await this.http.request<ApiResponse<VerifyEmailSuccess>>(
+      '/api/auth/verify-email',
+      { method: 'POST', body: input, authenticated: false },
+    );
+    return unwrap(response);
+  }
+
+  /** POST /api/auth/resend-verification — re-issue a verification token + email. */
+  async resendVerification(input: ResendVerificationRequest): Promise<ResendVerificationSuccess> {
+    const response = await this.http.request<ApiResponse<ResendVerificationSuccess>>(
+      '/api/auth/resend-verification',
+      { method: 'POST', body: input, authenticated: false },
+    );
     return unwrap(response);
   }
 }

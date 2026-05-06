@@ -6,11 +6,12 @@
   "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
   "requiresAuth": false,
   "priority": 10,
-  "description": "Register a new Kiana user with email + password and return a signed JWT plus public user payload.",
+  "description": "Register a new Kiana user with email + password. Issues a signed JWT plus a one-time email-verification token (token field present in non-production environments only).",
   "captureResponse": {
     "auth.register.response.data.token": "data.token",
     "auth.register.response.data.user.id": "data.user.id",
-    "auth.register.response.data.user.email": "data.user.email"
+    "auth.register.response.data.user.email": "data.user.email",
+    "auth.register.response.data.verification.token": "data.verification.token"
   },
   "testCases": [
     {
@@ -26,6 +27,9 @@
           "token": "<string>",
           "user": {
             "email": "<string>"
+          },
+          "verification": {
+            "expires_at": "<string>"
           }
         }
       }

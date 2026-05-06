@@ -490,6 +490,9 @@ importers:
       fastify:
         specifier: ^4.26.0
         version: 4.29.1
+      zod:
+        specifier: ^3.22.4
+        version: 3.25.76
     devDependencies:
       '@kiana/config':
         specifier: workspace:*
@@ -549,6 +552,9 @@ importers:
       '@kiana/event-bus':
         specifier: workspace:*
         version: link:../../packages/event-bus
+      '@kiana/service-client':
+        specifier: workspace:*
+        version: link:../../packages/service-client
       '@kiana/service-kit':
         specifier: workspace:*
         version: link:../../packages/service-kit

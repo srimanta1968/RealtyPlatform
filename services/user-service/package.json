@@ -19,6 +19,7 @@
     "@kiana/contracts": "workspace:*",
     "@kiana/db-kit": "workspace:*",
     "@kiana/event-bus": "workspace:*",
+    "@kiana/service-client": "workspace:*",
     "@kiana/service-kit": "workspace:*",
     "bcryptjs": "^2.4.3",
     "drizzle-orm": "^0.30.0",

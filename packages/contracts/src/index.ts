@@ -5,4 +5,5 @@ export * from './services/user.js';
 export * from './services/lead.js';
 export * from './services/property.js';
 export * from './services/crm.js';
+export * from './services/notification.js';
 export * from './events/index.js';

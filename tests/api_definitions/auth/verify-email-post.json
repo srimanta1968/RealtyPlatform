@@ -1,0 +1,33 @@
+{
+  "name": "POST /api/auth/verify-email - Confirm a registered email address",
+  "endpoint": "/api/auth/verify-email",
+  "method": "POST",
+  "taskId": "39391eaf-41bd-4eb4-8166-30e5b707dc1e",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": false,
+  "priority": 15,
+  "description": "Consume the verification token issued during registration. Marks the user verified and burns the token so it cannot be reused.",
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "auth.verify-email.response.data.user.id": "data.user.id",
+    "auth.verify-email.response.data.user.email_verified_at": "data.user.email_verified_at"
+  },
+  "testCases": [
+    {
+      "name": "Verify a freshly registered account using its issued token",
+      "payload": {
+        "token": "{{cache:auth.register.response.data.verification.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "user": {
+            "email": "<string>",
+            "email_verified_at": "<string>"
+          }
+        }
+      }
+    }
+  ]
+}

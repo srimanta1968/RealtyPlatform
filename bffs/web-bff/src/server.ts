@@ -1,5 +1,7 @@
+import type { FastifyReply, FastifyRequest } from 'fastify';
+
 import { createServer, loadServiceConfig, type KianaFastify } from '@kiana/service-kit';
-import { createServiceClient } from '@kiana/service-client';
+import { createServiceClient, type ServiceClient } from '@kiana/service-client';
 
 const SERVICE_NAME = 'web-bff';
 const DEFAULT_PORT = 4000;
@@ -24,6 +26,23 @@ function loadBackendUrls(): BackendUrls {
   };
 }
 
+/** Build a Fastify proxy handler that forwards the request body to a downstream client. */
+function makeProxyHandler(client: ServiceClient, path: string, successStatus: number) {
+  return async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const result = await client.post<unknown>(path, request.body);
+      return reply.code(successStatus).send(result);
+    } catch (err) {
+      const status = (err as { status?: number }).status ?? 500;
+      const body = (err as { body?: unknown }).body ?? {
+        success: false,
+        error: 'Upstream user-service error',
+      };
+      return reply.code(status).send(body);
+    }
+  };
+}
+
 /**
  * Build the web-bff Fastify instance. The BFF holds NO business logic — every
  * route here is a thin proxy / aggregator over downstream microservices.
@@ -41,20 +60,12 @@ export async function buildServer(): Promise<KianaFastify> {
     config,
     version: '0.1.0',
     registerRoutes: async (app) => {
-      // Auth — proxied straight through to user-service.
-      app.post('/api/auth/register', async (request, reply) => {
-        try {
-          const result = await userClient.post<unknown>('/api/auth/register', request.body);
-          return reply.code(201).send(result);
-        } catch (err) {
-          const status = (err as { status?: number }).status ?? 500;
-          const body = (err as { body?: unknown }).body ?? {
-            success: false,
-            error: 'Upstream user-service error',
-          };
-          return reply.code(status).send(body);
-        }
-      });
+      app.post('/api/auth/register', makeProxyHandler(userClient, '/api/auth/register', 201));
+      app.post('/api/auth/verify-email', makeProxyHandler(userClient, '/api/auth/verify-email', 200));
+      app.post(
+        '/api/auth/resend-verification',
+        makeProxyHandler(userClient, '/api/auth/resend-verification', 200),
+      );
     },
   });
 }

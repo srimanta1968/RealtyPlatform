@@ -14,15 +14,46 @@ export const LoginRequestSchema = z.object({
 });
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
+export const VerifyEmailRequestSchema = z.object({
+  token: z.string().min(20).max(200),
+});
+export type VerifyEmailRequest = z.infer<typeof VerifyEmailRequestSchema>;
+
+export const ResendVerificationRequestSchema = z.object({
+  email: z.string().trim().email(),
+});
+export type ResendVerificationRequest = z.infer<typeof ResendVerificationRequestSchema>;
+
 export interface PublicUser {
   id: UserId;
   email: string;
   created_at: string;
+  email_verified_at: string | null;
+}
+
+/**
+ * Returned alongside register / resend-verification. The `token` field is
+ * populated only in non-production environments so the API test runner can
+ * chain into POST /api/auth/verify-email. Production responses omit it.
+ */
+export interface VerificationDetails {
+  expires_at: string;
+  token?: string;
 }
 
 export interface AuthSuccess {
   token: string;
   user: PublicUser;
+  /** Present when registration just issued a fresh email-verification token. */
+  verification?: VerificationDetails;
+}
+
+export interface VerifyEmailSuccess {
+  user: PublicUser;
+}
+
+export interface ResendVerificationSuccess {
+  verification: VerificationDetails;
 }
 
 export interface ApiError {
