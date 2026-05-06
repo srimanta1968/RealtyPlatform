@@ -1,0 +1,24 @@
+{
+  "name": "GET /api/crm/_status - crm-service readiness probe",
+  "endpoint": "/api/crm/_status",
+  "method": "GET",
+  "taskId": "1213ec70-ad27-459d-a777-6c3b48251830",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": false,
+  "priority": 5,
+  "description": "Operator-readable status route confirming crm-service has booted with DataService + PipelineDomain wired up. Lives until the GET /api/crm/pipeline aggregation endpoint (Phase 1 task #21) lands. Currently surfaces the running lead count to prove cross-table read connectivity (P4+ will switch to lead-service HTTP per Project-Structure.md §11).",
+  "testCases": [
+    {
+      "name": "Service reports ready with lead count from shared DB",
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "service": "<string>",
+          "ready": "<boolean>",
+          "lead_count": "<number>"
+        }
+      }
+    }
+  ]
+}
