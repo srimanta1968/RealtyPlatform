@@ -41,9 +41,11 @@ function toRecord(row: LeadRow): LeadRecord {
     phone: row.phone,
     source: row.source as LeadSource,
     stage: row.stage as LeadStage,
+    location_interest: row.locationInterest,
     budget_min_minor: row.budgetMinMinor,
     budget_max_minor: row.budgetMaxMinor,
     notes: row.notes,
+    consent_marketing: row.consentMarketing,
     created_at: row.createdAt.toISOString(),
     updated_at: row.updatedAt.toISOString(),
   };

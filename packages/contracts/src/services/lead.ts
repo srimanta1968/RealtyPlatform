@@ -20,9 +20,13 @@ export const LeadCreateRequestSchema = z.object({
   email: z.string().email().optional(),
   phone: z.string().min(7).max(20).optional(),
   source: LeadSourceSchema,
+  /** Free-text locality interest from Phase-1-Trust-Launch.md §5 (e.g., 'Lonavala', 'Alibaug'). */
+  location_interest: z.string().max(200).optional(),
   budget_min_minor: z.number().int().nonnegative().optional(),
   budget_max_minor: z.number().int().nonnegative().optional(),
   notes: z.string().max(2000).optional(),
+  /** Marketing-consent flag captured at form submit; required by Phase-1-Trust-Launch.md §5. */
+  consent_marketing: z.boolean().optional(),
 });
 export type LeadCreateRequest = z.infer<typeof LeadCreateRequestSchema>;
 
@@ -56,9 +60,11 @@ export interface LeadRecord {
   phone: string | null;
   source: LeadSource;
   stage: LeadStage;
+  location_interest: string | null;
   budget_min_minor: number | null;
   budget_max_minor: number | null;
   notes: string | null;
+  consent_marketing: boolean;
   created_at: string;
   updated_at: string;
 }

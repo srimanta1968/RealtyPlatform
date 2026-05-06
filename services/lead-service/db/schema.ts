@@ -1,4 +1,14 @@
-import { bigint, index, jsonb, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  bigint,
+  boolean,
+  index,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 
 export const leads = pgTable(
   'leads',
@@ -10,9 +20,11 @@ export const leads = pgTable(
     phone: varchar('phone', { length: 20 }),
     source: varchar('source', { length: 50 }).notNull(),
     stage: varchar('stage', { length: 50 }).notNull().default('new'),
+    locationInterest: varchar('location_interest', { length: 200 }),
     budgetMinMinor: bigint('budget_min_minor', { mode: 'number' }),
     budgetMaxMinor: bigint('budget_max_minor', { mode: 'number' }),
     notes: text('notes'),
+    consentMarketing: boolean('consent_marketing').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },

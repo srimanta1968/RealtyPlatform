@@ -27,6 +27,11 @@ CREATE INDEX IF NOT EXISTS leads_owner_idx ON leads(owner_id);
 CREATE INDEX IF NOT EXISTS leads_stage_idx ON leads(stage);
 CREATE INDEX IF NOT EXISTS leads_source_idx ON leads(source);
 
+-- Phase-1-Trust-Launch.md §5 alignment — additive columns. PostgreSQL 11+
+-- backfills existing rows with the DEFAULT in a single statement.
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS location_interest VARCHAR(200);
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS consent_marketing BOOLEAN NOT NULL DEFAULT false;
+
 CREATE TABLE IF NOT EXISTS lead_timeline_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   lead_id UUID NOT NULL REFERENCES leads(id) ON DELETE CASCADE,

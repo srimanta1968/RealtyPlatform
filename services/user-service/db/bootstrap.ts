@@ -31,6 +31,12 @@ ALTER TABLE users ALTER COLUMN full_name SET NOT NULL;
 -- one line covers both add-on-fresh-DB and add-to-pre-existing-DB.
 ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) NOT NULL DEFAULT 'presales';
 
+-- Phase-1-Trust-Launch.md §5 alignment — User { id, name, email, phone,
+-- role, active }. phone is nullable because legacy demo registrations
+-- don't have one; active defaults to true for the same reason.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT true;
+
 CREATE TABLE IF NOT EXISTS email_verifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,

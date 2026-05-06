@@ -30,7 +30,9 @@ export interface PublicUser {
   id: UserId;
   full_name: string;
   email: string;
+  phone: string | null;
   role: UserRole;
+  active: boolean;
   created_at: string;
   email_verified_at: string | null;
 }

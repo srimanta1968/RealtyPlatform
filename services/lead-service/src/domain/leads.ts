@@ -96,9 +96,13 @@ export class LeadDomain {
       email: parsed.email ?? null,
       phone: parsed.phone ?? null,
       source: parsed.source,
+      locationInterest: parsed.location_interest ?? null,
       budgetMinMinor: parsed.budget_min_minor ?? null,
       budgetMaxMinor: parsed.budget_max_minor ?? null,
       notes: parsed.notes ?? null,
+      ...(parsed.consent_marketing !== undefined
+        ? { consentMarketing: parsed.consent_marketing }
+        : {}),
     });
   }
 

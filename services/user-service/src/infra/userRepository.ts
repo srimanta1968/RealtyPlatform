@@ -45,7 +45,9 @@ export function createUserRepository(db: Db): UserRepository {
       id: asUserId(row.id),
       full_name: row.fullName,
       email: row.email,
+      phone: row.phone,
       role: row.role as UserRole,
+      active: row.active,
       created_at: row.createdAt.toISOString(),
       email_verified_at: row.emailVerifiedAt ? row.emailVerifiedAt.toISOString() : null,
     };
