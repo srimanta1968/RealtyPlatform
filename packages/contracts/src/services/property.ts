@@ -56,6 +56,36 @@ export const PropertyCreateRequestSchema = z.object({
 });
 export type PropertyCreateRequest = z.infer<typeof PropertyCreateRequestSchema>;
 
+/**
+ * Partial-update payload for PATCH /api/properties/:id. At least one
+ * field must be supplied (refine), and the price-range invariant is
+ * re-checked at the domain layer once the row is loaded.
+ */
+export const PropertyUpdateRequestSchema = z
+  .object({
+    title: z.string().trim().min(1).max(200).optional(),
+    type: PropertyTypeSchema.optional(),
+    location: z.string().trim().min(1).max(200).optional(),
+    status: PropertyStatusSchema.optional(),
+    price_min_minor: z.number().int().nonnegative().nullable().optional(),
+    price_max_minor: z.number().int().nonnegative().nullable().optional(),
+    tags: z.array(z.string().min(1).max(50)).max(20).optional(),
+    media: z.array(PropertyMediaRefSchema).optional(),
+  })
+  .refine(
+    (data) =>
+      data.title !== undefined ||
+      data.type !== undefined ||
+      data.location !== undefined ||
+      data.status !== undefined ||
+      data.price_min_minor !== undefined ||
+      data.price_max_minor !== undefined ||
+      data.tags !== undefined ||
+      data.media !== undefined,
+    { message: 'At least one updatable field must be provided.' },
+  );
+export type PropertyUpdateRequest = z.infer<typeof PropertyUpdateRequestSchema>;
+
 export interface PropertyRecord {
   id: PropertyId;
   slug: string;

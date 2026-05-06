@@ -1,6 +1,7 @@
 import {
   PropertyCreateRequestSchema,
   PropertyStatusSchema,
+  PropertyUpdateRequestSchema,
   type PropertyRecord,
   type PropertyStatus,
 } from '@kiana/contracts';
@@ -101,6 +102,32 @@ export class PropertyDomain {
     const updated = await this.options.repository.updateFields(id, fields);
     if (!updated) throw new PropertyNotFoundError(id);
     return updated;
+  }
+
+  /**
+   * Validate a snake_case PATCH body and apply the partial update. Maps
+   * API field names (price_min_minor) onto repository field names
+   * (priceMinMinor) in one place so the route layer doesn't repeat the
+   * conversion. Throws ZodError on bad input, PriceRangeError on an
+   * inverted range, PropertyNotFoundError when the id is gone.
+   */
+  async updateFromRequest(id: string, input: unknown): Promise<PropertyRecord> {
+    const parsed = PropertyUpdateRequestSchema.parse(input);
+    const fields: PropertyFieldUpdate = {
+      ...(parsed.title !== undefined ? { title: parsed.title } : {}),
+      ...(parsed.type !== undefined ? { type: parsed.type } : {}),
+      ...(parsed.location !== undefined ? { location: parsed.location } : {}),
+      ...(parsed.status !== undefined ? { status: parsed.status } : {}),
+      ...(parsed.price_min_minor !== undefined
+        ? { priceMinMinor: parsed.price_min_minor }
+        : {}),
+      ...(parsed.price_max_minor !== undefined
+        ? { priceMaxMinor: parsed.price_max_minor }
+        : {}),
+      ...(parsed.tags !== undefined ? { tags: parsed.tags } : {}),
+      ...(parsed.media !== undefined ? { media: parsed.media } : {}),
+    };
+    return this.update(id, fields);
   }
 
   /**

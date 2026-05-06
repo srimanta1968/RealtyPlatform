@@ -1,6 +1,7 @@
 import { createDataService } from '@kiana/db-kit';
 import { createServer, loadServiceConfig, type KianaFastify } from '@kiana/service-kit';
 
+import { registerPropertyAdminRoutes } from './api/properties.js';
 import { PropertyDomain } from './domain/properties.js';
 import { createPropertyRepository } from './infra/propertyRepository.js';
 import { properties } from '../db/schema.js';
@@ -29,8 +30,7 @@ export async function buildServer(): Promise<KianaFastify> {
     },
     registerRoutes: async (server) => {
       const domain = new PropertyDomain({ repository });
-      // Operator-readable status until real CRUD routes land in the next
-      // Phase 1 task ("POST /api/properties + PATCH /api/properties/:id").
+      await registerPropertyAdminRoutes(server, { domain });
       server.get('/api/properties/_status', async () => ({
         success: true,
         data: {
