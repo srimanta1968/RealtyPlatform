@@ -30,4 +30,44 @@ CREATE TABLE IF NOT EXISTS notification_sends (
   sent_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
+
+-- Phase-1 canonical seed templates per docs/Phase/Phase-1-Trust-Launch.md §4.
+-- Idempotent: ON CONFLICT (slug) DO NOTHING preserves any operator overrides
+-- applied via POST /api/notifications/templates. Operators tune the body /
+-- subject through the admin endpoint; only fresh deploys land these defaults.
+INSERT INTO notification_templates (slug, channel, subject, body)
+VALUES (
+  'verification',
+  'email',
+  'Verify your Kiana account',
+  E'Hi {{full_name}},\n\nThanks for signing up. Please confirm your email to finish setting up your account:\n\n{{verification_url}}\n\nThis link expires {{expires_at}}.\n\n— The Kiana team'
+)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO notification_templates (slug, channel, subject, body)
+VALUES (
+  'lead_created_customer',
+  'email',
+  'We got your enquiry, {{full_name}}',
+  E'Hi {{full_name}},\n\nThanks for reaching out to Kiana Realty. A presales specialist will be in touch within one business day to walk you through next steps.\n\nIn the meantime, feel free to reply to this email with any questions.\n\n— The Kiana team'
+)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO notification_templates (slug, channel, subject, body)
+VALUES (
+  'lead_created_presales',
+  'email',
+  'New lead: {{full_name}} ({{source}})',
+  E'A new lead just landed from {{source}}.\n\n• Name: {{full_name}}\n• Email: {{email}}\n• Phone: {{phone}}\n• Stage: {{stage}}\n\nFollow up at: {{lead_url}}\n\nResponse-time SLA: 30 minutes during business hours.'
+)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO notification_templates (slug, channel, subject, body)
+VALUES (
+  'stage_changed',
+  'email',
+  'Your enquiry is now {{to_stage}}',
+  E'Hi {{full_name}},\n\nYour enquiry has moved from {{from_stage}} to {{to_stage}}. We''ll be in touch soon with the next steps.\n\n— The Kiana team'
+)
+ON CONFLICT (slug) DO NOTHING;
 `;

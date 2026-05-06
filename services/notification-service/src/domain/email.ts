@@ -14,7 +14,8 @@ export interface EmailDomainOptions {
   logOnly?: boolean;
 }
 
-export const EMAIL_VERIFICATION_TEMPLATE_SLUG = 'auth.email-verification';
+/** Aligned with the Phase-1 seed template slugs (see db/bootstrap.ts). */
+export const EMAIL_VERIFICATION_TEMPLATE_SLUG = 'verification';
 
 export class EmailDomain {
   constructor(private readonly options: EmailDomainOptions) {}

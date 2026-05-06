@@ -2,7 +2,9 @@ import { createDataService } from '@kiana/db-kit';
 import { createServer, loadServiceConfig, type KianaFastify } from '@kiana/service-kit';
 
 import { registerInternalRoutes } from './api/internal.js';
+import { registerTemplateRoutes } from './api/templates.js';
 import { EmailDomain } from './domain/email.js';
+import { TemplateDomain } from './domain/templates.js';
 import { createNotificationRepository } from './infra/notificationRepository.js';
 import { notificationSends, notificationTemplates } from '../db/schema.js';
 import { NOTIFICATION_SERVICE_BOOTSTRAP_SQL } from '../db/bootstrap.js';
@@ -30,7 +32,9 @@ export async function buildServer(): Promise<KianaFastify> {
     },
     registerRoutes: async (server) => {
       const emailDomain = new EmailDomain({ repository, logger: server.log, logOnly });
+      const templateDomain = new TemplateDomain({ repository });
       await registerInternalRoutes(server, { emailDomain, serviceToken });
+      await registerTemplateRoutes(server, { domain: templateDomain });
 
       server.get('/api/notifications/_status', async () => ({
         success: true,

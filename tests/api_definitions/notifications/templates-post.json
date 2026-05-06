@@ -1,0 +1,39 @@
+{
+  "name": "POST /api/notifications/templates - Upsert a notification template",
+  "endpoint": "/api/notifications/templates",
+  "method": "POST",
+  "taskId": "88519e3c-1aac-430f-bc49-e63c1f6eae4f",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 30,
+  "description": "Admin upsert for notification_templates rows. Body uses {{handlebars}} placeholders that the upcoming subscribers (lead.created / lead.stage_changed / lead.assigned) render against the event payload before dispatching. Phase-1 seed templates land via db/bootstrap.ts on every restart (verification, lead_created_customer, lead_created_presales, stage_changed); this endpoint lets operators tune them without redeploying the service. Admin-only via the requireRole middleware that lands in Phase 1 Task #11.",
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "templates.upsert.response.data.template.slug": "data.template.slug"
+  },
+  "testCases": [
+    {
+      "name": "Upsert a stage-changed template",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {
+        "slug": "{{static:stage_changed}}",
+        "channel": "{{static:email}}",
+        "subject": "{{static:Your enquiry is now {{to_stage}}}}",
+        "body": "{{static:Hi {{full_name}} — your enquiry has moved to {{to_stage}}.}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "template": {
+            "slug": "<string>",
+            "channel": "<string>",
+            "body": "<string>"
+          }
+        }
+      }
+    }
+  ]
+}
