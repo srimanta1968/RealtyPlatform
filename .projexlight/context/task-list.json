@@ -1,0 +1,120 @@
+{
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "sprintName": "Quick Prototype Sprint",
+  "totalTasks": 16,
+  "tasks": [
+    {
+      "taskId": "2dc248ab-3da4-4621-8148-d411e7ff4582",
+      "taskNumber": 1,
+      "title": "Create User Registration Form",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "39391eaf-41bd-4eb4-8166-30e5b707dc1e",
+      "taskNumber": 2,
+      "title": "Implement Email Verification",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "96878f5e-4345-4b75-82e2-1e923cd86277",
+      "taskNumber": 3,
+      "title": "Handle User Login",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "41162ca7-a829-4e99-8f9e-3d204d3d81bd",
+      "taskNumber": 4,
+      "title": "Create User Session Management",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "147e3e2c-594c-4085-8db3-114620ef5aec",
+      "taskNumber": 5,
+      "title": "Implement Lead Capture Form",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "020c4945-e047-41fa-97d7-a82e2e0064ea",
+      "taskNumber": 6,
+      "title": "Integrate Lead Sources",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "809859b7-e3a1-472c-b48e-31420f75e2cc",
+      "taskNumber": 7,
+      "title": "Develop Lead Management Interface",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "5946653d-5bb1-416c-a604-03e1afc596ff",
+      "taskNumber": 8,
+      "title": "Implement Lead Status Tracking",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "694af8aa-6377-48d7-b131-4aea7fa03739",
+      "taskNumber": 9,
+      "title": "Define Business Workflow Processes",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "cf1f6f08-2f88-46f4-bbe5-872823218d9b",
+      "taskNumber": 10,
+      "title": "Implement Workflow Execution Logic",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "e5df1563-4433-41fc-b65b-82387151f1f9",
+      "taskNumber": 11,
+      "title": "Capture Workflow Metrics",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "ea5b2a7f-7ab8-48b0-9fca-c7a0ca4ce0a4",
+      "taskNumber": 12,
+      "title": "Develop Workflow Monitoring Tools",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "0cd4a146-0aed-48b4-8f05-40f8ba2e57f6",
+      "taskNumber": 13,
+      "title": "Implement Create Functionality",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "0894bad2-26d8-4c58-ab8c-98489770d190",
+      "taskNumber": 14,
+      "title": "Implement Read Functionality",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "206f8f4e-9162-4d95-9a58-5596e7687bec",
+      "taskNumber": 15,
+      "title": "Implement Update Functionality",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "2b1c1364-664e-44c7-9979-2eaf6053c700",
+      "taskNumber": 16,
+      "title": "Implement Delete Functionality",
+      "status": "not_started",
+      "taskType": "development"
+    }
+  ],
+  "note": "Detailed instructions are delivered via MCP API. Call projexlight_get_instruction with taskId."
+}

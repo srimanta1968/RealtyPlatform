@@ -1,0 +1,39 @@
+{
+  "name": "@kiana/user-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "User accounts, registration, login, sessions, roles. Owns user_db.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "test": "echo \"user-service: tests scaffolded — run jest when ready\"",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@kiana/contracts": "workspace:*",
+    "@kiana/db-kit": "workspace:*",
+    "@kiana/event-bus": "workspace:*",
+    "@kiana/service-kit": "workspace:*",
+    "bcryptjs": "^2.4.3",
+    "drizzle-orm": "^0.30.0",
+    "fastify": "^4.26.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@kiana/config": "workspace:*",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.10.0",
+    "@types/pg": "^8.10.9",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}

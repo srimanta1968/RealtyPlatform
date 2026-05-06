@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phase 5 — Premium Experience · Kiana Realty Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{--bg:#0b0f17;--panel:#121826;--panel-2:#1a2234;--line:#243049;--text:#e6ecf5;--muted:#8a98b3;--accent:#c9a86a;--accent-2:#6aa9ff;--green:#5dd39e;--red:#ff6b6b;--yellow:#f5c451;--code-bg:#0f1422;}
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;line-height:1.55}
+  .page{max-width:1180px;margin:0 auto;padding:48px 32px 96px}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line)}
+  .crumbs a:hover{color:var(--accent)}
+  header.cover{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:40px}
+  header.cover .eyebrow{color:var(--accent);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600}
+  header.cover h1{font-size:40px;line-height:1.15;margin:10px 0 8px;letter-spacing:-.02em}
+  header.cover .sub{color:var(--muted);font-size:16px;max-width:780px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;color:var(--muted);font-size:13px}
+  .meta b{color:var(--text)}
+  h2{font-size:24px;margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 10px}
+  h4{font-size:13px;margin:14px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}
+  p{color:#c8d1e3}
+  .grid{display:grid;gap:14px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:900px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}header.cover h1{font-size:30px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
+  .card .title{font-weight:600;margin:6px 0}
+  .card .body{color:var(--muted);font-size:13.5px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .pill.gold{color:var(--accent);border-color:rgba(201,168,106,.4)}
+  .pill.blue{color:var(--accent-2);border-color:rgba(106,169,255,.4)}
+  .pill.green{color:var(--green);border-color:rgba(93,211,158,.4)}
+  .pill.red{color:var(--red);border-color:rgba(255,107,107,.4)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.5px}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:12px}
+  .diagram-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto}
+  .caption{color:var(--muted);font-size:12.5px;margin-top:10px;text-align:center}
+  .phasebar{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .phasebar a{flex:1;min-width:110px;text-align:center;padding:8px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--muted);font-size:12px}
+  .phasebar a.current{background:var(--panel-2);color:var(--accent);border-color:var(--accent)}
+  .phasebar a:hover{color:var(--text)}
+  .footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap}
+  ul{color:#c8d1e3}
+  .checklist li{list-style:none;padding-left:22px;position:relative;margin:6px 0}
+  .checklist li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+  .agent-card{background:linear-gradient(180deg,#1a2234,#161e2e);border:1px solid rgba(201,168,106,.4);border-radius:12px;padding:16px}
+  .agent-card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="crumbs"><a href="../Architecture.html">Architecture</a> · <a href="../PRD.md">PRD</a> · Phase 5</div>
+  <header class="cover">
+    <div class="eyebrow">Phase 5 of 7 · Architecture Detail</div>
+    <h1>Premium Experience</h1>
+    <div class="sub">Make the buyer feel the brand — self-serve confidence between visit and closure. Documents, decisions, and history live in one place.</div>
+    <div class="meta">
+      <div><b>Duration:</b> 6–8 weeks</div>
+      <div><b>Adds:</b> Customer Portal · Document Service · e-sign · Recommender v2</div>
+      <div><b>Outcome:</b> Buyer confidence</div>
+    </div>
+    <div class="phasebar">
+      <a href="Phase-1-Trust-Launch.html">P1 · Trust</a>
+      <a href="Phase-2-Operations-Backbone.html">P2 · Ops</a>
+      <a href="Phase-3-Growth-Engine.html">P3 · Growth</a>
+      <a href="Phase-4-Field-Intelligence.html">P4 · Field</a>
+      <a href="Phase-5-Premium-Experience.html" class="current">P5 · Premium</a>
+      <a href="Phase-6-AI-Native-Layer.html">P6 · AI</a>
+      <a href="Phase-7-Scale-Ownership.html">P7 · Scale</a>
+    </div>
+  </header>
+
+  <h2>1 · Phase Goal</h2>
+  <p>Until Phase 5 the buyer experiences premium <b>only when interacting with humans</b>. Phase 5 makes the <b>digital surface</b> feel premium too — an authenticated portal with shortlists, comparisons, documents, and a refined recommender.</p>
+
+  <div class="grid cols-2">
+    <div class="card"><div class="label">In Scope</div><div class="title">Buyer self-serve</div><div class="body">Customer Portal (Next.js) · Document Service · e-sign integration · Recommendation Agent v2 · communication history view · payment receipt tracking · notification preferences.</div></div>
+    <div class="card"><div class="label">Out of Scope</div><div class="title">Deferred</div><div class="body">Concierge AI / chat (P6) · full mortgage workflow · title/registration · native mobile customer app.</div></div>
+  </div>
+
+  <h2>2 · Architecture View</h2>
+  <p>The <b>Customer Portal</b> is the second Next.js surface. It speaks to a dedicated Customer BFF, not the Admin BFF. The new <b>Document Service</b> manages versioned files with ACLs and e-sign provider integration.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef new fill:#1a2234,stroke:#c9a86a,color:#e6ecf5,stroke-width:2px
+  classDef existing fill:#1a2234,stroke:#243049,color:#8a98b3
+  classDef agent fill:#1a2234,stroke:#c9a86a,color:#c9a86a,stroke-width:2px
+  classDef bus fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+  classDef ext fill:#0f1422,stroke:#8a98b3,color:#e6ecf5,stroke-dasharray:3 3
+  classDef db fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+
+  WEB[Public Site · Next.js]:::existing
+  PORTAL[Customer Portal · Next.js · NEW]:::new
+  ADM[Admin Cockpit]:::existing
+  FIELD[Field PWA]:::existing
+  CBFF[Customer BFF · NEW]:::new
+  BFF[Admin BFF]:::existing
+
+  CP[Customer Portal Service · NEW]:::new
+  D[Document Service · NEW]:::new
+  L[Lead · customer linkage]:::existing
+  P[Property]:::existing
+  V[Visit]:::existing
+  N[Notification · prefs enforcement]:::existing
+  C[CRM]:::existing
+  REC((Recommendation Agent v2)):::agent
+
+  PG[(PostgreSQL)]:::db
+  OBJ[(S3 · documents · encrypted)]:::db
+
+  ESIGN[(E-sign · Digio/Leegality)]:::ext
+  PAY[(Payment Gateway · Razorpay)]:::ext
+  OTP[(OTP / Magic Link)]:::ext
+
+  PORTAL --> CBFF
+  WEB --> BFF
+  ADM --> BFF
+  FIELD --> BFF
+  CBFF --> CP
+  CBFF --> D
+  CBFF --> P
+  CBFF --> V
+  CBFF --> L
+  CBFF --> REC
+  CP --> OTP
+  D --> ESIGN
+  D --> OBJ
+  CP --> PG
+  D --> PG
+  REC --> P
+    </pre>
+    <div class="caption">Phase 5 introduces the Customer Portal as a dedicated Next.js surface with its own BFF, separate from the operator API.</div>
+  </div>
+
+  <h2>3 · Components Added</h2>
+  <table>
+    <thead><tr><th>Component</th><th>Status</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><b>Customer Portal Service</b></td><td><span class="pill green">NEW</span></td><td>Customer-facing BFF, auth, preferences</td></tr>
+      <tr><td><b>Customer Portal (Next.js)</b></td><td><span class="pill green">NEW</span></td><td>SSR/RSC web app for buyers · OTP login</td></tr>
+      <tr><td><b>Document Service</b></td><td><span class="pill green">NEW</span></td><td>Versioned storage · ACL · e-sign integration</td></tr>
+      <tr><td><b>Recommendation Agent v2</b></td><td><span class="pill blue">UPGRADE</span></td><td>Portal-aware (views, dwell, save/unsave signals)</td></tr>
+      <tr><td><b>Lead Service</b></td><td><span class="pill blue">EXTEND</span></td><td>Customer login linkage, preference sync</td></tr>
+      <tr><td><b>Notification</b></td><td><span class="pill blue">EXTEND</span></td><td>Customer-controlled preferences enforcement</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Customer Portal · APIs</h3>
+<pre>POST   /v1/portal/auth/request-otp
+POST   /v1/portal/auth/verify-otp
+GET    /v1/portal/me
+GET    /v1/portal/saved
+POST   /v1/portal/saved/{property_id}
+DELETE /v1/portal/saved/{property_id}
+GET    /v1/portal/shortlist
+POST   /v1/portal/shortlist/compare
+GET    /v1/portal/visits                    Past + upcoming
+GET    /v1/portal/communications            Threaded view
+GET    /v1/portal/documents
+POST   /v1/portal/documents                 Customer upload (KYC, etc.)
+PATCH  /v1/portal/preferences</pre>
+
+  <h3>Document Service · APIs</h3>
+<pre>POST   /v1/documents                        Upload (server-side)
+GET    /v1/documents/{id}                   Signed read URL
+POST   /v1/documents/{id}/sign-request      Trigger e-sign envelope
+GET    /v1/documents/{id}/audit-trail
+PATCH  /v1/documents/{id}/acl               Grant/revoke access</pre>
+
+  <h2>4 · Data Model Additions</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+erDiagram
+  CUSTOMER_ACCOUNT ||--o{ LEAD : owns
+  CUSTOMER_ACCOUNT ||--o{ SAVED_PROPERTY : keeps
+  CUSTOMER_ACCOUNT ||--|| SHORTLIST : has
+  CUSTOMER_ACCOUNT ||--o{ DOCUMENT : owns
+  CUSTOMER_ACCOUNT ||--|| NOTIFICATION_PREFERENCE : configures
+  LEAD ||--o{ PAYMENT_RECORD : has
+  DOCUMENT ||--o| DOCUMENT : versioned_by
+
+  CUSTOMER_ACCOUNT {
+    uuid id PK
+    string email
+    string phone
+    bool email_verified
+    timestamp created_at
+    timestamp last_login_at
+  }
+  SAVED_PROPERTY {
+    uuid customer_id FK
+    uuid property_id FK
+    timestamp saved_at
+    string notes
+  }
+  SHORTLIST {
+    uuid customer_id PK
+    json property_ids
+    timestamp updated_at
+  }
+  DOCUMENT {
+    uuid id PK
+    uuid customer_id FK
+    uuid lead_id FK
+    string type
+    string filename
+    string mime
+    int size
+    int version
+    uuid parent_id FK
+    string uploader
+    json acl
+    string esign_envelope_id
+    string status
+  }
+  NOTIFICATION_PREFERENCE {
+    uuid customer_id PK
+    string channel
+    bool opt_in
+    int frequency_cap_per_week
+  }
+  PAYMENT_RECORD {
+    uuid id PK
+    uuid lead_id FK
+    string type
+    int amount
+    string currency
+    string reference
+    string status
+    uuid evidence_doc_id FK
+    timestamp recorded_at
+  }
+    </pre>
+  </div>
+
+  <h2>5 · Customer Auth Flow</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant U as Customer
+  participant P as Portal (Next.js)
+  participant CB as Customer BFF
+  participant CP as Customer Portal Svc
+  participant N as Notification
+  U->>P: enter phone
+  P->>CB: POST /auth/request-otp
+  CB->>CP: request OTP
+  CP->>N: send OTP via SMS / WA
+  N-->>U: OTP delivered
+  U->>P: enter OTP
+  P->>CB: POST /auth/verify-otp
+  CB->>CP: verify
+  CP->>CP: link to existing Lead by phone
+  CP-->>CB: session token
+  CB-->>P: set httpOnly cookie
+  P-->>U: Portal home (saved + shortlist + visits)
+    </pre>
+  </div>
+
+  <h2>6 · Document &amp; E-sign Flow</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant S as Staff (Cockpit)
+  participant D as Document Service
+  participant E as E-sign Provider
+  participant U as Customer (Portal)
+  participant C as CRM
+  S->>D: POST /documents (booking confirmation)
+  S->>D: POST /sign-request
+  D->>E: create envelope
+  E-->>D: envelope_id
+  D->>U: notify (Portal + WA)
+  U->>E: review &amp; sign
+  E-->>D: webhook · signed
+  D->>D: status=SIGNED · audit trail
+  D->>C: document.signed event → advance stage
+    </pre>
+  </div>
+
+  <h2>7 · Recommendation Agent v2</h2>
+  <div class="agent-card">
+    <div class="label">Agent · Phase 5 (Upgrade)</div>
+    <h3 style="margin:6px 0">Portal-aware Recommendations</h3>
+    <p style="font-size:13.5px;color:var(--muted)">Builds on Phase 4 Property Matching with new signals: portal views, dwell time, save/unsave, comparison sets, and last-discussed property from call notes.</p>
+    <p style="font-size:13.5px;color:var(--muted)"><b>Surfaces in:</b> Customer Portal ("You might also like") and Presales Cockpit ("Suggested next conversation").</p>
+    <p style="font-size:13.5px;color:var(--muted)"><b>Explainability:</b> every suggestion shows reason — same bar as Phase 4.</p>
+  </div>
+
+  <h2>8 · Trust &amp; Security</h2>
+  <ul>
+    <li>Customer auth: phone OTP (primary), magic-link email (secondary), passkey (optional)</li>
+    <li>Document encryption at rest with per-tenant keys</li>
+    <li>Watermark customer-downloaded brochures with their name + timestamp</li>
+    <li>ACL audit log on every document access</li>
+    <li>Customer can request data export (DPDP compliance)</li>
+    <li>Right-to-erasure workflow</li>
+  </ul>
+
+  <h2>9 · Non-Functional Requirements</h2>
+  <table>
+    <thead><tr><th>Concern</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Portal load</td><td>P75 &lt;2s on mobile 4G</td></tr>
+      <tr><td>Document upload</td><td>Up to 100MB, resumable</td></tr>
+      <tr><td>E-sign envelope creation</td><td>P95 &lt;5s</td></tr>
+      <tr><td>Recommendation refresh</td><td>&lt;30s after portal interaction</td></tr>
+      <tr><td>Availability</td><td>99.9% for portal auth and document read</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10 · Deliverables</h2>
+  <ul class="checklist">
+    <li>Customer Portal (Next.js, mobile-responsive) launched</li>
+    <li>Document Service with e-sign integration (lite)</li>
+    <li>Recommendation Agent v2 (portal-aware)</li>
+    <li>Customer notification preferences UI + enforcement</li>
+    <li>Payment record tracking with evidence linkage</li>
+    <li>Customer onboarding email sequence</li>
+    <li>Compliance review (DPDP, data export, erasure flow)</li>
+  </ul>
+
+  <h2>11 · Exit Criteria</h2>
+  <ul class="checklist">
+    <li>≥50% of QUALIFIED-stage leads activate their portal account</li>
+    <li>≥30% of activated customers maintain a shortlist</li>
+    <li>Document verification turnaround &lt;24h for ≥90% of uploads</li>
+    <li>Token-to-booking cycle time reduced by ≥20% vs Phase 4</li>
+    <li>Customer NPS for portal ≥30 in first month</li>
+  </ul>
+
+  <h2>12 · Risks</h2>
+  <table>
+    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Low portal adoption</td><td>Onboarding email + in-call activation by presales</td></tr>
+      <tr><td>Document leakage / wrong ACL</td><td>Default-deny ACL; audit on every access; staff training</td></tr>
+      <tr><td>E-sign provider downtime</td><td>Manual fallback; provider-agnostic abstraction</td></tr>
+      <tr><td>Customer support load spike</td><td>In-app help; FAQs; escalation to presales owner</td></tr>
+      <tr><td>Recommendation feels "creepy"</td><td>Transparency: show why each property is suggested</td></tr>
+    </tbody>
+  </table>
+
+  <h2>13 · Hand-off to Phase 6</h2>
+  <p>By end of Phase 5, the platform owns the <b>full customer + operations lifecycle</b>. Phase 6 layers full AI on top — Concierge for inbound, advanced scoring, property intelligence — turning the platform into a <b>semi-autonomous revenue engine</b>. <a href="Phase-6-AI-Native-Layer.html" style="color:var(--accent)">Continue to Phase 6 →</a></p>
+
+  <div class="footer">
+    <div>Phase 5 · Premium Experience · v1.0</div>
+    <div>Companion: <a href="../Architecture.html" style="color:var(--accent)">Architecture.html</a></div>
+  </div>
+</div>
+<script>
+  mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{darkMode:true,background:'#121826',primaryColor:'#1a2234',primaryTextColor:'#e6ecf5',primaryBorderColor:'#c9a86a',lineColor:'#8a98b3',secondaryColor:'#16241c',tertiaryColor:'#0f1422',fontFamily:'ui-sans-serif'},flowchart:{curve:'basis',useMaxWidth:true},sequence:{useMaxWidth:true,wrap:true},er:{useMaxWidth:true}});
+</script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phase 3 — Growth Engine · Kiana Realty Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{--bg:#0b0f17;--panel:#121826;--panel-2:#1a2234;--line:#243049;--text:#e6ecf5;--muted:#8a98b3;--accent:#c9a86a;--accent-2:#6aa9ff;--green:#5dd39e;--red:#ff6b6b;--yellow:#f5c451;--code-bg:#0f1422;}
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;line-height:1.55}
+  .page{max-width:1180px;margin:0 auto;padding:48px 32px 96px}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line)}
+  .crumbs a:hover{color:var(--accent)}
+  header.cover{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:40px}
+  header.cover .eyebrow{color:var(--accent);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600}
+  header.cover h1{font-size:40px;line-height:1.15;margin:10px 0 8px;letter-spacing:-.02em}
+  header.cover .sub{color:var(--muted);font-size:16px;max-width:780px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;color:var(--muted);font-size:13px}
+  .meta b{color:var(--text)}
+  h2{font-size:24px;margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 10px}
+  h4{font-size:13px;margin:14px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}
+  p{color:#c8d1e3}
+  .grid{display:grid;gap:14px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:900px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}header.cover h1{font-size:30px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
+  .card .title{font-weight:600;margin:6px 0}
+  .card .body{color:var(--muted);font-size:13.5px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .pill.gold{color:var(--accent);border-color:rgba(201,168,106,.4)}
+  .pill.blue{color:var(--accent-2);border-color:rgba(106,169,255,.4)}
+  .pill.green{color:var(--green);border-color:rgba(93,211,158,.4)}
+  .pill.red{color:var(--red);border-color:rgba(255,107,107,.4)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.5px}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:12px}
+  .diagram-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto}
+  .caption{color:var(--muted);font-size:12.5px;margin-top:10px;text-align:center}
+  .phasebar{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .phasebar a{flex:1;min-width:110px;text-align:center;padding:8px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--muted);font-size:12px}
+  .phasebar a.current{background:var(--panel-2);color:var(--accent);border-color:var(--accent)}
+  .phasebar a:hover{color:var(--text)}
+  .footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap}
+  ul{color:#c8d1e3}
+  .checklist li{list-style:none;padding-left:22px;position:relative;margin:6px 0}
+  .checklist li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+  .agent-card{background:linear-gradient(180deg,#1a2234,#161e2e);border:1px solid rgba(201,168,106,.4);border-radius:12px;padding:16px}
+  .agent-card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="crumbs"><a href="../Architecture.html">Architecture</a> · <a href="../PRD.md">PRD</a> · Phase 3</div>
+  <header class="cover">
+    <div class="eyebrow">Phase 3 of 7 · Architecture Detail</div>
+    <h1>Growth Engine</h1>
+    <div class="sub">Replace cold calling with intent-driven outreach. Marketing spend converts into measurable, attributed revenue. The first LLM agents come online.</div>
+    <div class="meta">
+      <div><b>Duration:</b> 6–8 weeks</div>
+      <div><b>Adds:</b> Campaign · Segmentation · Engagement · 2 LLM agents</div>
+      <div><b>Outcome:</b> Marketing ROI</div>
+    </div>
+    <div class="phasebar">
+      <a href="Phase-1-Trust-Launch.html">P1 · Trust</a>
+      <a href="Phase-2-Operations-Backbone.html">P2 · Ops</a>
+      <a href="Phase-3-Growth-Engine.html" class="current">P3 · Growth</a>
+      <a href="Phase-4-Field-Intelligence.html">P4 · Field</a>
+      <a href="Phase-5-Premium-Experience.html">P5 · Premium</a>
+      <a href="Phase-6-AI-Native-Layer.html">P6 · AI</a>
+      <a href="Phase-7-Scale-Ownership.html">P7 · Scale</a>
+    </div>
+  </header>
+
+  <h2>1 · Phase Goal</h2>
+  <p>Phase 2 produced clean funnel data. Phase 3 turns that data into <b>outbound growth</b>: segment by intent and behavior, run drip and broadcast campaigns across email/WA/SMS, score lead warmth from engagement, and push warm leads into a call queue presales works first. <b>First LLM agents go live.</b></p>
+
+  <div class="grid cols-2">
+    <div class="card"><div class="label">In Scope</div><div class="title">Outbound machine</div><div class="body">Campaign Service · Segmentation Engine · Engagement Tracker · Marketing Console (React) · Lead Qualification Agent (LLM) · Campaign Scoring Agent · A/B framework.</div></div>
+    <div class="card"><div class="label">Out of Scope</div><div class="title">Deferred</div><div class="body">Field PWA (P4) · Customer Portal (P5) · Concierge (P6) · outbound voice / dialer.</div></div>
+  </div>
+
+  <h2>2 · Architecture View</h2>
+  <p>Three new services, a new React frontend (Marketing Console), and the platform's <b>first LLM agents</b> running on the Agent Runtime.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef new fill:#1a2234,stroke:#c9a86a,color:#e6ecf5,stroke-width:2px
+  classDef existing fill:#1a2234,stroke:#243049,color:#8a98b3
+  classDef bus fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+  classDef agent fill:#1a2234,stroke:#c9a86a,color:#c9a86a,stroke-width:2px
+  classDef ext fill:#0f1422,stroke:#8a98b3,color:#e6ecf5,stroke-dasharray:3 3
+
+  MKT[Marketing Console · React · NEW]:::new
+  ADM[Admin Cockpit]:::existing
+  BFF[BFF / API Gateway]:::existing
+
+  L[Lead · score field added]:::existing
+  P[Property]:::existing
+  C[CRM · warm queue UI]:::existing
+  V[Visit]:::existing
+  N[Notification · bulk paths]:::existing
+  CAMP[Campaign Service · NEW]:::new
+  SEG[Segmentation Engine · NEW]:::new
+  ETR[Engagement Tracker · NEW]:::new
+
+  BUS{{Event Bus}}:::bus
+  T{{Temporal · drip flows}}:::bus
+
+  Q((Lead Qualification Agent · LLM)):::agent
+  S((Campaign Scoring Agent)):::agent
+
+  LLM[(Claude / OpenAI)]:::ext
+  WAH[(WhatsApp webhooks)]:::ext
+  EMH[(Email tracking pixels / webhooks)]:::ext
+
+  MKT --> BFF
+  ADM --> BFF
+  BFF --> CAMP
+  BFF --> SEG
+  BFF --> L
+  BFF --> C
+  CAMP --> SEG
+  CAMP --> N
+  N --> WAH
+  N --> EMH
+  WAH -.webhook.-> ETR
+  EMH -.webhook.-> ETR
+  ETR --> BUS
+  L --> BUS
+  CAMP --> BUS
+  BUS --> Q
+  BUS --> S
+  Q --> L
+  S --> L
+  Q --> LLM
+  CAMP --> T
+  T --> CAMP
+    </pre>
+    <div class="caption">Phase 3 introduces the Marketing Console and two LLM agents. Engagement Tracker ingests provider webhooks for opens/clicks/replies.</div>
+  </div>
+
+  <h2>3 · Microservices &amp; Agents</h2>
+  <table>
+    <thead><tr><th>Component</th><th>Status</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><b>Campaign Service</b></td><td><span class="pill green">NEW</span></td><td>Campaign CRUD, scheduling, send orchestration, A/B</td></tr>
+      <tr><td><b>Segmentation Engine</b></td><td><span class="pill green">NEW</span></td><td>Rule-based segments, dynamic membership</td></tr>
+      <tr><td><b>Engagement Tracker</b></td><td><span class="pill green">NEW</span></td><td>Open/click/reply ingest, attribution</td></tr>
+      <tr><td><b>Marketing Console</b></td><td><span class="pill green">NEW (React)</span></td><td>Visual segment builder, campaign editor, A/B</td></tr>
+      <tr><td><b>Lead Qualification Agent</b></td><td><span class="pill red">NEW (LLM)</span></td><td>Extracts intent, budget, location, urgency</td></tr>
+      <tr><td><b>Campaign Scoring Agent</b></td><td><span class="pill red">NEW</span></td><td>Hybrid rule + ML scoring on engagement</td></tr>
+      <tr><td><b>Lead Service</b></td><td><span class="pill blue">EXTEND</span></td><td>Score field, warm queue endpoint, qualification metadata</td></tr>
+      <tr><td><b>Notification</b></td><td><span class="pill blue">EXTEND</span></td><td>Bulk send, throttling, suppression list</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Campaign Service · APIs</h3>
+<pre>POST   /v1/campaigns                Create draft
+PATCH  /v1/campaigns/{id}           Update content / segment / schedule
+POST   /v1/campaigns/{id}/test      Send test
+POST   /v1/campaigns/{id}/launch    Schedule for send
+GET    /v1/campaigns/{id}/metrics   Sends, opens, clicks, replies, conversions
+POST   /v1/campaigns/{id}/abort     Halt in-flight</pre>
+
+  <h3>Segmentation DSL example</h3>
+<pre>location_interest IN ('Lonavala','Karjat')
+  AND budget_band &gt;= 2_CR
+  AND last_activity_within(30d)
+  AND stage NOT IN ('CLOSED','NURTURE')</pre>
+
+  <h2>4 · Data Model Additions</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+erDiagram
+  CAMPAIGN ||--|| SEGMENT : targets
+  CAMPAIGN ||--o{ ENGAGEMENT_EVENT : produces
+  LEAD ||--o{ ENGAGEMENT_EVENT : receives
+  LEAD ||--|| LEAD_SCORE : scored_by
+  LEAD ||--o| QUALIFICATION_RESULT : qualified_by
+
+  CAMPAIGN {
+    uuid id PK
+    string name
+    string channel
+    uuid segment_id FK
+    json variants
+    string schedule
+    string status
+    int attribution_window_days
+  }
+  SEGMENT {
+    uuid id PK
+    string name
+    text dsl
+    int materialized_count
+  }
+  ENGAGEMENT_EVENT {
+    uuid id PK
+    uuid lead_id FK
+    uuid campaign_id FK
+    string channel
+    string type
+    json metadata
+    timestamp occurred_at
+  }
+  LEAD_SCORE {
+    uuid lead_id PK
+    int score
+    json components
+    timestamp updated_at
+  }
+  QUALIFICATION_RESULT {
+    uuid lead_id PK
+    string source
+    string agent_version
+    string intent
+    string budget_band
+    string urgency
+    float confidence
+    text reasoning
+  }
+    </pre>
+  </div>
+
+  <h2>5 · LLM Agents</h2>
+  <div class="grid cols-2">
+    <div class="agent-card">
+      <div class="label">Agent · Phase 3</div>
+      <h3 style="margin:6px 0">Lead Qualification (LLM)</h3>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Trigger:</b> <code>lead.created</code> with free-text enquiry, or any inbound message.</p>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Extracts:</b> intent · budget band · location preference · urgency · per-field confidence.</p>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Guardrails:</b> confidence threshold gates auto-stage moves; below threshold goes to human review queue. Reasoning stored for audit.</p>
+    </div>
+    <div class="agent-card">
+      <div class="label">Agent · Phase 3</div>
+      <h3 style="margin:6px 0">Campaign Scoring</h3>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Trigger:</b> any <code>engagement.*</code> event.</p>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Logic:</b> rule-based first (recency × frequency × intent), upgrade to gradient-boosted model in late P3.</p>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Output:</b> <code>lead.scored</code> with components for explainability; warm queue resorted.</p>
+    </div>
+  </div>
+
+  <h2>6 · Drip Campaign Workflow</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart LR
+  M[segment match] --> E[enroll lead]
+  E --> D0[send email D0]
+  D0 --> W3{engagement?}
+  W3 -->|yes| EXIT1[exit drip · score boost]
+  W3 -->|no, after 3d| WA[send WA D3]
+  WA --> W4{engagement?}
+  W4 -->|yes| EXIT2[exit drip]
+  W4 -->|no, after 4d| SMS[send SMS D7]
+  SMS --> END[end]
+    </pre>
+  </div>
+
+  <h2>7 · Event Catalogue (additions)</h2>
+  <table>
+    <thead><tr><th>Event</th><th>Producer</th><th>Consumers</th></tr></thead>
+    <tbody>
+      <tr><td><code>campaign.scheduled / .launched / .completed</code></td><td>Campaign</td><td>Analytics</td></tr>
+      <tr><td><code>engagement.open / .click / .reply</code></td><td>Engagement Tracker</td><td>Scoring Agent, Analytics</td></tr>
+      <tr><td><code>lead.scored</code></td><td>Scoring Agent</td><td>Lead (warm queue), Notification</td></tr>
+      <tr><td><code>lead.qualified</code></td><td>Qualification Agent</td><td>CRM (auto-stage), Notification (assign)</td></tr>
+      <tr><td><code>lead.unsubscribed</code></td><td>Engagement Tracker</td><td>Notification (suppression)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8 · Deliverability &amp; Compliance</h2>
+  <ul>
+    <li>DKIM/SPF/DMARC for email</li>
+    <li>WhatsApp opt-in proof captured at lead source</li>
+    <li>Suppression list shared across channels</li>
+    <li>DPDP-compliant consent capture and revocation</li>
+    <li>Per-recipient throttling to protect sender reputation</li>
+  </ul>
+
+  <h2>9 · Non-Functional Requirements</h2>
+  <table>
+    <thead><tr><th>Concern</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Bulk send</td><td>50k recipients per campaign without backpressure</td></tr>
+      <tr><td>Engagement ingestion</td><td>1k events/sec sustained</td></tr>
+      <tr><td>Score recompute</td><td>&lt;60s from event</td></tr>
+      <tr><td>LLM qualification</td><td>P95 &lt;8s; async fallback</td></tr>
+      <tr><td>Explainability</td><td>All agent outputs show components/reasoning in UI</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10 · Deliverables</h2>
+  <ul class="checklist">
+    <li>Campaign Service + Segmentation Engine deployed</li>
+    <li>Engagement Tracker with provider webhooks integrated</li>
+    <li>Two agents in production (Scoring, Qualification)</li>
+    <li>Marketing Console (React) live</li>
+    <li>Warm-lead call queue in CRM cockpit</li>
+    <li>Marketing attribution dashboard</li>
+    <li>A/B test reporting view</li>
+    <li>Compliance &amp; deliverability monitoring</li>
+  </ul>
+
+  <h2>11 · Exit Criteria</h2>
+  <ul class="checklist">
+    <li>Cost per qualified lead measurable, trending down month-over-month</li>
+    <li>≥30% of presales daily call volume comes from warm queue</li>
+    <li>Auto-qualification covers ≥60% of inbound leads with confidence ≥0.7</li>
+    <li>At least one campaign completes a full attribution cycle to closure</li>
+    <li>Open + click rates within industry benchmark; bounce &lt;2%</li>
+  </ul>
+
+  <h2>12 · Risks</h2>
+  <table>
+    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>LLM hallucination on qualification</td><td>Confidence threshold + human review + audit log</td></tr>
+      <tr><td>Domain reputation hit from bad list</td><td>Warm-up schedule; double opt-in for new segments</td></tr>
+      <tr><td>Over-messaging fatigue</td><td>Frequency cap per channel per lead per week</td></tr>
+      <tr><td>LLM cost spike</td><td>Provider-agnostic adapter; per-call cost telemetry</td></tr>
+      <tr><td>Segment DSL complexity</td><td>Visual builder for non-technical users</td></tr>
+    </tbody>
+  </table>
+
+  <h2>13 · Hand-off to Phase 4</h2>
+  <p>Phase 3 produces a <b>scored, segmented, engaged lead base</b> but field execution is still desktop-driven. Phase 4 puts this intelligence in the field agent's pocket and adds the Property Matching Agent. <a href="Phase-4-Field-Intelligence.html" style="color:var(--accent)">Continue to Phase 4 →</a></p>
+
+  <div class="footer">
+    <div>Phase 3 · Growth Engine · v1.0</div>
+    <div>Companion: <a href="../Architecture.html" style="color:var(--accent)">Architecture.html</a></div>
+  </div>
+</div>
+<script>
+  mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{darkMode:true,background:'#121826',primaryColor:'#1a2234',primaryTextColor:'#e6ecf5',primaryBorderColor:'#c9a86a',lineColor:'#8a98b3',secondaryColor:'#16241c',tertiaryColor:'#0f1422',fontFamily:'ui-sans-serif'},flowchart:{curve:'basis',useMaxWidth:true},sequence:{useMaxWidth:true,wrap:true},er:{useMaxWidth:true}});
+</script>
+</body>
+</html>

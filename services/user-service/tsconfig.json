@@ -1,0 +1,10 @@
+{
+  "extends": "../../packages/config/tsconfig.service.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "composite": false,
+    "incremental": false
+  },
+  "include": ["src/**/*", "db/**/*", "scripts/**/*"],
+  "exclude": ["dist", "node_modules", "tests"]
+}

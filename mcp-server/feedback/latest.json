@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-05-06T00:30:06.372745Z",
+  "file": {
+    "path": ".mcp-cache/custom_standards.json",
+    "language": "json"
+  },
+  "review": {
+    "complianceScore": 100,
+    "status": "excellent",
+    "totalViolations": 0,
+    "autoFixableCount": 0
+  },
+  "violations": [],
+  "autoFixes": [],
+  "metrics": {
+    "llmTokensUsed": 0,
+    "llmCostUsd": 0.0,
+    "reviewedAt": "2026-05-06T00:30:06.361453"
+  },
+  "nextSteps": [
+    "\u2705 Code quality is excellent!",
+    "Safe to commit this code",
+    "Re-run review after fixes to verify compliance"
+  ]
+}

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phase 7 — Scale &amp; Ownership · Kiana Realty Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{--bg:#0b0f17;--panel:#121826;--panel-2:#1a2234;--line:#243049;--text:#e6ecf5;--muted:#8a98b3;--accent:#c9a86a;--accent-2:#6aa9ff;--green:#5dd39e;--red:#ff6b6b;--yellow:#f5c451;--code-bg:#0f1422;}
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;line-height:1.55}
+  .page{max-width:1180px;margin:0 auto;padding:48px 32px 96px}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line)}
+  .crumbs a:hover{color:var(--accent)}
+  header.cover{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:40px}
+  header.cover .eyebrow{color:var(--accent);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600}
+  header.cover h1{font-size:40px;line-height:1.15;margin:10px 0 8px;letter-spacing:-.02em}
+  header.cover .sub{color:var(--muted);font-size:16px;max-width:780px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;color:var(--muted);font-size:13px}
+  .meta b{color:var(--text)}
+  h2{font-size:24px;margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 10px}
+  h4{font-size:13px;margin:14px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}
+  p{color:#c8d1e3}
+  .grid{display:grid;gap:14px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:900px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}header.cover h1{font-size:30px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
+  .card .title{font-weight:600;margin:6px 0}
+  .card .body{color:var(--muted);font-size:13.5px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .pill.gold{color:var(--accent);border-color:rgba(201,168,106,.4)}
+  .pill.blue{color:var(--accent-2);border-color:rgba(106,169,255,.4)}
+  .pill.green{color:var(--green);border-color:rgba(93,211,158,.4)}
+  .pill.red{color:var(--red);border-color:rgba(255,107,107,.4)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.5px}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:12px}
+  .diagram-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto}
+  .caption{color:var(--muted);font-size:12.5px;margin-top:10px;text-align:center}
+  .phasebar{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .phasebar a{flex:1;min-width:110px;text-align:center;padding:8px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--muted);font-size:12px}
+  .phasebar a.current{background:var(--panel-2);color:var(--accent);border-color:var(--accent)}
+  .phasebar a:hover{color:var(--text)}
+  .footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap}
+  ul{color:#c8d1e3}
+  .checklist li{list-style:none;padding-left:22px;position:relative;margin:6px 0}
+  .checklist li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+  .stack-box{background:linear-gradient(180deg,#1a2234,#161e2e);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center;margin-bottom:8px}
+  .stack-box.core{border-color:var(--accent)}
+  .stack-box.vert{border-color:var(--accent-2)}
+  .stack-box.tenant{border-color:var(--green)}
+  .stack-label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:6px}
+  .stack-title{font-weight:700;font-size:18px}
+  .stack-sub{color:var(--muted);font-size:13px;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="crumbs"><a href="../Architecture.html">Architecture</a> · <a href="../PRD.md">PRD</a> · Phase 7</div>
+  <header class="cover">
+    <div class="eyebrow">Phase 7 of 7 · Architecture Detail</div>
+    <h1>Scale &amp; Ownership</h1>
+    <div class="sub">From a managed service to a Kiana-owned, hybrid-operated platform — and the blueprint for the next vertical. The bridge that turns this product into a Vertical AI OS.</div>
+    <div class="meta">
+      <div><b>Duration:</b> 8–12 weeks (overlapping steady state)</div>
+      <div><b>Adds:</b> Hardening · Governance · Vertical OS extraction</div>
+      <div><b>Outcome:</b> Sustainable hybrid ownership</div>
+    </div>
+    <div class="phasebar">
+      <a href="Phase-1-Trust-Launch.html">P1 · Trust</a>
+      <a href="Phase-2-Operations-Backbone.html">P2 · Ops</a>
+      <a href="Phase-3-Growth-Engine.html">P3 · Growth</a>
+      <a href="Phase-4-Field-Intelligence.html">P4 · Field</a>
+      <a href="Phase-5-Premium-Experience.html">P5 · Premium</a>
+      <a href="Phase-6-AI-Native-Layer.html">P6 · AI</a>
+      <a href="Phase-7-Scale-Ownership.html" class="current">P7 · Scale</a>
+    </div>
+  </header>
+
+  <h2>1 · Phase Goal</h2>
+  <p>Phases 1–6 built the platform. Phase 7 is about <b>operational maturity</b> and <b>strategic optionality</b>:</p>
+  <ul>
+    <li>Transition from "Insignia-managed" to "Kiana-operated, Insignia-supported" (hybrid)</li>
+    <li>Institutionalize training, governance, and continuous improvement</li>
+    <li>Harden the platform for multi-tenancy / multi-region scale</li>
+    <li>Extract the <b>Vertical AI OS</b> core so it can be replicated (Insurance, Healthcare next)</li>
+  </ul>
+
+  <h2>2 · Vertical OS Extraction</h2>
+  <p>Refactor the codebase into three layers. Tenants (customers) plug their config into a vertical pack; vertical packs plug into the platform core.</p>
+
+  <div class="diagram-wrap">
+    <div class="grid" style="gap:8px">
+      <div class="stack-box tenant">
+        <div class="stack-label">Layer 3 · Tenant Config</div>
+        <div class="stack-title">Kiana / Next Customer</div>
+        <div class="stack-sub">branding · taxonomies · integrations · SLA policies · prompt overrides</div>
+      </div>
+      <div class="stack-box vert">
+        <div class="stack-label">Layer 2 · Vertical Pack</div>
+        <div class="stack-title">Real Estate Pack</div>
+        <div class="stack-sub">Lead / Property / Visit / Campaign domain models · agents · prompts · dashboards</div>
+        <div class="stack-sub" style="opacity:.6">(future packs: Insurance · Healthcare)</div>
+      </div>
+      <div class="stack-box core">
+        <div class="stack-label">Layer 1 · Platform Core</div>
+        <div class="stack-title">Domain-agnostic</div>
+        <div class="stack-sub">event bus · workflow engine · AI gateway · agent runtime · notification · media · document · user/role</div>
+      </div>
+    </div>
+    <div class="caption">A new vertical (e.g., Insurance) reuses Layer 1 and adds its own Layer 2.</div>
+  </div>
+
+  <h2>3 · Operational Transition Matrix</h2>
+  <p>Each capability follows a <b>shadow → drive → solo</b> ramp over 4–8 weeks with explicit checkpoints.</p>
+
+  <table>
+    <thead><tr><th>Capability</th><th>Today (P6)</th><th>Phase 7 Target</th></tr></thead>
+    <tbody>
+      <tr><td>Cockpit operations (lead inbox, visits)</td><td>Insignia + Kiana co-op</td><td>Kiana primary · Insignia escalation</td></tr>
+      <tr><td>Agent ops (review queues)</td><td>Insignia</td><td>Kiana primary · Insignia weekly audit</td></tr>
+      <tr><td>Campaign execution</td><td>Insignia marketing</td><td>Kiana marketing with templates</td></tr>
+      <tr><td>Platform engineering</td><td>Insignia</td><td>Insignia (long-term)</td></tr>
+      <tr><td>Roadmap / product</td><td>Insignia</td><td>Insignia + Kiana joint</td></tr>
+      <tr><td>AI guardrails / prompts</td><td>Insignia</td><td>Insignia with Kiana review board</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4 · Multi-Region Readiness</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef edge fill:#1a2234,stroke:#c9a86a,color:#e6ecf5
+  classDef app fill:#1a2234,stroke:#6aa9ff,color:#e6ecf5
+  classDef data fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+
+  USER([Buyers · Multi-region])
+  CDN[Edge CDN · Global<br/>+ WAF + Bot mgmt]:::edge
+
+  subgraph PRIMARY["Primary Region · India"]
+    direction TB
+    GW1[API Gateway]:::app
+    K1[Kubernetes Cluster]:::app
+    PG1[(PostgreSQL Primary)]:::data
+    OBJ1[(Object Store)]:::data
+  end
+
+  subgraph DR["DR Region · Read-only Failover"]
+    direction TB
+    K2[Kubernetes Cluster · standby]:::app
+    PG2[(PostgreSQL Read Replica)]:::data
+    OBJ2[(Object Store · cross-region replication)]:::data
+  end
+
+  USER --> CDN
+  CDN --> GW1
+  GW1 --> K1
+  K1 --> PG1
+  K1 --> OBJ1
+  PG1 -. logical replication .-> PG2
+  OBJ1 -. CRR .-> OBJ2
+  CDN -. failover .-> K2
+    </pre>
+    <div class="caption">Phase 7 introduces a DR region with read replicas. Active-active multi-region is deferred until customer base demands it.</div>
+  </div>
+
+  <h2>5 · Governance Forums</h2>
+  <table>
+    <thead><tr><th>Forum</th><th>Cadence</th><th>Attendees</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><td>Daily ops standup</td><td>Daily</td><td>Ops + presales lead</td><td>Open SLAs, escalations</td></tr>
+      <tr><td>Weekly performance review</td><td>Weekly</td><td>Insignia + Kiana leads</td><td>KPI trend, anomaly, action</td></tr>
+      <tr><td>Monthly optimization</td><td>Monthly</td><td>+ product</td><td>Roadmap deltas, A/B results</td></tr>
+      <tr><td>Quarterly business review</td><td>Quarterly</td><td>Leadership both sides</td><td>Strategic decisions, budget, scope</td></tr>
+      <tr><td>Agent review board</td><td>Bi-weekly</td><td>Insignia AI + Kiana ops</td><td>Override patterns, prompt updates</td></tr>
+    </tbody>
+  </table>
+
+  <h2>6 · Training Program</h2>
+  <table>
+    <thead><tr><th>Audience</th><th>Module</th><th>Format</th></tr></thead>
+    <tbody>
+      <tr><td>Presales</td><td>Lead inbox · qualification · warm queue · NBA usage</td><td>Live + recorded + checklist</td></tr>
+      <tr><td>Field agents</td><td>Field app · voice notes · alternatives</td><td>On-site, 1:1</td></tr>
+      <tr><td>Acquisition</td><td>Property intake · intelligence reviews</td><td>Workshop</td></tr>
+      <tr><td>Marketing</td><td>Segments · campaigns · copy review</td><td>Workshop + templates library</td></tr>
+      <tr><td>Ops</td><td>Visit scheduling · SLA management · agent ops</td><td>Live + runbooks</td></tr>
+      <tr><td>Leadership</td><td>Dashboards · KPI literacy</td><td>Briefing + monthly review</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7 · Platform Hardening</h2>
+  <div class="grid cols-3">
+    <div class="card"><div class="label">Multi-region</div><div class="title">Read replicas + region routing</div><div class="body">Property catalogue and customer portal serve from nearest region.</div></div>
+    <div class="card"><div class="label">Multi-brand</div><div class="title">Namespace isolation</div><div class="body">Sub-brands (Premium, Land) supported via tenant config.</div></div>
+    <div class="card"><div class="label">Capacity</div><div class="title">5× &amp; 10× load tests</div><div class="body">Documented remediation backlog from results.</div></div>
+    <div class="card"><div class="label">DR drills</div><div class="title">Quarterly</div><div class="body">Documented recovery; RPO ≤1h, RTO ≤4h.</div></div>
+    <div class="card"><div class="label">Security</div><div class="title">Annual pen test</div><div class="body">Findings remediated or risk-accepted with sign-off.</div></div>
+    <div class="card"><div class="label">Cost</div><div class="title">Per-service dashboard</div><div class="body">Quarterly rightsizing review.</div></div>
+  </div>
+
+  <h2>8 · SLAs &amp; Support Tiers</h2>
+  <table>
+    <thead><tr><th>Tier</th><th>Scope</th><th>Response</th><th>Resolve</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill red">Sev-1</span></td><td>Capture / cockpit / portal down</td><td>15 min</td><td>4h</td></tr>
+      <tr><td><span class="pill gold">Sev-2</span></td><td>Degraded (slow, partial)</td><td>30 min</td><td>8h</td></tr>
+      <tr><td><span class="pill blue">Sev-3</span></td><td>Single feature broken, workaround exists</td><td>4h</td><td>3 business days</td></tr>
+      <tr><td><span class="pill green">Sev-4</span></td><td>Cosmetic, enhancement</td><td>next sprint</td><td>next release</td></tr>
+    </tbody>
+  </table>
+  <p class="muted" style="font-size:13px">24×7 on-call for Sev-1 / Sev-2; business hours otherwise.</p>
+
+  <h2>9 · Customer Success Function</h2>
+  <p>Net-new role(s) at Kiana (with Insignia coaching):</p>
+  <ul>
+    <li>Activation specialist for portal adoption</li>
+    <li>Account engagement reviews for top customers</li>
+    <li>Win/loss analysis loop into product</li>
+  </ul>
+
+  <h2>10 · Replication Playbook</h2>
+  <p>The deliverable that makes the next vertical possible. Documents:</p>
+  <ul>
+    <li>How to stand up a new vertical pack on Platform Core</li>
+    <li>Reference data models, prompts, dashboards (templated)</li>
+    <li>Onboarding checklist for a new tenant</li>
+    <li>Cost model + sizing table</li>
+    <li>Validated end-to-end (paper exercise) by an Insignia squad outside the Kiana team</li>
+  </ul>
+
+  <h2>11 · Non-Functional Requirements</h2>
+  <table>
+    <thead><tr><th>Concern</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Runbook freshness</td><td>All runbooks tested in last 90 days</td></tr>
+      <tr><td>Documentation</td><td>Every service has a one-page operator README</td></tr>
+      <tr><td>MTTR Sev-1</td><td>&lt;2h</td></tr>
+      <tr><td>Change failure rate</td><td>&lt;15%</td></tr>
+      <tr><td>Deployment frequency</td><td>≥daily for application services</td></tr>
+      <tr><td>Code separation</td><td>Generic vs vertical-specific 100% verifiable</td></tr>
+    </tbody>
+  </table>
+
+  <h2>12 · Deliverables</h2>
+  <ul class="checklist">
+    <li>Transition plan executed; ownership matrix signed off</li>
+    <li>Training program delivered; competency checks passed</li>
+    <li>Governance forums operating with documented agendas and decisions log</li>
+    <li>Platform hardening: load tests passed at 5× volume; DR drill completed</li>
+    <li>SLA &amp; support framework live; on-call rotations established</li>
+    <li>Customer Success function staffed and producing weekly reports</li>
+    <li>Vertical OS extraction complete; code separation merged; documentation published</li>
+    <li>Replication playbook published</li>
+  </ul>
+
+  <h2>13 · Exit Criteria</h2>
+  <ul class="checklist">
+    <li>Kiana operates day-to-day for 30 consecutive days without Sev-2+ Insignia escalation</li>
+    <li>All governance forums have run for two full cycles with documented outcomes</li>
+    <li>Replication playbook validated end-to-end by an outside Insignia squad</li>
+    <li>KPI trend lines positive: lead capture, conversion, cost-per-qualified-lead, sales cycle</li>
+    <li>Customer NPS for portal ≥40; field NPS for app ≥50</li>
+    <li>Annual penetration test passed; findings remediated or risk-accepted</li>
+  </ul>
+
+  <h2>14 · Risks</h2>
+  <table>
+    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Knowledge concentrated in 1–2 Insignia engineers</td><td>Pair programming · documentation reviews · rotation</td></tr>
+      <tr><td>Kiana team turnover post-transition</td><td>Role-based docs (not person-based) · shadow-buddy system</td></tr>
+      <tr><td>Hybrid mode causes accountability ambiguity</td><td>RACI matrix per workflow · escalation paths explicit</td></tr>
+      <tr><td>Platform extraction breaks existing flows</td><td>Feature flags · staged rollout · regression suite</td></tr>
+      <tr><td>Replication playbook never gets used</td><td>Commit to one pilot vertical assessment by end of phase</td></tr>
+    </tbody>
+  </table>
+
+  <h2>15 · Strategic Outcome</h2>
+  <p>By the end of Phase 7, Kiana Realty Growth Platform is no longer a "project" — it is:</p>
+  <ol>
+    <li><b>A productized real estate operating system</b> owned by Kiana, supported by Insignia</li>
+    <li><b>A reference implementation</b> of the Insignia Vertical AI OS pattern</li>
+    <li><b>A repeatable engine</b> that turns intent into revenue, with the playbook to replicate into the next vertical</li>
+  </ol>
+  <p style="font-size:18px;color:var(--accent);text-align:center;margin-top:32px;letter-spacing:.05em">Real estate OS → Insurance OS → Healthcare OS</p>
+  <p style="text-align:center;color:var(--muted);font-size:13px">Phase 7 is the bridge that makes that thesis credible to the next customer.</p>
+
+  <div class="footer">
+    <div>Phase 7 · Scale &amp; Ownership · v1.0</div>
+    <div>Companion: <a href="../Architecture.html" style="color:var(--accent)">Architecture.html</a></div>
+  </div>
+</div>
+<script>
+  mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{darkMode:true,background:'#121826',primaryColor:'#1a2234',primaryTextColor:'#e6ecf5',primaryBorderColor:'#c9a86a',lineColor:'#8a98b3',secondaryColor:'#16241c',tertiaryColor:'#0f1422',fontFamily:'ui-sans-serif'},flowchart:{curve:'basis',useMaxWidth:true},sequence:{useMaxWidth:true,wrap:true},er:{useMaxWidth:true}});
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "name": "@kiana/realty-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kiana Realty Growth Platform — monorepo (Turborepo + pnpm workspaces).",
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.10.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "db:migrate": "turbo run db:migrate",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:reset": "tsx scripts/reset-db.ts",
+    "gen:sdk": "tsx scripts/gen-sdk.ts",
+    "gen:types": "tsx scripts/gen-types.ts",
+    "scaffold:service": "tsx scripts/scaffold-service.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "prettier": "^3.2.5",
+    "tsx": "^4.7.0",
+    "turbo": "^1.13.0",
+    "typescript": "^5.3.3"
+  }
+}

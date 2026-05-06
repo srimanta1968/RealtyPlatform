@@ -1,0 +1,38 @@
+{
+  "name": "@kiana/ui-kit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared React hooks and providers (auth, theme, query, telemetry).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "echo \"@kiana/ui-kit: no tests yet\"",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@kiana/contracts": "workspace:*",
+    "@kiana/sdk": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@kiana/config": "workspace:*",
+    "@types/react": "^18.2.0",
+    "react": "^18.2.0",
+    "typescript": "^5.3.3"
+  }
+}

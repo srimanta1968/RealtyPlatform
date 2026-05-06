@@ -1,0 +1,28 @@
+{
+  "name": "@kiana/ai-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Gateway client SDK — used by agents. Provider-agnostic, with route hints and cost telemetry.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "echo \"@kiana/ai-client: no tests yet\"",
+    "clean": "rm -rf dist .turbo"
+  },
+  "devDependencies": {
+    "@kiana/config": "workspace:*",
+    "typescript": "^5.3.3"
+  }
+}

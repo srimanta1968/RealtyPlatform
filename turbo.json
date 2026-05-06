@@ -1,0 +1,51 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    ".env",
+    ".env.example",
+    "tsconfig.base.json"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "PORT",
+    "DB_HOST",
+    "DB_PORT",
+    "DB_NAME",
+    "DB_USER",
+    "DB_PASSWORD",
+    "DB_SSL",
+    "JWT_SECRET",
+    "JWT_EXPIRES_IN",
+    "BCRYPT_ROUNDS",
+    "REDIS_URL",
+    "EVENT_BUS_URL",
+    "BACKEND_URL"
+  ],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

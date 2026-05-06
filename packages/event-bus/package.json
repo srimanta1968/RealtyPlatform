@@ -1,0 +1,32 @@
+{
+  "name": "@kiana/event-bus",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Event-bus adapter (Redis Streams in P1-P3, Kafka later) with at-least-once + idempotency helpers.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "echo \"@kiana/event-bus: no tests yet\"",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@kiana/contracts": "workspace:*",
+    "ioredis": "^5.3.2"
+  },
+  "devDependencies": {
+    "@kiana/config": "workspace:*",
+    "typescript": "^5.3.3"
+  }
+}

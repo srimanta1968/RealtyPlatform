@@ -1,0 +1,16 @@
+openapi: 3.1.0
+info:
+  title: Kiana Media Service
+  version: 0.1.0
+  description: Upload metadata, transcoding state, signed URLs. Owns media_db.
+servers:
+  - url: http://localhost:4015
+paths:
+  /api/media/_status:
+    get:
+      operationId: mediaServiceStatus
+      summary: Scaffold-only health echo
+      tags: [meta]
+      responses:
+        '200':
+          description: OK

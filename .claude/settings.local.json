@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl *)",
+      "mcp__projexlight__projexlight_check_server_health",
+      "mcp__projexlight__projexlight_get_context",
+      "mcp__projexlight__projexlight_get_rules",
+      "mcp__projexlight__projexlight_init_session",
+      "mcp__projexlight__projexlight_self_check",
+      "mcp__projexlight__projexlight_get_instruction",
+      "Bash(corepack pnpm *)",
+      "Bash(COREPACK_INTEGRITY_KEYS=0 corepack pnpm *)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "projexlight-mcp",
+    "projexlight-crm",
+    "projexlight"
+  ]
+}

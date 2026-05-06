@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-foreground: #0f172a;
+    --color-background: #f8fafc;
+    --color-primary: #0f4c81;
+    --color-accent: #e5a823;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+}

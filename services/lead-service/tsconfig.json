@@ -1,0 +1,9 @@
+{
+  "extends": "../../packages/config/tsconfig.service.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*", "scripts/**/*", "db/**/*"],
+  "exclude": ["dist", "node_modules"]
+}

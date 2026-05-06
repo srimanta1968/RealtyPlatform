@@ -1,0 +1,31 @@
+{
+  "name": "@kiana/service-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Internal service-to-service HTTP client (mTLS-ready, retries, circuit breaker, OTel propagation).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "echo \"@kiana/service-client: no tests yet\"",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@kiana/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@kiana/config": "workspace:*",
+    "typescript": "^5.3.3"
+  }
+}

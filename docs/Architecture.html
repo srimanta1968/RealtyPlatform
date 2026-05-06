@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kiana Realty Growth Platform — Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0f17;
+    --panel: #121826;
+    --panel-2: #1a2234;
+    --line: #243049;
+    --text: #e6ecf5;
+    --muted: #8a98b3;
+    --accent: #c9a86a;        /* premium gold */
+    --accent-2: #6aa9ff;      /* signal blue */
+    --green: #5dd39e;
+    --red: #ff6b6b;
+    --yellow: #f5c451;
+    --code-bg: #0f1422;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--text); font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; margin: 0; padding: 0; line-height: 1.55; }
+  .page { max-width: 1180px; margin: 0 auto; padding: 56px 32px 96px; }
+  header.cover {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 36px;
+    margin-bottom: 48px;
+  }
+  header.cover .eyebrow { color: var(--accent); letter-spacing: 0.18em; text-transform: uppercase; font-size: 12px; font-weight: 600; }
+  header.cover h1 { font-size: 44px; line-height: 1.15; margin: 12px 0 8px; letter-spacing: -0.02em; }
+  header.cover .sub { color: var(--muted); font-size: 17px; max-width: 780px; }
+  header.cover .meta { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 24px; color: var(--muted); font-size: 13px; }
+  header.cover .meta b { color: var(--text); font-weight: 600; }
+
+  h2 { font-size: 26px; letter-spacing: -0.01em; margin: 56px 0 18px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  h3 { font-size: 18px; margin: 28px 0 10px; color: var(--text); }
+  h4 { font-size: 14px; margin: 18px 0 8px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; }
+  p { color: #c8d1e3; }
+  small, .muted { color: var(--muted); }
+
+  .grid { display: grid; gap: 16px; }
+  .grid.cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .grid.cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .grid.cols-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  @media (max-width: 900px) {
+    .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    header.cover h1 { font-size: 32px; }
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 18px 16px;
+  }
+  .card .label { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+  .card .title { font-weight: 600; margin: 6px 0 6px; }
+  .card .body { color: var(--muted); font-size: 14px; }
+
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    margin-right: 6px;
+  }
+  .pill.gold { color: var(--accent); border-color: rgba(201,168,106,0.4); }
+  .pill.blue { color: var(--accent-2); border-color: rgba(106,169,255,0.4); }
+  .pill.green { color: var(--green); border-color: rgba(93,211,158,0.4); }
+  .pill.red { color: var(--red); border-color: rgba(255,107,107,0.4); }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-size: 13px; }
+  code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+
+  .diagram-wrap {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+    overflow-x: auto;
+  }
+  .diagram-wrap.tight { padding: 12px; }
+  .caption { color: var(--muted); font-size: 12.5px; margin-top: 10px; text-align: center; }
+
+  .stack-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--text);
+  }
+  .stack-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .stack-pill .dot.b { background: var(--accent-2); }
+  .stack-pill .dot.g { background: var(--green); }
+  .stack-pill .dot.y { background: var(--yellow); }
+
+  .nav { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 0; }
+  .nav a {
+    color: var(--muted); text-decoration: none; font-size: 13px;
+    border: 1px solid var(--line); padding: 6px 12px; border-radius: 8px;
+  }
+  .nav a:hover { color: var(--text); border-color: var(--accent); }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; font-size: 12.5px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+
+  /* Mermaid dark tweak */
+  .mermaid { background: transparent; }
+  .footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ============ COVER ============ -->
+<header class="cover">
+  <div class="eyebrow">Architecture Document · v1.0</div>
+  <h1>Kiana Realty Growth Platform</h1>
+  <div class="sub">A vertical AI operating system for premium real estate. Event-driven microservices on PostgreSQL, Next.js for customer-facing surfaces, and React for the operator and field experiences.</div>
+  <div class="meta">
+    <div><b>Owner:</b> Insignia Consultancy Solutions</div>
+    <div><b>Customer:</b> Kiana Realty</div>
+    <div><b>Status:</b> Baseline for phased delivery</div>
+    <div><b>Tech Pillars:</b> PostgreSQL · Next.js · React.js</div>
+  </div>
+  <nav class="nav">
+    <a href="#stack">Tech Stack</a>
+    <a href="#layers">Layered View</a>
+    <a href="#services">Microservices</a>
+    <a href="#frontends">Frontends</a>
+    <a href="#data">Data</a>
+    <a href="#events">Event Flow</a>
+    <a href="#agents">AI Layer</a>
+    <a href="#deploy">Deployment</a>
+    <a href="#phases">Phases</a>
+    <a href="#decisions">Decisions</a>
+  </nav>
+</header>
+
+<!-- ============ TECH STACK ============ -->
+<section id="stack">
+  <h2>1 · Technology Stack</h2>
+  <p>The platform is intentionally narrow on technology choices to keep operability simple. Three pillars carry the bulk of the system; the rest are deliberately replaceable behind interfaces.</p>
+
+  <div style="display:flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 24px;">
+    <span class="stack-pill"><span class="dot"></span>PostgreSQL 16 (per-service schema, pgvector for embeddings)</span>
+    <span class="stack-pill"><span class="dot b"></span>Next.js 14+ (App Router, public site &amp; customer portal)</span>
+    <span class="stack-pill"><span class="dot g"></span>React 18+ (admin cockpit &amp; field PWA)</span>
+    <span class="stack-pill"><span class="dot y"></span>Node.js / TypeScript microservices</span>
+    <span class="stack-pill"><span class="dot"></span>Temporal (workflow engine)</span>
+    <span class="stack-pill"><span class="dot b"></span>Redis Streams → Kafka (event bus, scale path)</span>
+    <span class="stack-pill"><span class="dot g"></span>S3-compatible object store (media, documents)</span>
+    <span class="stack-pill"><span class="dot y"></span>AI Gateway (Claude / OpenAI / Whisper)</span>
+  </div>
+
+  <div class="grid cols-3">
+    <div class="card">
+      <div class="label">Database</div>
+      <div class="title">PostgreSQL 16</div>
+      <div class="body">One physical cluster, one logical database <b>per microservice</b>. <code>pgvector</code> for embeddings (Property Matching). Logical replication into a warehouse for analytics.</div>
+    </div>
+    <div class="card">
+      <div class="label">Customer Surfaces</div>
+      <div class="title">Next.js (App Router)</div>
+      <div class="body">SSR/ISR for the public website (SEO-critical) and the authenticated Customer Portal. React Server Components for fast first paint; Edge runtime where applicable.</div>
+    </div>
+    <div class="card">
+      <div class="label">Operator Surfaces</div>
+      <div class="title">React.js SPA + PWA</div>
+      <div class="body">Admin Cockpit as a Vite + React SPA optimized for dense data. Field App as an installable React PWA with offline queue and background sync.</div>
+    </div>
+    <div class="card">
+      <div class="label">Services</div>
+      <div class="title">Node.js / TypeScript</div>
+      <div class="body">Fastify or NestJS microservices. Shared TS types via an internal <code>@kiana/contracts</code> package. OpenAPI generated for every service.</div>
+    </div>
+    <div class="card">
+      <div class="label">Orchestration</div>
+      <div class="title">Temporal + Event Bus</div>
+      <div class="body">Long-running flows (visit lifecycle, drip campaigns) on Temporal. Fire-and-forget events on Redis Streams initially; scale path to Kafka.</div>
+    </div>
+    <div class="card">
+      <div class="label">AI</div>
+      <div class="title">AI Gateway</div>
+      <div class="body">Provider-agnostic adapter (Claude, OpenAI) with prompt registry, PII scrubbing, cost telemetry, and per-agent budgets.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAYERED VIEW (CUSTOM SVG) ============ -->
+<section id="layers">
+  <h2>2 · Layered Architecture</h2>
+  <p>The platform separates five concerns: the <b>customer surface</b>, the <b>operator surface</b>, the <b>AI agent layer</b> that observes events and acts through the same service APIs a human would, the <b>core microservices</b>, and the <b>data + integration plane</b> beneath them.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 1080 640" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Layered architecture diagram">
+      <defs>
+        <linearGradient id="gold" x1="0" x2="1">
+          <stop offset="0" stop-color="#c9a86a"/>
+          <stop offset="1" stop-color="#a78344"/>
+        </linearGradient>
+        <linearGradient id="blue" x1="0" x2="1">
+          <stop offset="0" stop-color="#6aa9ff"/>
+          <stop offset="1" stop-color="#3b78d8"/>
+        </linearGradient>
+        <linearGradient id="green" x1="0" x2="1">
+          <stop offset="0" stop-color="#5dd39e"/>
+          <stop offset="1" stop-color="#39a07a"/>
+        </linearGradient>
+        <linearGradient id="dim" x1="0" x2="1">
+          <stop offset="0" stop-color="#243049"/>
+          <stop offset="1" stop-color="#1a2234"/>
+        </linearGradient>
+        <style>
+          .lbl { fill:#e6ecf5; font: 600 14px ui-sans-serif,Segoe UI,Roboto; }
+          .sub { fill:#8a98b3; font: 400 12px ui-sans-serif,Segoe UI,Roboto; }
+          .tag { fill:#0b0f17; font: 700 11px ui-sans-serif,Segoe UI,Roboto; }
+          .layerlbl { fill:#8a98b3; font: 600 11px ui-sans-serif,Segoe UI,Roboto; letter-spacing:0.14em; }
+          .box { fill:#1a2234; stroke:#243049; stroke-width:1; rx:10; }
+        </style>
+      </defs>
+
+      <!-- LAYER 1: CUSTOMER -->
+      <text x="40" y="36" class="layerlbl">CUSTOMER SURFACE  ·  NEXT.JS</text>
+      <rect x="40" y="50" width="1000" height="80" rx="12" fill="url(#dim)" stroke="#243049"/>
+      <rect x="60" y="68" width="220" height="46" class="box"/><text x="170" y="89" text-anchor="middle" class="lbl">Public Website</text><text x="170" y="106" text-anchor="middle" class="sub">SSR/ISR · SEO · Lead capture</text>
+      <rect x="300" y="68" width="220" height="46" class="box"/><text x="410" y="89" text-anchor="middle" class="lbl">Customer Portal</text><text x="410" y="106" text-anchor="middle" class="sub">Auth · Shortlist · Documents</text>
+      <rect x="540" y="68" width="220" height="46" class="box"/><text x="650" y="89" text-anchor="middle" class="lbl">WhatsApp / Email</text><text x="650" y="106" text-anchor="middle" class="sub">Inbound &amp; outbound</text>
+      <rect x="780" y="68" width="240" height="46" class="box"/><text x="900" y="89" text-anchor="middle" class="lbl">AI Concierge Widget</text><text x="900" y="106" text-anchor="middle" class="sub">Phase 6 · embedded chat</text>
+
+      <!-- LAYER 2: OPERATOR -->
+      <text x="40" y="160" class="layerlbl">OPERATOR SURFACE  ·  REACT.JS</text>
+      <rect x="40" y="174" width="1000" height="80" rx="12" fill="url(#dim)" stroke="#243049"/>
+      <rect x="60" y="192" width="300" height="46" class="box"/><text x="210" y="213" text-anchor="middle" class="lbl">Admin Cockpit (React SPA)</text><text x="210" y="230" text-anchor="middle" class="sub">Lead inbox · pipeline · analytics</text>
+      <rect x="380" y="192" width="300" height="46" class="box"/><text x="530" y="213" text-anchor="middle" class="lbl">Field App (React PWA)</text><text x="530" y="230" text-anchor="middle" class="sub">Day plan · capture · offline sync</text>
+      <rect x="700" y="192" width="320" height="46" class="box"/><text x="860" y="213" text-anchor="middle" class="lbl">Marketing Console (React SPA)</text><text x="860" y="230" text-anchor="middle" class="sub">Segments · campaigns · A/B</text>
+
+      <!-- LAYER 3: AGENTS -->
+      <text x="40" y="284" class="layerlbl">AI AGENT LAYER  ·  EVENT-DRIVEN HANDLERS</text>
+      <rect x="40" y="298" width="1000" height="76" rx="12" fill="url(#dim)" stroke="#243049"/>
+      <g>
+        <rect x="60" y="316" width="150" height="42" rx="8" fill="url(#gold)"/><text x="135" y="342" text-anchor="middle" class="tag">Qualification</text>
+        <rect x="220" y="316" width="150" height="42" rx="8" fill="url(#gold)"/><text x="295" y="342" text-anchor="middle" class="tag">Matching</text>
+        <rect x="380" y="316" width="160" height="42" rx="8" fill="url(#gold)"/><text x="460" y="342" text-anchor="middle" class="tag">Next-Best-Action</text>
+        <rect x="550" y="316" width="150" height="42" rx="8" fill="url(#gold)"/><text x="625" y="342" text-anchor="middle" class="tag">Visit Summary</text>
+        <rect x="710" y="316" width="160" height="42" rx="8" fill="url(#gold)"/><text x="790" y="342" text-anchor="middle" class="tag">Campaign Scoring</text>
+        <rect x="880" y="316" width="140" height="42" rx="8" fill="url(#gold)"/><text x="950" y="342" text-anchor="middle" class="tag">Concierge</text>
+      </g>
+
+      <!-- LAYER 4: SERVICES -->
+      <text x="40" y="404" class="layerlbl">CORE MICROSERVICES  ·  NODE.JS / TYPESCRIPT</text>
+      <rect x="40" y="418" width="1000" height="92" rx="12" fill="url(#dim)" stroke="#243049"/>
+      <g>
+        <rect x="60" y="436" width="100" height="56" class="box"/><text x="110" y="460" text-anchor="middle" class="lbl">Lead</text><text x="110" y="478" text-anchor="middle" class="sub">P1</text>
+        <rect x="170" y="436" width="100" height="56" class="box"/><text x="220" y="460" text-anchor="middle" class="lbl">Property</text><text x="220" y="478" text-anchor="middle" class="sub">P1</text>
+        <rect x="280" y="436" width="100" height="56" class="box"/><text x="330" y="460" text-anchor="middle" class="lbl">CRM</text><text x="330" y="478" text-anchor="middle" class="sub">P1→P2</text>
+        <rect x="390" y="436" width="100" height="56" class="box"/><text x="440" y="460" text-anchor="middle" class="lbl">Visit</text><text x="440" y="478" text-anchor="middle" class="sub">P2</text>
+        <rect x="500" y="436" width="100" height="56" class="box"/><text x="550" y="460" text-anchor="middle" class="lbl">Campaign</text><text x="550" y="478" text-anchor="middle" class="sub">P3</text>
+        <rect x="610" y="436" width="100" height="56" class="box"/><text x="660" y="460" text-anchor="middle" class="lbl">Notification</text><text x="660" y="478" text-anchor="middle" class="sub">P1</text>
+        <rect x="720" y="436" width="100" height="56" class="box"/><text x="770" y="460" text-anchor="middle" class="lbl">Media</text><text x="770" y="478" text-anchor="middle" class="sub">P1→P4</text>
+        <rect x="830" y="436" width="100" height="56" class="box"/><text x="880" y="460" text-anchor="middle" class="lbl">Document</text><text x="880" y="478" text-anchor="middle" class="sub">P5</text>
+        <rect x="940" y="436" width="80" height="56" class="box"/><text x="980" y="460" text-anchor="middle" class="lbl">User</text><text x="980" y="478" text-anchor="middle" class="sub">P1</text>
+      </g>
+
+      <!-- LAYER 5: DATA -->
+      <text x="40" y="540" class="layerlbl">DATA &amp; INTEGRATION PLANE</text>
+      <rect x="40" y="554" width="1000" height="70" rx="12" fill="url(#dim)" stroke="#243049"/>
+      <rect x="60" y="572" width="180" height="40" rx="8" fill="url(#blue)"/><text x="150" y="597" text-anchor="middle" class="tag">PostgreSQL · per service</text>
+      <rect x="250" y="572" width="150" height="40" rx="8" fill="url(#blue)"/><text x="325" y="597" text-anchor="middle" class="tag">pgvector index</text>
+      <rect x="410" y="572" width="160" height="40" rx="8" fill="url(#green)"/><text x="490" y="597" text-anchor="middle" class="tag">Event Bus (Redis/Kafka)</text>
+      <rect x="580" y="572" width="140" height="40" rx="8" fill="url(#green)"/><text x="650" y="597" text-anchor="middle" class="tag">Temporal</text>
+      <rect x="730" y="572" width="130" height="40" rx="8" fill="url(#blue)"/><text x="795" y="597" text-anchor="middle" class="tag">Object Store</text>
+      <rect x="870" y="572" width="150" height="40" rx="8" fill="url(#blue)"/><text x="945" y="597" text-anchor="middle" class="tag">Warehouse / OLAP</text>
+    </svg>
+    <div class="caption">Five-layer view. The agent layer is deliberately not a service — it subscribes to events and invokes the same APIs operators use.</div>
+  </div>
+</section>
+
+<!-- ============ MICROSERVICES MAP ============ -->
+<section id="services">
+  <h2>3 · Microservices &amp; Domain Map</h2>
+  <p>Each microservice owns its data, exposes a versioned HTTP API, and emits domain events. There are <b>no cross-service database joins</b>.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart LR
+  classDef svc fill:#1a2234,stroke:#c9a86a,color:#e6ecf5,stroke-width:1.5px,rx:8,ry:8;
+  classDef ext fill:#0f1422,stroke:#6aa9ff,color:#e6ecf5,stroke-dasharray:3 3;
+  classDef bus fill:#16241c,stroke:#5dd39e,color:#e6ecf5;
+
+  Lead([Lead Service]):::svc
+  Property([Property Service]):::svc
+  CRM([CRM / Workflow]):::svc
+  Visit([Visit Service]):::svc
+  Campaign([Campaign Service]):::svc
+  Notif([Notification]):::svc
+  Media([Media Service]):::svc
+  Doc([Document Service]):::svc
+  User([User / Role]):::svc
+  Analytics([Analytics]):::svc
+  Concierge([Concierge]):::svc
+  AIGW([AI Gateway]):::svc
+
+  Bus{{Event Bus}}:::bus
+  Temp{{Temporal Workflows}}:::bus
+
+  WA[(WhatsApp API)]:::ext
+  EMAIL[(Email Provider)]:::ext
+  SMS[(SMS Aggregator)]:::ext
+  LLM[(LLM Providers)]:::ext
+  OBJ[(S3 Object Store)]:::ext
+
+  Lead -- emits --> Bus
+  Property -- emits --> Bus
+  Visit -- emits --> Bus
+  Campaign -- emits --> Bus
+  CRM -- emits --> Bus
+  Doc -- emits --> Bus
+
+  Bus --> Notif
+  Bus --> Analytics
+  Bus --> Concierge
+  Bus --> Temp
+
+  Temp --> Visit
+  Temp --> CRM
+  Temp --> Campaign
+
+  Notif --> WA
+  Notif --> EMAIL
+  Notif --> SMS
+
+  Concierge --> AIGW
+  CRM --> AIGW
+  Property --> AIGW
+  Campaign --> AIGW
+  AIGW --> LLM
+
+  Media --> OBJ
+  Doc --> OBJ
+    </pre>
+  </div>
+
+  <h3>Service Catalogue</h3>
+  <table>
+    <thead><tr><th>Service</th><th>Owns (PostgreSQL)</th><th>Key APIs</th><th>Phase</th></tr></thead>
+    <tbody>
+      <tr><td><b>Lead</b></td><td><code>lead_db</code> · leads, timeline, scores</td><td>POST /v1/leads · PATCH /stage · GET /queue/warm</td><td><span class="pill gold">P1</span></td></tr>
+      <tr><td><b>Property</b></td><td><code>property_db</code> · properties, media refs, embeddings (pgvector)</td><td>POST /v1/properties · GET /v1/properties · /publish</td><td><span class="pill gold">P1</span></td></tr>
+      <tr><td><b>CRM / Workflow</b></td><td><code>crm_db</code> · pipeline, tasks, SLAs</td><td>GET /v1/pipeline · POST /v1/tasks · /follow-up</td><td><span class="pill gold">P1→P2</span></td></tr>
+      <tr><td><b>Visit</b></td><td><code>visit_db</code> · visits, outcomes, alternatives</td><td>POST /v1/visits · /confirm · /complete</td><td><span class="pill blue">P2</span></td></tr>
+      <tr><td><b>Campaign</b></td><td><code>campaign_db</code> · campaigns, segments, engagement events</td><td>POST /v1/campaigns · /launch · GET /metrics</td><td><span class="pill blue">P3</span></td></tr>
+      <tr><td><b>Notification</b></td><td><code>notif_db</code> · templates, sends, suppression</td><td>POST /v1/send · template registry</td><td><span class="pill gold">P1</span></td></tr>
+      <tr><td><b>Media</b></td><td><code>media_db</code> · upload metadata, transcoding state</td><td>POST /v1/media/upload-url · /finalize</td><td><span class="pill green">P1→P4</span></td></tr>
+      <tr><td><b>Document</b></td><td><code>document_db</code> · docs, versions, ACLs, e-sign envelopes</td><td>POST /v1/documents · /sign-request</td><td><span class="pill green">P5</span></td></tr>
+      <tr><td><b>User / Role</b></td><td><code>user_db</code> · accounts, roles, sessions</td><td>OIDC · RBAC checks</td><td><span class="pill gold">P1</span></td></tr>
+      <tr><td><b>Analytics</b></td><td><code>analytics_db</code> + warehouse</td><td>GET /v1/analytics/funnel · attribution</td><td><span class="pill blue">P2</span></td></tr>
+      <tr><td><b>Concierge</b></td><td><code>concierge_db</code> · sessions, transcripts</td><td>POST /v1/concierge/sessions · /messages · /handoff</td><td><span class="pill red">P6</span></td></tr>
+      <tr><td><b>AI Gateway</b></td><td><code>ai_db</code> · prompts, invocations, cost</td><td>POST /v1/ai/complete · /chat · /embed</td><td><span class="pill red">P6</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ FRONTENDS ============ -->
+<section id="frontends">
+  <h2>4 · Frontend Architecture</h2>
+  <p>Three distinct frontends, each tuned for its audience. They share a design system package and a typed API client generated from the services' OpenAPI specs.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef next fill:#1a2234,stroke:#6aa9ff,color:#e6ecf5;
+  classDef react fill:#1a2234,stroke:#5dd39e,color:#e6ecf5;
+  classDef shared fill:#0f1422,stroke:#c9a86a,color:#e6ecf5;
+  classDef api fill:#16241c,stroke:#c9a86a,color:#e6ecf5;
+
+  subgraph NEXT["Next.js (App Router)"]
+    direction TB
+    PUB["Public Website<br/>SSR · ISR · SEO"]:::next
+    PORT["Customer Portal<br/>Auth · Server Components"]:::next
+  end
+
+  subgraph REACT["React.js"]
+    direction TB
+    ADMIN["Admin Cockpit<br/>Vite + React SPA · TanStack Query"]:::react
+    FIELD["Field App<br/>React PWA · IndexedDB · Service Worker"]:::react
+    MKT["Marketing Console<br/>React SPA"]:::react
+  end
+
+  subgraph SHARED["@kiana/* internal packages"]
+    DS["@kiana/design-system<br/>Tailwind + Radix primitives"]:::shared
+    SDK["@kiana/sdk<br/>Generated TS client per service"]:::shared
+    CONTRACTS["@kiana/contracts<br/>Shared types &amp; event schemas"]:::shared
+  end
+
+  GW["BFF / API Gateway"]:::api
+  SVC["Microservices"]:::api
+
+  PUB --> GW
+  PORT --> GW
+  ADMIN --> GW
+  FIELD --> GW
+  MKT --> GW
+  GW --> SVC
+
+  PUB -.uses.-> DS
+  PORT -.uses.-> DS
+  ADMIN -.uses.-> DS
+  FIELD -.uses.-> DS
+  MKT -.uses.-> DS
+
+  PORT -.calls.-> SDK
+  ADMIN -.calls.-> SDK
+  FIELD -.calls.-> SDK
+  MKT -.calls.-> SDK
+  PUB -.calls.-> SDK
+
+  SDK -.types.-> CONTRACTS
+    </pre>
+  </div>
+
+  <div class="grid cols-3" style="margin-top:18px">
+    <div class="card">
+      <div class="label">Next.js · Public Site</div>
+      <div class="title">Marketing &amp; Discovery</div>
+      <div class="body">
+        App Router. Mostly Server Components. ISR for property pages with on-demand revalidation when <code>property.published</code> fires. Lead capture via Server Actions → Lead Service. Edge runtime for region-friendly latency.
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">Next.js · Customer Portal</div>
+      <div class="title">Authenticated Buyer Surface</div>
+      <div class="body">
+        OTP login via Customer Portal Service. Server Components fetch shortlist &amp; documents. Optimistic client updates for save/unsave. Document upload via signed S3 URLs.
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">React · Admin Cockpit</div>
+      <div class="title">Operator SPA</div>
+      <div class="body">
+        Vite + React + TypeScript. <b>TanStack Query</b> for server state. <b>TanStack Table</b> for dense pipelines. WebSocket / SSE for live lead feed. Role-aware route guards.
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">React · Field App</div>
+      <div class="title">PWA for Agents</div>
+      <div class="body">
+        Installable PWA. Service worker caches today's day plan + map tiles. Outcomes queued in IndexedDB; background sync when online. Voice memo via MediaRecorder; resumable photo upload.
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">React · Marketing Console</div>
+      <div class="title">Campaign Builder</div>
+      <div class="body">
+        Visual segment builder generating the segment DSL. Campaign editor with variant management and A/B controls. Live engagement charts.
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">Shared</div>
+      <div class="title">Design System &amp; SDK</div>
+      <div class="body">
+        Single Tailwind-based design system shared across Next.js and React apps. Typed SDK auto-generated from each service's OpenAPI; one source of truth for contracts.
+      </div>
+    </div>
+  </div>
+
+  <h3>Why this split</h3>
+  <p>Next.js is chosen for surfaces where SEO, SSR, and first-paint matter (public site, customer portal). React SPA/PWA is chosen for surfaces where data density, interactivity, and offline behavior matter more than SEO (cockpit, field app, marketing console). Both are React under the hood — the <b>design system, types, and SDK are shared</b>, so a developer works seamlessly across them.</p>
+</section>
+
+<!-- ============ DATA ARCHITECTURE ============ -->
+<section id="data">
+  <h2>5 · Data Architecture</h2>
+  <p>One PostgreSQL cluster, but logically isolated databases per service. This gives strong service boundaries while keeping operations simple in early phases. As load grows, individual databases can be split onto dedicated clusters without code changes.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart LR
+  classDef db fill:#1a2234,stroke:#6aa9ff,color:#e6ecf5,rx:8,ry:8;
+  classDef svc fill:#1a2234,stroke:#c9a86a,color:#e6ecf5;
+  classDef sink fill:#16241c,stroke:#5dd39e,color:#e6ecf5;
+
+  subgraph "PostgreSQL Cluster"
+    LDB[(lead_db)]:::db
+    PDB[(property_db<br/>+ pgvector)]:::db
+    CDB[(crm_db)]:::db
+    VDB[(visit_db)]:::db
+    CMP[(campaign_db)]:::db
+    NDB[(notif_db)]:::db
+    MDB[(media_db)]:::db
+    DDB[(document_db)]:::db
+    UDB[(user_db)]:::db
+    AIDB[(ai_db)]:::db
+  end
+
+  L[Lead Svc]:::svc --> LDB
+  P[Property Svc]:::svc --> PDB
+  C[CRM Svc]:::svc --> CDB
+  V[Visit Svc]:::svc --> VDB
+  CM[Campaign Svc]:::svc --> CMP
+  N[Notification]:::svc --> NDB
+  ME[Media Svc]:::svc --> MDB
+  D[Document Svc]:::svc --> DDB
+  U[User Svc]:::svc --> UDB
+  AI[AI Gateway]:::svc --> AIDB
+
+  LDB -. logical replication .-> WH[(Warehouse · OLAP)]:::sink
+  PDB -. logical replication .-> WH
+  CDB -. logical replication .-> WH
+  VDB -. logical replication .-> WH
+  CMP -. logical replication .-> WH
+  WH --> BI[BI / Dashboards]:::sink
+    </pre>
+  </div>
+
+  <h3>Core Entity Model</h3>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+erDiagram
+  LEAD ||--o{ LEAD_TIMELINE : has
+  LEAD ||--o{ TASK : owns
+  LEAD ||--o{ VISIT : schedules
+  LEAD ||--o{ ENGAGEMENT_EVENT : receives
+  LEAD ||--|| LEAD_SCORE : scored_by
+  LEAD ||--o| QUALIFICATION_RESULT : qualified_by
+  CUSTOMER_ACCOUNT ||--o{ LEAD : owns
+
+  PROPERTY ||--o{ PROPERTY_MEDIA : has
+  PROPERTY ||--o{ VISIT : visited_in
+  PROPERTY ||--o{ SAVED_PROPERTY : saved_by
+  PROPERTY }o--o{ ALTERNATIVE_SHOWN : suggested_in
+
+  VISIT ||--o{ VISIT_MEDIA : captures
+  VISIT ||--|| VISIT_OUTCOME : has
+
+  CAMPAIGN ||--o{ ENGAGEMENT_EVENT : produces
+  CAMPAIGN ||--|| SEGMENT : targets
+
+  CUSTOMER_ACCOUNT ||--o{ DOCUMENT : owns
+  CUSTOMER_ACCOUNT ||--o{ SAVED_PROPERTY : keeps
+
+  USER ||--o{ TASK : assigned
+  USER ||--o{ VISIT : conducts
+
+  LEAD {
+    uuid id PK
+    string source
+    string phone
+    string email
+    string stage
+    uuid owner_id FK
+  }
+  PROPERTY {
+    uuid id PK
+    string title
+    string location
+    string status
+    vector embedding
+  }
+  VISIT {
+    uuid id PK
+    uuid lead_id FK
+    uuid property_id FK
+    string status
+    string outcome
+  }
+  CAMPAIGN {
+    uuid id PK
+    string channel
+    uuid segment_id FK
+    string status
+  }
+  DOCUMENT {
+    uuid id PK
+    uuid customer_id FK
+    string type
+    int version
+  }
+    </pre>
+  </div>
+
+  <h3>Data Strategy Notes</h3>
+  <div class="grid cols-2">
+    <div class="card">
+      <div class="label">Isolation</div>
+      <div class="title">No cross-service joins</div>
+      <div class="body">Services talk via APIs and events, never via shared tables. Data needed elsewhere is duplicated through events with eventual consistency.</div>
+    </div>
+    <div class="card">
+      <div class="label">Vectors</div>
+      <div class="title">pgvector inside Property</div>
+      <div class="body">Embeddings stored alongside property rows. Avoids a separate vector DB until scale demands it (cosine similarity on 1536-dim embeddings is fine into the millions).</div>
+    </div>
+    <div class="card">
+      <div class="label">Analytics</div>
+      <div class="title">Logical replication → warehouse</div>
+      <div class="body">CDC into BigQuery / ClickHouse / Snowflake. Dashboards never query OLTP. Event log is the secondary source of truth for analytical history.</div>
+    </div>
+    <div class="card">
+      <div class="label">Migrations</div>
+      <div class="title">Per-service, expand–contract</div>
+      <div class="body">Each service owns its migrations (Drizzle / Prisma / Knex). Backward-compatible deploy first, code switch second, drop-old third.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EVENT FLOW ============ -->
+<section id="events">
+  <h2>6 · Event-Driven Flow</h2>
+  <p>The canonical lead journey, illustrating how services and agents coordinate via events without direct coupling.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant W as Public Website (Next.js)
+  participant L as Lead Service
+  participant B as Event Bus
+  participant Q as Qualification Agent
+  participant C as CRM Service
+  participant N as Notification
+  participant V as Visit Service
+  participant T as Temporal
+  participant M as Property Matching Agent
+  participant F as Field App (React PWA)
+  participant S as Visit Summary Agent
+
+  W->>L: POST /v1/leads {form data}
+  L->>B: lead.created
+  B-->>Q: deliver
+  Q->>L: PATCH /qualification {intent, budget, urgency}
+  L->>B: lead.qualified
+  B-->>C: deliver
+  C->>C: assign owner, create follow-up task
+  B-->>N: deliver
+  N->>N: send WhatsApp confirmation
+  C->>V: schedule visit (after presales call)
+  V->>B: visit.scheduled
+  B-->>T: start visit lifecycle workflow
+  T->>N: send T-24h reminder
+  T->>N: send T-2h reminder
+  F->>V: PATCH /v1/visits/{id}/start (geo)
+  F->>M: GET /v1/field/match?lead_id
+  M-->>F: ranked alternatives
+  F->>V: PATCH /complete {notes, voice, media}
+  V->>B: visit.completed
+  B-->>S: deliver
+  S->>V: PATCH outcome.structured
+  S->>C: create next-best-action task
+    </pre>
+  </div>
+
+  <h3>Event Catalogue (selection)</h3>
+  <table>
+    <thead><tr><th>Event</th><th>Producer</th><th>Consumers</th><th>Phase</th></tr></thead>
+    <tbody>
+      <tr><td><code>lead.created</code></td><td>Lead</td><td>Notification, Qualification Agent, Analytics</td><td>P1</td></tr>
+      <tr><td><code>lead.qualified</code></td><td>Lead / Agent</td><td>CRM, Matching Agent</td><td>P3</td></tr>
+      <tr><td><code>lead.stage_changed</code></td><td>Lead</td><td>Notification, Analytics</td><td>P1</td></tr>
+      <tr><td><code>visit.scheduled</code></td><td>Visit</td><td>Notification, Temporal, Analytics</td><td>P2</td></tr>
+      <tr><td><code>visit.completed</code></td><td>Visit</td><td>CRM, Visit Summary Agent, Analytics</td><td>P2</td></tr>
+      <tr><td><code>engagement.open</code> / <code>.click</code> / <code>.reply</code></td><td>Engagement Tracker</td><td>Scoring Agent, Analytics</td><td>P3</td></tr>
+      <tr><td><code>document.signed</code></td><td>Document</td><td>CRM (auto-stage), Notification</td><td>P5</td></tr>
+      <tr><td><code>concierge.handoff</code></td><td>Concierge</td><td>CRM, Notification (page presales)</td><td>P6</td></tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:14px"><span class="pill gold">Envelope</span> All events share a versioned envelope: <code>{ event_id, event_type, version, occurred_at, actor, payload }</code>. Consumers must be idempotent; the bus delivers at-least-once.</p>
+</section>
+
+<!-- ============ AGENTS ============ -->
+<section id="agents">
+  <h2>7 · AI Agent Layer</h2>
+  <p>Agents are not services — they are event-subscribed handlers running inside the Agent Runtime. They use the same APIs operators use, which makes their actions reviewable, replayable, and reversible.</p>
+
+  <div class="grid cols-3">
+    <div class="card">
+      <div class="label">Phase 3</div>
+      <div class="title">Lead Qualification</div>
+      <div class="body">LLM extracts intent / budget / location / urgency from the enquiry. Confidence threshold gates auto-stage moves; below threshold goes to a human review queue.</div>
+    </div>
+    <div class="card">
+      <div class="label">Phase 3</div>
+      <div class="title">Campaign Scoring</div>
+      <div class="body">Hybrid rule + ML scoring on engagement signals. Pushes warm leads to the call queue; explainable components shown in cockpit.</div>
+    </div>
+    <div class="card">
+      <div class="label">Phase 4</div>
+      <div class="title">Property Matching</div>
+      <div class="body">pgvector kNN + rule re-rank + optional LLM reasoning. Solves "Karjat enquiry → Lonavala villa" with explanations.</div>
+    </div>
+    <div class="card">
+      <div class="label">Phase 4</div>
+      <div class="title">Visit Summary</div>
+      <div class="body">Whisper transcribes voice memo; LLM extracts sentiment, objections, interest level, next step. Human confirms with one tap.</div>
+    </div>
+    <div class="card">
+      <div class="label">Phase 6</div>
+      <div class="title">Concierge</div>
+      <div class="body">24/7 inbound chat. Cites Property Service facts only; hands off to humans on low confidence or high-value signal with a structured summary.</div>
+    </div>
+    <div class="card">
+      <div class="label">Phase 6</div>
+      <div class="title">Next-Best-Action (LLM)</div>
+      <div class="body">Synthesizes lead history + recent context to suggest the next action with timing and channel. Surfaces as a task; never auto-executes.</div>
+    </div>
+  </div>
+
+  <h3>AI Gateway</h3>
+  <p>All agents call the <b>AI Gateway</b> instead of provider SDKs directly. The gateway provides:</p>
+  <ul>
+    <li>Provider-agnostic routing with <code>route_hint</code> = <i>quality</i> | <i>latency</i> | <i>cost</i></li>
+    <li>Versioned prompt registry with rollout gates</li>
+    <li>PII scrubbing before egress</li>
+    <li>Per-agent cost telemetry and monthly budgets</li>
+    <li>Provider failover (primary → secondary) on errors</li>
+    <li>Response caching for static prompts</li>
+  </ul>
+</section>
+
+<!-- ============ DEPLOYMENT ============ -->
+<section id="deploy">
+  <h2>8 · Deployment Topology</h2>
+  <p>Production runs in a single primary region (India) with regional CDN edge for the public site. Below is the steady-state target by Phase 4.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef edge fill:#1a2234,stroke:#c9a86a,color:#e6ecf5;
+  classDef app fill:#1a2234,stroke:#6aa9ff,color:#e6ecf5;
+  classDef data fill:#16241c,stroke:#5dd39e,color:#e6ecf5;
+  classDef ext fill:#0f1422,stroke:#8a98b3,color:#e6ecf5,stroke-dasharray:3 3;
+
+  USER([Buyers · Mobile / Web]):::ext
+  STAFF([Operators · Browsers]):::ext
+  AGENT([Field Agents · PWA]):::ext
+
+  CDN[Edge CDN<br/>+ WAF]:::edge
+  VERCEL[Next.js Runtime<br/>Vercel / self-hosted]:::edge
+
+  GW[API Gateway<br/>Auth · Rate-limit · Routing]:::app
+
+  subgraph K8S["Kubernetes Cluster"]
+    direction LR
+    SVCS[Microservices<br/>Lead · Property · CRM · Visit · ...]:::app
+    AGENTS[Agent Runtime<br/>Concierge · NBA · Matching ...]:::app
+    AIGW[AI Gateway]:::app
+    TEMP[Temporal Workers]:::app
+  end
+
+  subgraph DATA["Data Plane"]
+    direction LR
+    PG[(PostgreSQL Cluster<br/>per-service DBs · pgvector)]:::data
+    REDIS[(Redis · cache + streams)]:::data
+    OBJ[(S3 Object Store)]:::data
+    WH[(Warehouse · OLAP)]:::data
+  end
+
+  subgraph PROVIDERS["Providers"]
+    direction LR
+    LLM[(Claude / OpenAI)]:::ext
+    WA[(WhatsApp Business)]:::ext
+    EMAIL[(Email · SES/SendGrid)]:::ext
+    SMS[(SMS Aggregator)]:::ext
+    ESIGN[(E-Sign · Digio)]:::ext
+  end
+
+  USER --> CDN --> VERCEL
+  STAFF --> CDN
+  AGENT --> CDN
+  CDN --> GW
+  VERCEL --> GW
+
+  GW --> SVCS
+  GW --> AGENTS
+  AGENTS --> AIGW
+  AIGW --> LLM
+  SVCS <--> REDIS
+  SVCS --> PG
+  AGENTS --> PG
+  TEMP --> PG
+  SVCS --> OBJ
+  AGENTS --> OBJ
+  PG -. CDC .-> WH
+
+  SVCS --> WA
+  SVCS --> EMAIL
+  SVCS --> SMS
+  SVCS --> ESIGN
+    </pre>
+  </div>
+
+  <div class="grid cols-3" style="margin-top:18px">
+    <div class="card">
+      <div class="label">Compute</div>
+      <div class="title">Kubernetes (managed)</div>
+      <div class="body">EKS / GKE. Each microservice deploys independently (Helm). HPA on RPS &amp; queue depth. Next.js can run on Vercel or self-hosted in the cluster.</div>
+    </div>
+    <div class="card">
+      <div class="label">Data</div>
+      <div class="title">Managed PostgreSQL</div>
+      <div class="body">RDS / Cloud SQL. Read replica for analytics readers. Logical replication slot per service for CDC into the warehouse.</div>
+    </div>
+    <div class="card">
+      <div class="label">Networking</div>
+      <div class="title">Edge CDN + WAF</div>
+      <div class="body">CloudFront / Cloudflare in front of Next.js and the API gateway. WAF rules block obvious abuse; bot challenge on lead capture endpoints.</div>
+    </div>
+    <div class="card">
+      <div class="label">Observability</div>
+      <div class="title">OTel everywhere</div>
+      <div class="body">OpenTelemetry traces, metrics, logs from every service and frontend. Stored in Grafana stack or Datadog. RED metrics dashboards per service.</div>
+    </div>
+    <div class="card">
+      <div class="label">CI / CD</div>
+      <div class="title">GitHub Actions + Argo</div>
+      <div class="body">Trunk-based with feature flags. Argo CD for Kubernetes deploys. Per-PR ephemeral preview environments for the cockpit and portal.</div>
+    </div>
+    <div class="card">
+      <div class="label">Secrets</div>
+      <div class="title">Vault / Secrets Manager</div>
+      <div class="body">No secrets in env files. Workload identity for cloud APIs. Rotation policies per provider key.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PHASES ============ -->
+<section id="phases">
+  <h2>9 · Phase Rollout</h2>
+  <p>Each phase ships standalone value. Detailed designs live alongside this document in <code>docs/Phase/</code>.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+gantt
+  title Phased Build (indicative durations)
+  dateFormat  YYYY-MM-DD
+  axisFormat  %b
+  section Foundation
+  Phase 1 — Trust Launch        :p1, 2026-05-15, 56d
+  Phase 2 — Operations Backbone :p2, after p1, 56d
+  section Growth
+  Phase 3 — Growth Engine       :p3, after p2, 56d
+  Phase 4 — Field Intelligence  :p4, after p3, 56d
+  section Premium &amp; AI
+  Phase 5 — Premium Experience  :p5, after p4, 56d
+  Phase 6 — AI-Native Layer     :p6, after p5, 70d
+  section Scale
+  Phase 7 — Scale &amp; Ownership   :p7, after p6, 84d
+    </pre>
+  </div>
+
+  <table>
+    <thead><tr><th>Phase</th><th>Theme</th><th>Adds</th><th>Outcome</th></tr></thead>
+    <tbody>
+      <tr><td><b>P1</b></td><td>Trust Launch</td><td>Public site (Next.js), Lead, Property, CRM-lite, Notification</td><td>Brand credibility · zero lead leakage</td></tr>
+      <tr><td><b>P2</b></td><td>Operations Backbone</td><td>Visit, Analytics, Temporal, full CRM, WA Business API</td><td>Process discipline</td></tr>
+      <tr><td><b>P3</b></td><td>Growth Engine</td><td>Campaign, Segmentation, Engagement Tracker, first LLM agent</td><td>Marketing ROI</td></tr>
+      <tr><td><b>P4</b></td><td>Field Intelligence</td><td>Field PWA (React), Media expansion, Matching + Visit Summary agents</td><td>On-ground effectiveness</td></tr>
+      <tr><td><b>P5</b></td><td>Premium Experience</td><td>Customer Portal (Next.js), Document Service, e-sign</td><td>Buyer confidence</td></tr>
+      <tr><td><b>P6</b></td><td>AI-Native Layer</td><td>AI Gateway, Concierge, advanced scoring, copy &amp; intelligence agents</td><td>Productivity at scale</td></tr>
+      <tr><td><b>P7</b></td><td>Scale &amp; Ownership</td><td>Hardening, governance, vertical OS extraction</td><td>Sustainable ownership</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ DECISIONS ============ -->
+<section id="decisions">
+  <h2>10 · Architecture Decisions (ADRs in brief)</h2>
+  <table>
+    <thead><tr><th>#</th><th>Decision</th><th>Rationale</th><th>Trade-off</th></tr></thead>
+    <tbody>
+      <tr><td>ADR-001</td><td>PostgreSQL per service (one cluster, multi-DB)</td><td>Strong service boundaries with operationally simple footprint; pgvector handles embeddings without a separate vector DB.</td><td>Noisy-neighbour risk in early phases; mitigated by per-DB resource limits, easy split later.</td></tr>
+      <tr><td>ADR-002</td><td>Next.js for customer surfaces, React SPA/PWA for operators</td><td>SSR/ISR/SEO matter on customer surfaces; operator surfaces are data-dense and benefit from SPA tooling. Both share the design system.</td><td>Two build pipelines, but unified by shared packages.</td></tr>
+      <tr><td>ADR-003</td><td>Redis Streams now → Kafka later</td><td>Lower operational cost in early phases; Kafka is adopted only when consumer count or throughput demands it.</td><td>Eventual migration cost; mitigated by abstracting bus behind a thin client.</td></tr>
+      <tr><td>ADR-004</td><td>Temporal for long-running workflows</td><td>Visit lifecycles, drip campaigns, retry/escalation logic survive restarts and are inspectable.</td><td>Operational learning curve; limited to 2–3 workflows in Phase 2.</td></tr>
+      <tr><td>ADR-005</td><td>Agents are event handlers, not services</td><td>Agents act through service APIs; humans and agents are interchangeable from the data-plane's view, making everything reversible and auditable.</td><td>Slightly more plumbing (subscribe + invoke) vs. embedding logic in services.</td></tr>
+      <tr><td>ADR-006</td><td>Provider-agnostic AI Gateway</td><td>Avoids vendor lock-in; centralizes cost, prompt versioning, PII scrubbing.</td><td>Extra hop adds latency; mitigated by caching and route hints.</td></tr>
+      <tr><td>ADR-007</td><td>Single primary region, edge CDN</td><td>Customer base concentrated in India in early phases; cost-effective.</td><td>Multi-region deferred to Phase 7.</td></tr>
+      <tr><td>ADR-008</td><td>Shared <code>@kiana/contracts</code> package</td><td>OpenAPI-generated TS types; no drift between services and frontends.</td><td>Requires release discipline; one package version per release train.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<div class="footer">
+  <div>Kiana Realty Growth Platform · Architecture v1.0</div>
+  <div>Insignia Consultancy Solutions · Companion to <code>docs/PRD.md</code> and <code>docs/Phase/</code></div>
+</div>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#121826',
+      primaryColor: '#1a2234',
+      primaryTextColor: '#e6ecf5',
+      primaryBorderColor: '#c9a86a',
+      lineColor: '#8a98b3',
+      secondaryColor: '#16241c',
+      tertiaryColor: '#0f1422',
+      fontFamily: 'ui-sans-serif, -apple-system, "Segoe UI", Roboto'
+    },
+    flowchart: { curve: 'basis', useMaxWidth: true },
+    sequence: { useMaxWidth: true, mirrorActors: false, wrap: true },
+    er: { useMaxWidth: true },
+    gantt: { useMaxWidth: true }
+  });
+</script>
+</body>
+</html>

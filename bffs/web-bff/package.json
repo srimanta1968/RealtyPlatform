@@ -1,0 +1,29 @@
+{
+  "name": "@kiana/web-bff",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend-for-Frontend serving web-public + admin-cockpit. Aggregates downstream microservices.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "test": "echo \"web-bff: tests scaffolded\"",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@kiana/contracts": "workspace:*",
+    "@kiana/service-client": "workspace:*",
+    "@kiana/service-kit": "workspace:*",
+    "fastify": "^4.26.0"
+  },
+  "devDependencies": {
+    "@kiana/config": "workspace:*",
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}

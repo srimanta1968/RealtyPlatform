@@ -1,0 +1,16 @@
+openapi: 3.1.0
+info:
+  title: Kiana Notification Service
+  version: 0.1.0
+  description: Templates, sends, suppression list, channel preferences. Owns notif_db.
+servers:
+  - url: http://localhost:4014
+paths:
+  /api/notifications/_status:
+    get:
+      operationId: notificationServiceStatus
+      summary: Scaffold-only health echo
+      tags: [meta]
+      responses:
+        '200':
+          description: OK

@@ -1,0 +1,16 @@
+openapi: 3.1.0
+info:
+  title: Kiana Property Service
+  version: 0.1.0
+  description: Properties, media refs, embeddings. Owns property_db.
+servers:
+  - url: http://localhost:4012
+paths:
+  /api/properties/_status:
+    get:
+      operationId: propertyServiceStatus
+      summary: Scaffold-only health echo
+      tags: [meta]
+      responses:
+        '200':
+          description: OK

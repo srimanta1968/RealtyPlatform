@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Project Structure · Kiana Realty Platform</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{--bg:#0b0f17;--panel:#121826;--panel-2:#1a2234;--line:#243049;--text:#e6ecf5;--muted:#8a98b3;--accent:#c9a86a;--accent-2:#6aa9ff;--green:#5dd39e;--red:#ff6b6b;--yellow:#f5c451;--code-bg:#0f1422;}
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;line-height:1.55}
+  .page{max-width:1200px;margin:0 auto;padding:56px 32px 96px}
+  header.cover{border-bottom:1px solid var(--line);padding-bottom:36px;margin-bottom:48px}
+  header.cover .eyebrow{color:var(--accent);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600}
+  header.cover h1{font-size:44px;line-height:1.15;margin:12px 0 8px;letter-spacing:-.02em}
+  header.cover .sub{color:var(--muted);font-size:17px;max-width:820px}
+  .meta{display:flex;gap:24px;flex-wrap:wrap;margin-top:24px;color:var(--muted);font-size:13px}
+  .meta b{color:var(--text);font-weight:600}
+  h2{font-size:26px;letter-spacing:-0.01em;margin:56px 0 18px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:18px;margin:28px 0 10px}
+  h4{font-size:14px;margin:18px 0 8px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}
+  p{color:#c8d1e3}
+  small,.muted{color:var(--muted)}
+  .grid{display:grid;gap:14px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media(max-width:900px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}header.cover h1{font-size:32px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
+  .card .title{font-weight:600;margin:6px 0}
+  .card .body{color:var(--muted);font-size:13.5px}
+  .card .num{font-size:32px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .pill.gold{color:var(--accent);border-color:rgba(201,168,106,.4)}
+  .pill.blue{color:var(--accent-2);border-color:rgba(106,169,255,.4)}
+  .pill.green{color:var(--green);border-color:rgba(93,211,158,.4)}
+  .pill.red{color:var(--red);border-color:rgba(255,107,107,.4)}
+  .pill.yellow{color:var(--yellow);border-color:rgba(245,196,81,.4)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:16px 18px;overflow-x:auto;font-size:12.5px;line-height:1.5}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:12.5px}
+  pre code{background:none;padding:0}
+  .tree{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;color:#c8d1e3;background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:18px;overflow-x:auto;white-space:pre}
+  .tree .dir{color:var(--accent);font-weight:600}
+  .tree .file{color:var(--accent-2)}
+  .tree .new{color:var(--green)}
+  .tree .pkg{color:var(--yellow)}
+  .tree .cmt{color:var(--muted)}
+  .diagram-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;overflow-x:auto}
+  .caption{color:var(--muted);font-size:12.5px;margin-top:10px;text-align:center}
+  .nav{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 0}
+  .nav a{color:var(--muted);text-decoration:none;font-size:13px;border:1px solid var(--line);padding:6px 12px;border-radius:8px}
+  .nav a:hover{color:var(--text);border-color:var(--accent)}
+  .footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  ul{color:#c8d1e3}
+  .check li{list-style:none;padding-left:22px;position:relative;margin:6px 0}
+  .check li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+  .x li{list-style:none;padding-left:22px;position:relative;margin:6px 0}
+  .x li:before{content:"✗";position:absolute;left:0;color:var(--red);font-weight:700}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line)}
+  .crumbs a:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="crumbs"><a href="Architecture.html">Architecture</a> · <a href="PRD.md">PRD</a> · Project Structure</div>
+
+  <header class="cover">
+    <div class="eyebrow">Project Structure · v1.0</div>
+    <h1>Monorepo Design &amp; SDK Strategy</h1>
+    <div class="sub">One git repository. Many deployable artifacts. Many databases. The folder layout, package boundaries, SDK module structure, and codegen pipeline that hold the platform together across seven phases.</div>
+    <div class="meta">
+      <div><b>Decision:</b> Monorepo · Turborepo + pnpm</div>
+      <div><b>Stack:</b> Node/TypeScript · PostgreSQL · Next.js · React</div>
+      <div><b>Scope:</b> Phase 1 → Phase 7</div>
+    </div>
+    <nav class="nav">
+      <a href="#tldr">TL;DR</a>
+      <a href="#why">Why Monorepo</a>
+      <a href="#tree">Folder Tree</a>
+      <a href="#apps">Apps</a>
+      <a href="#services">Services</a>
+      <a href="#agents">Agents</a>
+      <a href="#packages">Packages</a>
+      <a href="#sdk">SDK Deep Dive</a>
+      <a href="#codegen">SDK Codegen</a>
+      <a href="#data">Database</a>
+      <a href="#deploy">Deployment</a>
+      <a href="#cicd">CI/CD</a>
+      <a href="#scale">Scale</a>
+      <a href="#p7">Phase 7</a>
+    </nav>
+  </header>
+
+  <!-- ======== TL;DR ======== -->
+  <section id="tldr">
+    <h2>1 · TL;DR</h2>
+    <p>One git repository. Many deployable artifacts. Many databases. A single monorepo holds every microservice, every agent, every frontend, and every shared package. Each microservice still ships its own Docker image, owns its own PostgreSQL database, and deploys independently — but shared types, SDKs, and the design system live in internal packages that everything consumes via workspace references.</p>
+
+    <div class="grid cols-4" style="margin-top:24px">
+      <div class="card"><div class="label">Git repos</div><div class="num">1</div><div class="body">single monorepo</div></div>
+      <div class="card"><div class="label">Frontend apps</div><div class="num">6</div><div class="body">2× Next.js · 4× React</div></div>
+      <div class="card"><div class="label">BFFs</div><div class="num">3</div><div class="body">web · customer · field</div></div>
+      <div class="card"><div class="label">Microservices</div><div class="num">~14</div><div class="body">by Phase 6</div></div>
+      <div class="card"><div class="label">Agents</div><div class="num">~8</div><div class="body">event-subscribed</div></div>
+      <div class="card"><div class="label">Logical DBs</div><div class="num">~12</div><div class="body">one per service</div></div>
+      <div class="card"><div class="label">Postgres clusters</div><div class="num">1 → 3</div><div class="body">split when hot</div></div>
+      <div class="card"><div class="label">Shared packages</div><div class="num">~10</div><div class="body">contracts · sdk · ui · etc</div></div>
+    </div>
+  </section>
+
+  <!-- ======== WHY MONOREPO ======== -->
+  <section id="why">
+    <h2>2 · Why Monorepo (vs Polyrepo)</h2>
+    <p>Polyrepo is the right choice when you have multiple independent teams, mixed tech stacks, or external consumers of one component. <b>None apply to Kiana.</b></p>
+
+    <table>
+      <thead><tr><th>Concern</th><th>Polyrepo</th><th>Monorepo (Turborepo)</th></tr></thead>
+      <tbody>
+        <tr><td>Independent deploys</td><td>✅</td><td>✅ via <code>--filter=...[origin/main]</code></td></tr>
+        <tr><td>Shared event types</td><td>npm publish + version drift</td><td><code>import</code> from <code>@kiana/contracts</code></td></tr>
+        <tr><td>Cross-service refactor</td><td>N PRs, N reviews, N deploys</td><td>1 atomic PR</td></tr>
+        <tr><td>Onboarding</td><td>Clone N repos</td><td><code>pnpm install</code></td></tr>
+        <tr><td>Phase 7 vertical extraction</td><td>Multi-month migration</td><td>Folder restructure</td></tr>
+        <tr><td>Repo overhead</td><td>N × CI / READMEs / IaC</td><td>One set</td></tr>
+        <tr><td>Team size to justify</td><td>20+ engineers</td><td>Works from 2 engineers</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ======== FOLDER TREE ======== -->
+  <section id="tree">
+    <h2>3 · Folder Structure</h2>
+<div class="tree"><span class="dir">realty-platform/</span>                          <span class="cmt">← single git repo</span>
+│
+├── <span class="dir">apps/</span>                                 <span class="cmt">← user-facing deployables (frontends)</span>
+│   ├── <span class="file">web-public/</span>                         <span class="cmt">Next.js · public marketing site (P1)</span>
+│   ├── <span class="file">web-portal/</span>                         <span class="cmt">Next.js · customer portal (P5)</span>
+│   ├── <span class="file">admin-cockpit/</span>                      <span class="cmt">Vite + React SPA · operators (P1→)</span>
+│   ├── <span class="file">field-app/</span>                          <span class="cmt">React PWA · field agents (P4)</span>
+│   ├── <span class="file">marketing-console/</span>                  <span class="cmt">Vite + React SPA · marketers (P3)</span>
+│   └── <span class="file">concierge-widget/</span>                   <span class="cmt">Embeddable React widget (P6)</span>
+│
+├── <span class="dir">bffs/</span>                                 <span class="cmt">← API gateways / aggregators</span>
+│   ├── <span class="file">web-bff/</span>                            <span class="cmt">Public + admin (P1)</span>
+│   ├── <span class="file">customer-bff/</span>                       <span class="cmt">Customer portal (P5)</span>
+│   └── <span class="file">field-bff/</span>                          <span class="cmt">Field PWA (P4)</span>
+│
+├── <span class="dir">services/</span>                             <span class="cmt">← microservices, one per bounded context</span>
+│   ├── <span class="file">lead-service/</span>                       <span class="cmt">(P1)</span>
+│   ├── <span class="file">property-service/</span>                   <span class="cmt">(P1) + pgvector (P4)</span>
+│   ├── <span class="file">crm-service/</span>                        <span class="cmt">(P1 → P2)</span>
+│   ├── <span class="file">visit-service/</span>                      <span class="cmt">(P2)</span>
+│   ├── <span class="file">notification-service/</span>               <span class="cmt">(P1 →)</span>
+│   ├── <span class="file">user-service/</span>                       <span class="cmt">(P1)</span>
+│   ├── <span class="file">media-service/</span>                      <span class="cmt">(P1 → P4)</span>
+│   ├── <span class="file">analytics-service/</span>                  <span class="cmt">(P2)</span>
+│   ├── <span class="file">campaign-service/</span>                   <span class="cmt">(P3)</span>
+│   ├── <span class="file">segmentation-engine/</span>                <span class="cmt">(P3)</span>
+│   ├── <span class="file">engagement-tracker/</span>                 <span class="cmt">(P3)</span>
+│   ├── <span class="file">document-service/</span>                   <span class="cmt">(P5)</span>
+│   ├── <span class="file">concierge-service/</span>                  <span class="cmt">(P6)</span>
+│   └── <span class="file">ai-gateway/</span>                         <span class="cmt">(P6)</span>
+│
+├── <span class="dir">agents/</span>                               <span class="cmt">← event-subscribed handlers</span>
+│   ├── <span class="file">qualification-agent/</span>                <span class="cmt">(P3)</span>
+│   ├── <span class="file">scoring-agent/</span>                      <span class="cmt">(P3 → upgrade P6)</span>
+│   ├── <span class="file">matching-agent/</span>                     <span class="cmt">(P4)</span>
+│   ├── <span class="file">visit-summary-agent/</span>                <span class="cmt">(P4)</span>
+│   ├── <span class="file">recommendation-agent/</span>               <span class="cmt">(P5)</span>
+│   ├── <span class="file">nba-agent/</span>                          <span class="cmt">(P2 rules → P6 LLM)</span>
+│   ├── <span class="file">property-intelligence-agent/</span>        <span class="cmt">(P6)</span>
+│   └── <span class="file">campaign-copy-agent/</span>                <span class="cmt">(P6)</span>
+│
+├── <span class="dir">workflows/</span>                            <span class="cmt">← Temporal workflow definitions</span>
+│   ├── <span class="file">visit-lifecycle/</span>                    <span class="cmt">(P2)</span>
+│   ├── <span class="file">drip-campaign/</span>                      <span class="cmt">(P3)</span>
+│   └── <span class="file">lead-nurture/</span>                       <span class="cmt">(P2)</span>
+│
+├── <span class="dir">packages/</span>                             <span class="cmt">← shared internal libraries (NOT deployables)</span>
+│   ├── <span class="pkg">contracts/</span>                          <span class="cmt">TS types, event schemas, OpenAPI specs</span>
+│   ├── <span class="pkg">sdk/</span>                                <span class="cmt">Typed client SDK (apps + BFFs)</span>
+│   ├── <span class="pkg">service-client/</span>                     <span class="cmt">Internal service-to-service client (mTLS)</span>
+│   ├── <span class="pkg">design-system/</span>                      <span class="cmt">Tailwind + Radix React components</span>
+│   ├── <span class="pkg">ui-kit/</span>                             <span class="cmt">React hooks/providers (auth, query, theme)</span>
+│   ├── <span class="pkg">service-kit/</span>                        <span class="cmt">Fastify base, logging, OTel, auth middleware</span>
+│   ├── <span class="pkg">event-bus/</span>                          <span class="cmt">Redis Streams / Kafka adapter</span>
+│   ├── <span class="pkg">ai-client/</span>                          <span class="cmt">AI Gateway client (used by agents)</span>
+│   ├── <span class="pkg">db-kit/</span>                             <span class="cmt">Drizzle helpers, migration runner</span>
+│   └── <span class="pkg">config/</span>                             <span class="cmt">eslint, tsconfig, prettier, jest presets</span>
+│
+├── <span class="dir">db/</span>                                   <span class="cmt">← migrations, one folder per service DB</span>
+│   ├── <span class="file">lead/migrations/</span>
+│   ├── <span class="file">property/migrations/</span>
+│   ├── <span class="file">crm/migrations/</span>
+│   └── <span class="cmt">... (one per service)</span>
+│
+├── <span class="dir">infra/</span>                                <span class="cmt">← deployment &amp; infrastructure</span>
+│   ├── <span class="file">terraform/</span>                          <span class="cmt">Cloud resources (RDS, S3, CDN, k8s)</span>
+│   ├── <span class="file">helm/</span>                               <span class="cmt">One chart per service</span>
+│   ├── <span class="file">docker/</span>                             <span class="cmt">Shared base Dockerfiles</span>
+│   └── <span class="file">argocd/</span>                             <span class="cmt">GitOps app definitions</span>
+│
+├── <span class="dir">ops/</span>
+│   ├── <span class="file">runbooks/</span>                           <span class="cmt">One per service</span>
+│   ├── <span class="file">dashboards/</span>                         <span class="cmt">Grafana JSON, Metabase</span>
+│   └── <span class="file">load-tests/</span>                         <span class="cmt">k6 scripts</span>
+│
+├── <span class="dir">docs/</span>                                 <span class="cmt">← PRD, Architecture, Phase docs</span>
+├── <span class="dir">scripts/</span>                              <span class="cmt">← dev tooling: seed, reset, gen-sdk</span>
+├── <span class="file">turbo.json</span>                            <span class="cmt">← Turborepo pipeline config</span>
+├── <span class="file">pnpm-workspace.yaml</span>                   <span class="cmt">← workspace definition</span>
+├── <span class="file">tsconfig.base.json</span>                    <span class="cmt">← shared TypeScript config</span>
+├── <span class="file">.github/workflows/</span>                    <span class="cmt">← CI pipelines</span>
+└── <span class="file">package.json</span>                          <span class="cmt">← root manifest</span>
+</div>
+  </section>
+
+  <!-- ======== APPS ======== -->
+  <section id="apps">
+    <h2>4 · Apps Catalog</h2>
+    <table>
+      <thead><tr><th>App</th><th>Framework</th><th>Audience</th><th>Phase</th><th>Deployment</th></tr></thead>
+      <tbody>
+        <tr><td><b>web-public</b></td><td>Next.js 14 (App Router)</td><td>Buyers (public)</td><td><span class="pill gold">P1</span></td><td>Vercel / self-hosted Node</td></tr>
+        <tr><td><b>web-portal</b></td><td>Next.js 14 (App Router)</td><td>Authenticated customers</td><td><span class="pill green">P5</span></td><td>Vercel / self-hosted Node</td></tr>
+        <tr><td><b>admin-cockpit</b></td><td>Vite + React SPA</td><td>Operators</td><td><span class="pill gold">P1 →</span></td><td>S3 + CloudFront</td></tr>
+        <tr><td><b>field-app</b></td><td>React PWA + Service Worker</td><td>Field agents</td><td><span class="pill blue">P4</span></td><td>S3 + CloudFront, installable</td></tr>
+        <tr><td><b>marketing-console</b></td><td>Vite + React SPA</td><td>Marketing team</td><td><span class="pill blue">P3</span></td><td>S3 + CloudFront</td></tr>
+        <tr><td><b>concierge-widget</b></td><td>React (UMD/ESM bundle)</td><td>Embedded on web-public</td><td><span class="pill red">P6</span></td><td>S3 + CloudFront, versioned</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Why two frontend stacks (Next.js + React)</h3>
+    <table>
+      <thead><tr><th>Surface</th><th>SEO/SSR matters?</th><th>Data density?</th><th>Choice</th></tr></thead>
+      <tbody>
+        <tr><td>web-public</td><td>Yes (organic discovery)</td><td>Low</td><td>Next.js</td></tr>
+        <tr><td>web-portal</td><td>Some (auth gate, but speed matters)</td><td>Medium</td><td>Next.js</td></tr>
+        <tr><td>admin-cockpit</td><td>No</td><td>Very high</td><td>React SPA</td></tr>
+        <tr><td>field-app</td><td>No (offline-first)</td><td>Medium + offline</td><td>React PWA</td></tr>
+        <tr><td>marketing-console</td><td>No</td><td>High</td><td>React SPA</td></tr>
+      </tbody>
+    </table>
+    <p>Both stacks share the same <code>@kiana/design-system</code>, <code>@kiana/sdk</code>, and <code>@kiana/ui-kit</code>. Developers move between them seamlessly.</p>
+  </section>
+
+  <!-- ======== BFFs ======== -->
+  <section>
+    <h2>5 · BFFs (Backend-for-Frontend)</h2>
+    <table>
+      <thead><tr><th>BFF</th><th>Serves</th><th>Why separate</th></tr></thead>
+      <tbody>
+        <tr><td><b>web-bff</b></td><td>web-public + admin-cockpit</td><td>Aggregates calls; rate-limits public traffic differently from admin</td></tr>
+        <tr><td><b>customer-bff</b></td><td>web-portal</td><td>Customer auth context; OTP flow; portal-scoped views</td></tr>
+        <tr><td><b>field-bff</b></td><td>field-app</td><td>Mobile payloads; offline sync endpoints; signed-upload helpers</td></tr>
+      </tbody>
+    </table>
+    <p>Each BFF is a thin Fastify service that aggregates downstream microservice calls. They contain <b>no business logic</b> — just orchestration, response shaping, and auth.</p>
+  </section>
+
+  <!-- ======== SERVICES ======== -->
+  <section id="services">
+    <h2>6 · Microservices Catalog</h2>
+    <table>
+      <thead><tr><th>Service</th><th>Owns</th><th>Database</th><th>Phase</th></tr></thead>
+      <tbody>
+        <tr><td><b>lead-service</b></td><td>Leads, timeline, scores, qualification</td><td><code>lead_db</code></td><td><span class="pill gold">P1</span></td></tr>
+        <tr><td><b>property-service</b></td><td>Properties, media refs, embeddings (pgvector)</td><td><code>property_db</code></td><td><span class="pill gold">P1</span></td></tr>
+        <tr><td><b>crm-service</b></td><td>Pipeline, tasks, SLAs, follow-ups</td><td><code>crm_db</code></td><td><span class="pill gold">P1 → P2</span></td></tr>
+        <tr><td><b>visit-service</b></td><td>Visits, outcomes, alternatives</td><td><code>visit_db</code></td><td><span class="pill blue">P2</span></td></tr>
+        <tr><td><b>notification-service</b></td><td>Templates, sends, suppression, preferences</td><td><code>notif_db</code></td><td><span class="pill gold">P1</span></td></tr>
+        <tr><td><b>user-service</b></td><td>Accounts, roles, sessions</td><td><code>user_db</code></td><td><span class="pill gold">P1</span></td></tr>
+        <tr><td><b>media-service</b></td><td>Upload metadata, transcoding state</td><td><code>media_db</code></td><td><span class="pill gold">P1 → P4</span></td></tr>
+        <tr><td><b>analytics-service</b></td><td>Materialized views, dashboard queries</td><td><code>analytics_db</code> + warehouse</td><td><span class="pill blue">P2</span></td></tr>
+        <tr><td><b>campaign-service</b></td><td>Campaigns, variants, schedules</td><td><code>campaign_db</code></td><td><span class="pill blue">P3</span></td></tr>
+        <tr><td><b>segmentation-engine</b></td><td>Segments, DSL evaluation</td><td>(reads event log)</td><td><span class="pill blue">P3</span></td></tr>
+        <tr><td><b>engagement-tracker</b></td><td>Open/click/reply ingest</td><td><code>engagement_db</code></td><td><span class="pill blue">P3</span></td></tr>
+        <tr><td><b>document-service</b></td><td>Documents, ACLs, e-sign envelopes</td><td><code>document_db</code></td><td><span class="pill green">P5</span></td></tr>
+        <tr><td><b>concierge-service</b></td><td>Sessions, transcripts, handoffs</td><td><code>concierge_db</code></td><td><span class="pill red">P6</span></td></tr>
+        <tr><td><b>ai-gateway</b></td><td>Prompt registry, invocations, cost</td><td><code>ai_db</code></td><td><span class="pill red">P6</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Each service folder structure</h3>
+<pre>services/lead-service/
+├── src/
+│   ├── api/              <span style="color:var(--muted)">HTTP route handlers (Fastify)</span>
+│   ├── domain/           <span style="color:var(--muted)">Business logic, state machines</span>
+│   ├── infra/            <span style="color:var(--muted)">DB repositories, event publishers</span>
+│   ├── events/           <span style="color:var(--muted)">Event consumers</span>
+│   ├── workflows/        <span style="color:var(--muted)">Temporal activity definitions (if any)</span>
+│   └── server.ts         <span style="color:var(--muted)">Fastify bootstrap</span>
+├── openapi.yaml          <span style="color:var(--muted)">API contract (source of truth)</span>
+├── tests/
+│   ├── unit/
+│   └── integration/      <span style="color:var(--muted)">Hits a real Postgres in Docker</span>
+├── Dockerfile
+├── package.json
+└── tsconfig.json</pre>
+  </section>
+
+  <!-- ======== AGENTS ======== -->
+  <section id="agents">
+    <h2>7 · Agents Catalog</h2>
+    <p>Agents are <b>separately deployed processes</b>, each subscribed to specific events. They share the <code>@kiana/ai-client</code> for AI Gateway access.</p>
+    <table>
+      <thead><tr><th>Agent</th><th>Triggers</th><th>Calls AI Gateway?</th><th>Phase</th></tr></thead>
+      <tbody>
+        <tr><td><b>qualification-agent</b></td><td><code>lead.created</code></td><td>Yes (LLM extraction)</td><td><span class="pill blue">P3</span></td></tr>
+        <tr><td><b>scoring-agent</b></td><td><code>engagement.*</code></td><td>Yes in P6 (hybrid)</td><td><span class="pill blue">P3 → P6</span></td></tr>
+        <tr><td><b>matching-agent</b></td><td><code>lead.qualified</code>, <code>visit.outcome</code></td><td>Yes (re-rank)</td><td><span class="pill blue">P4</span></td></tr>
+        <tr><td><b>visit-summary-agent</b></td><td><code>visit.completed</code> + media</td><td>Yes (Whisper + LLM)</td><td><span class="pill blue">P4</span></td></tr>
+        <tr><td><b>recommendation-agent</b></td><td><code>customer.shortlist_updated</code></td><td>Yes</td><td><span class="pill green">P5</span></td></tr>
+        <tr><td><b>nba-agent</b></td><td>Stage change, inactivity</td><td>No in P2, Yes in P6</td><td><span class="pill blue">P2 → P6</span></td></tr>
+        <tr><td><b>property-intelligence-agent</b></td><td>Scheduled, intake</td><td>Yes</td><td><span class="pill red">P6</span></td></tr>
+        <tr><td><b>campaign-copy-agent</b></td><td><code>campaign.draft_requested</code></td><td>Yes</td><td><span class="pill red">P6</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ======== PACKAGES ======== -->
+  <section id="packages">
+    <h2>8 · Shared Packages</h2>
+    <table>
+      <thead><tr><th>Package</th><th>Purpose</th><th>Consumers</th></tr></thead>
+      <tbody>
+        <tr><td><b>@kiana/contracts</b></td><td>Type definitions, event schemas, OpenAPI specs (source of truth)</td><td>Services, agents, SDK</td></tr>
+        <tr><td><b>@kiana/sdk</b></td><td>Typed HTTP client + framework bindings</td><td>Apps, BFFs</td></tr>
+        <tr><td><b>@kiana/service-client</b></td><td>Service-to-service client (mTLS, retries, circuit breaker)</td><td>Services, agents</td></tr>
+        <tr><td><b>@kiana/design-system</b></td><td>Tailwind + Radix React components</td><td>All frontends</td></tr>
+        <tr><td><b>@kiana/ui-kit</b></td><td>React hooks/providers (auth, query, theme, telemetry)</td><td>All frontends</td></tr>
+        <tr><td><b>@kiana/service-kit</b></td><td>Fastify base, logging, OTel, auth, health checks</td><td>Services, BFFs</td></tr>
+        <tr><td><b>@kiana/event-bus</b></td><td>Redis Streams / Kafka adapter with idempotency</td><td>Services, agents</td></tr>
+        <tr><td><b>@kiana/ai-client</b></td><td>AI Gateway client (route hints, cost, retry)</td><td>Agents</td></tr>
+        <tr><td><b>@kiana/db-kit</b></td><td>Drizzle helpers, migration runner, transaction patterns</td><td>Services</td></tr>
+        <tr><td><b>@kiana/config</b></td><td>Shared eslint, tsconfig, prettier, jest presets</td><td>All packages</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Dependency rules (enforced by ESLint <code>no-restricted-imports</code>)</h3>
+<pre>apps/*    → packages/sdk, packages/design-system, packages/ui-kit, packages/contracts
+bffs/*    → packages/sdk, packages/service-client, packages/service-kit, packages/contracts
+services/* → packages/service-kit, packages/service-client, packages/event-bus,
+            packages/db-kit, packages/contracts
+agents/*  → packages/event-bus, packages/ai-client, packages/service-client, packages/contracts
+
+❌ services/* MUST NOT import from packages/sdk
+❌ services/* MUST NOT import from another services/*
+❌ apps/* MUST NOT import from services/* directly</pre>
+  </section>
+
+  <!-- ======== SDK DEEP DIVE ======== -->
+  <section id="sdk">
+    <h2>9 · SDK Deep Dive</h2>
+    <p><code>@kiana/sdk</code> is the typed client every frontend uses. It's the contract enforcement layer between services and clients.</p>
+
+    <h3>9.1 Module structure</h3>
+<div class="tree"><span class="dir">packages/sdk/</span>
+├── <span class="dir">src/</span>
+│   ├── <span class="dir">clients/</span>                        <span class="cmt">← per-service clients</span>
+│   │   ├── <span class="file">lead/</span>
+│   │   │   ├── <span class="file">generated/</span>              <span class="cmt">auto-generated from OpenAPI</span>
+│   │   │   ├── <span class="file">client.ts</span>               <span class="cmt">hand-written wrapper</span>
+│   │   │   ├── <span class="file">types.ts</span>                <span class="cmt">re-exports + brand types</span>
+│   │   │   └── <span class="file">index.ts</span>
+│   │   ├── <span class="file">property/</span>
+│   │   ├── <span class="file">crm/</span>
+│   │   ├── <span class="file">visit/</span>
+│   │   ├── <span class="file">campaign/</span>
+│   │   ├── <span class="file">notification/</span>
+│   │   ├── <span class="file">media/</span>
+│   │   ├── <span class="file">document/</span>
+│   │   ├── <span class="file">user/</span>
+│   │   ├── <span class="file">analytics/</span>
+│   │   ├── <span class="file">portal/</span>
+│   │   ├── <span class="file">concierge/</span>
+│   │   ├── <span class="file">ai-gateway/</span>
+│   │   └── <span class="file">field/</span>
+│   │
+│   ├── <span class="dir">core/</span>                           <span class="cmt">← hand-written infrastructure</span>
+│   │   ├── <span class="file">http-client.ts</span>              <span class="cmt">fetch wrapper, timeouts, interceptors</span>
+│   │   ├── <span class="file">auth.ts</span>                     <span class="cmt">token storage, refresh, OIDC + OTP</span>
+│   │   ├── <span class="file">errors.ts</span>                   <span class="cmt">typed error classes</span>
+│   │   ├── <span class="file">retry.ts</span>                    <span class="cmt">exponential backoff, idempotency keys</span>
+│   │   ├── <span class="file">telemetry.ts</span>                <span class="cmt">W3C trace headers, OTel propagation</span>
+│   │   ├── <span class="file">pagination.ts</span>               <span class="cmt">cursor + offset async iterators</span>
+│   │   ├── <span class="file">filters.ts</span>                  <span class="cmt">type-safe filter builders</span>
+│   │   └── <span class="file">config.ts</span>                   <span class="cmt">env-aware base URLs, feature flags</span>
+│   │
+│   ├── <span class="dir">react/</span>                          <span class="cmt">← React bindings (TanStack Query)</span>
+│   │   ├── <span class="file">provider.tsx</span>                <span class="cmt">&lt;KianaSDKProvider /&gt;</span>
+│   │   ├── <span class="dir">hooks/</span>
+│   │   │   ├── <span class="file">useAuth.ts</span>
+│   │   │   ├── <span class="file">useLead.ts · useLeadList.ts · useLeadMutation.ts</span>
+│   │   │   ├── <span class="file">useProperty.ts · useVisit.ts · useTaskInbox.ts</span>
+│   │   │   ├── <span class="file">useWarmQueue.ts · useCampaign.ts · useSegment.ts</span>
+│   │   │   ├── <span class="file">useDocument.ts · useShortlist.ts</span>
+│   │   │   └── <span class="cmt">... one per resource</span>
+│   │   └── <span class="dir">realtime/</span>
+│   │       ├── <span class="file">useLeadStream.ts</span>         <span class="cmt">SSE/WebSocket subscription</span>
+│   │       └── <span class="file">useTaskStream.ts</span>
+│   │
+│   ├── <span class="dir">next/</span>                           <span class="cmt">← Next.js Server bindings</span>
+│   │   ├── <span class="file">server-client.ts</span>            <span class="cmt">Server-side client with cookie auth</span>
+│   │   ├── <span class="file">server-actions.ts</span>           <span class="cmt">Type-safe Server Action helpers</span>
+│   │   ├── <span class="file">middleware.ts</span>               <span class="cmt">Auth middleware</span>
+│   │   └── <span class="file">revalidate.ts</span>               <span class="cmt">ISR revalidation helpers</span>
+│   │
+│   ├── <span class="dir">upload/</span>                         <span class="cmt">← file upload helpers</span>
+│   │   ├── <span class="file">signed-url.ts · multipart.ts · resumable.ts · compress.ts</span>
+│   │
+│   ├── <span class="dir">concierge/</span>                      <span class="cmt">← chat-specific helpers</span>
+│   │   ├── <span class="file">chat-stream.ts</span>              <span class="cmt">streaming token consumer</span>
+│   │   └── <span class="file">handoff.ts</span>                  <span class="cmt">trigger handoff with summary</span>
+│   │
+│   ├── <span class="dir">sync/</span>                           <span class="cmt">← offline-first helpers (Field PWA)</span>
+│   │   ├── <span class="file">offline-queue.ts</span>            <span class="cmt">IndexedDB op queue</span>
+│   │   └── <span class="file">conflict-resolver.ts</span>
+│   │
+│   ├── <span class="dir">embeddings/</span>
+│   │   └── <span class="file">property-search.ts</span>          <span class="cmt">vector search wrapper</span>
+│   │
+│   ├── <span class="dir">types/</span>                          <span class="cmt">← re-exports from @kiana/contracts</span>
+│   │   └── <span class="file">events.ts · enums.ts · primitives.ts</span>
+│   │
+│   └── <span class="file">index.ts</span>                        <span class="cmt">← main entry point</span>
+│
+├── <span class="dir">codegen/</span>                            <span class="cmt">← OpenAPI codegen config</span>
+│   ├── <span class="file">openapi-generator.config.ts</span>
+│   └── <span class="file">post-generate.ts</span>                <span class="cmt">custom transforms</span>
+│
+├── <span class="dir">tests/</span>
+│   ├── <span class="file">unit/</span>
+│   ├── <span class="file">contract/</span>                      <span class="cmt">contract tests against mock server</span>
+│   └── <span class="file">integration/</span>                    <span class="cmt">against real services in Docker</span>
+│
+├── <span class="file">tsup.config.ts</span>                      <span class="cmt">build config (dual ESM/CJS)</span>
+├── <span class="file">package.json</span>
+└── <span class="file">README.md</span>
+</div>
+
+    <h3>9.2 What's auto-generated vs hand-written</h3>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="label">80% Auto-generated</div>
+        <ul class="check" style="margin-top:8px;font-size:13.5px">
+          <li>HTTP request/response shapes</li>
+          <li>DTO types</li>
+          <li>Endpoint method signatures</li>
+          <li>Enum values</li>
+          <li>Error response types</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">20% Hand-written</div>
+        <ul class="check" style="margin-top:8px;font-size:13.5px">
+          <li>React Query keys + invalidation</li>
+          <li>Optimistic update helpers</li>
+          <li>Cross-service helpers (e.g., <code>leads.scheduleVisit()</code>)</li>
+          <li>Typed error classes</li>
+          <li>Pagination iterators</li>
+          <li>Realtime subscriptions (SSE/WebSocket)</li>
+          <li>Upload orchestration</li>
+          <li>Offline queue / sync helpers</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>9.3 Usage examples</h3>
+<pre>// Tree-shakable imports — apps pull only what they need
+import { LeadClient } from '@kiana/sdk'                  // core
+import { useLead, useLeadList } from '@kiana/sdk/react'  // React hooks
+import { getServerClient } from '@kiana/sdk/next'        // Next.js server
+import { uploadResumable } from '@kiana/sdk/upload'      // upload helper
+
+// In a Next.js Server Component
+const lead = await getServerClient().lead.get(leadId)
+
+// In a React component
+const { data, isLoading } = useLeadList({ stage: 'QUALIFIED' })</pre>
+  </section>
+
+  <!-- ======== CODEGEN ======== -->
+  <section id="codegen">
+    <h2>10 · SDK Generation &amp; Build Pipeline</h2>
+
+    <h3>10.1 The generation flow</h3>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+flowchart TB
+  classDef step fill:#1a2234,stroke:#c9a86a,color:#e6ecf5,stroke-width:1.5px
+  classDef tool fill:#0f1422,stroke:#6aa9ff,color:#6aa9ff,stroke-dasharray:3 3
+  classDef out fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+
+  S1[1 · Author edits<br/>services/lead-service/openapi.yaml]:::step
+  S2[2 · CI detects change<br/>Turborepo affected]:::step
+  S3[3 · Validate OpenAPI]:::step
+  T1[spectral lint]:::tool
+  S4[4 · Generate clients]:::step
+  T2[hey-api / openapi-typescript]:::tool
+  S5[5 · Post-process]:::step
+  T3[post-generate.ts<br/>brand types, formatting]:::tool
+  O1[generated/ updated<br/>contracts/services/lead.ts updated]:::out
+  S6[6 · Hand-written wrapper<br/>clients/lead/client.ts]:::step
+  S7[7 · Build SDK with tsup<br/>ESM + CJS + .d.ts]:::step
+  S8[8 · Apps rebuild via<br/>Turborepo cascade]:::step
+  O2[Type errors caught<br/>at compile time]:::out
+
+  S1 --> S2 --> S3
+  S3 --> T1
+  T1 --> S4
+  S4 --> T2
+  T2 --> S5
+  S5 --> T3
+  T3 --> O1
+  O1 --> S6
+  S6 --> S7
+  S7 --> S8
+  S8 --> O2
+      </pre>
+      <div class="caption">Source of truth is the service's <code>openapi.yaml</code>. Everything downstream regenerates automatically.</div>
+    </div>
+
+    <h3>10.2 Codegen tooling</h3>
+    <table>
+      <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><b>fastify-swagger</b></td><td>Inside each service, generates <code>openapi.yaml</code> from Fastify route schemas (Zod-based)</td></tr>
+        <tr><td><b>@hey-api/openapi-ts</b> (or <b>openapi-typescript-codegen</b>)</td><td>Generates TypeScript clients from OpenAPI</td></tr>
+        <tr><td><b>@stoplight/spectral</b></td><td>Lints OpenAPI specs (consistency, breaking change detection)</td></tr>
+        <tr><td><b>@apidevtools/swagger-cli</b></td><td>Bundles multi-file OpenAPI specs</td></tr>
+        <tr><td><b>tsup</b></td><td>Builds the SDK package (ESM + CJS + .d.ts, fast)</td></tr>
+        <tr><td><b>changesets</b></td><td>Versioning and changelog generation</td></tr>
+      </tbody>
+    </table>
+
+    <h3>10.3 Build configuration (tsup)</h3>
+<pre>// packages/sdk/tsup.config.ts
+import { defineConfig } from 'tsup'
+
+export default defineConfig({
+  entry: {
+    index:     'src/index.ts',
+    react:     'src/react/index.ts',
+    next:      'src/next/index.ts',
+    upload:    'src/upload/index.ts',
+    sync:      'src/sync/index.ts',
+    concierge: 'src/concierge/index.ts',
+  },
+  format:    ['esm', 'cjs'],
+  dts:       true,
+  sourcemap: true,
+  splitting: true,
+  treeshake: true,
+  external:  ['react', 'react-dom', 'next', '@tanstack/react-query'],
+  clean:     true,
+})</pre>
+    <p>This produces multiple entry points so consumers tree-shake to what they actually use. The Customer Portal pulls only <code>@kiana/sdk + /react + /next</code>; the Field App pulls <code>+ /upload + /sync</code>; the public site pulls <code>+ /next</code>.</p>
+
+    <h3>10.4 Versioning &amp; publishing</h3>
+    <table>
+      <thead><tr><th>Aspect</th><th>Strategy</th></tr></thead>
+      <tbody>
+        <tr><td><b>Versioning</b></td><td>Single SDK version, semver. Breaking changes bump major.</td></tr>
+        <tr><td><b>Source of truth</b></td><td><code>packages/sdk/CHANGELOG.md</code> (managed by Changesets)</td></tr>
+        <tr><td><b>Publishing</b></td><td><b>Workspace-only</b> — never published to public npm. Apps reference <code>"@kiana/sdk": "workspace:*"</code>.</td></tr>
+        <tr><td><b>Internal registry</b></td><td>Optional Verdaccio for downstream tools that need built artifacts</td></tr>
+        <tr><td><b>Breaking change detection</b></td><td>Spectral rules + API extractor diff in CI</td></tr>
+        <tr><td><b>Distribution</b></td><td>Via monorepo workspace symlinks. Each app build resolves the current source.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>10.5 Testing the SDK</h3>
+<pre>packages/sdk/tests/
+├── unit/                  <span style="color:var(--muted)">← hooks, helpers, error mapping</span>
+│   ├── retry.test.ts
+│   ├── pagination.test.ts
+│   └── auth.test.ts
+├── contract/              <span style="color:var(--muted)">← against mock server (Prism / MSW)</span>
+│   ├── lead.test.ts       <span style="color:var(--muted)">← every endpoint, every error path</span>
+│   ├── property.test.ts
+│   └── ...
+└── integration/           <span style="color:var(--muted)">← against real services in Docker</span>
+    └── e2e-lead-flow.test.ts</pre>
+    <p>Contract tests guarantee the SDK matches what the service actually exposes — they run against a mock generated from the same <code>openapi.yaml</code>. When a service author changes the OpenAPI in a breaking way, the contract test fails and CI blocks the merge.</p>
+
+    <h3>10.6 Single-package vs multi-package decision</h3>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="label">Phase 1–3</div>
+        <div class="title">Single <code>@kiana/sdk</code></div>
+        <div class="body">All clients in one package with multiple entry points. Simpler. Tree-shaking handles the bundle size.</div>
+      </div>
+      <div class="card">
+        <div class="label">Phase 4+</div>
+        <div class="title">Split into per-service packages</div>
+        <div class="body">If Field PWA bundle exceeds 500KB or Concierge widget needs minimal payload. Mechanical refactor — folder structure already separates concerns.</div>
+      </div>
+    </div>
+<pre>// Phase 4+ split
+@kiana/sdk-core         http-client, auth, errors, telemetry
+@kiana/sdk-lead         lead client + types
+@kiana/sdk-property
+@kiana/sdk-crm
+@kiana/sdk-visit
+@kiana/sdk-campaign
+@kiana/sdk-portal
+@kiana/sdk-field
+@kiana/sdk-react        React hooks, providers
+@kiana/sdk-next         Next.js helpers
+@kiana/sdk-upload       File upload helpers</pre>
+  </section>
+
+  <!-- ======== CONTRACTS ======== -->
+  <section>
+    <h2>11 · Contracts Package — Source of Truth</h2>
+    <p><code>@kiana/contracts</code> is upstream of everything. Pure types, no runtime.</p>
+<div class="tree"><span class="dir">packages/contracts/</span>
+├── <span class="dir">src/</span>
+│   ├── <span class="dir">services/</span>                     <span class="cmt">← per-service DTOs</span>
+│   │   ├── <span class="file">lead.ts</span>
+│   │   ├── <span class="file">property.ts</span>
+│   │   ├── <span class="file">crm.ts</span>
+│   │   └── <span class="cmt">...</span>
+│   ├── <span class="dir">events/</span>                       <span class="cmt">← event payload types</span>
+│   │   ├── <span class="file">lead-events.ts</span>            <span class="cmt">LeadCreated, LeadQualified, ...</span>
+│   │   ├── <span class="file">visit-events.ts</span>
+│   │   ├── <span class="file">campaign-events.ts</span>
+│   │   └── <span class="file">envelope.ts</span>               <span class="cmt">EventEnvelope&lt;T&gt;</span>
+│   ├── <span class="dir">enums/</span>                        <span class="cmt">← shared enums</span>
+│   │   ├── <span class="file">stages.ts · channels.ts · roles.ts</span>
+│   ├── <span class="dir">primitives/</span>                   <span class="cmt">← branded types</span>
+│   │   ├── <span class="file">ids.ts</span>                    <span class="cmt">LeadId, PropertyId, UserId</span>
+│   │   └── <span class="file">money.ts</span>
+│   ├── <span class="dir">schemas/</span>                      <span class="cmt">← Zod schemas (runtime validation)</span>
+│   └── <span class="file">index.ts</span>
+├── <span class="dir">openapi/</span>                          <span class="cmt">← per-service OpenAPI specs</span>
+│   ├── <span class="file">lead.openapi.yaml</span>
+│   ├── <span class="file">property.openapi.yaml</span>
+│   └── <span class="cmt">...</span>
+├── <span class="dir">asyncapi/</span>                         <span class="cmt">← event bus contracts (AsyncAPI 2.x)</span>
+│   └── <span class="file">events.asyncapi.yaml</span>
+└── <span class="file">package.json</span>
+</div>
+
+    <table>
+      <thead><tr><th>Use case</th><th>Imports from contracts</th></tr></thead>
+      <tbody>
+        <tr><td>Service validating request body</td><td><code>LeadCreateSchema</code> (Zod)</td></tr>
+        <tr><td>Agent typing event payload</td><td><code>LeadCreated</code> (TS type)</td></tr>
+        <tr><td>SDK auto-gen reading API shape</td><td><code>openapi/lead.openapi.yaml</code></td></tr>
+        <tr><td>Frontend typing form values</td><td><code>LeadDraft</code> (TS type)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ======== DATABASE ======== -->
+  <section id="data">
+    <h2>12 · Database Strategy</h2>
+
+    <h3>12.1 Logical isolation, physical consolidation</h3>
+    <table>
+      <thead><tr><th>Aspect</th><th>Strategy</th></tr></thead>
+      <tbody>
+        <tr><td><b>Logical DBs</b></td><td>One per service (<code>lead_db</code>, <code>property_db</code>, ...)</td></tr>
+        <tr><td><b>Physical clusters (P1–P3)</b></td><td>One managed Postgres cluster, ~10 logical DBs</td></tr>
+        <tr><td><b>Physical clusters (P4–P5)</b></td><td>Same + read replica for analytics</td></tr>
+        <tr><td><b>Physical clusters (P6+)</b></td><td>Optionally split heavy services to dedicated clusters</td></tr>
+        <tr><td><b>Cross-service joins</b></td><td><b>Forbidden.</b> Use APIs or events.</td></tr>
+        <tr><td><b>Migrations</b></td><td>Per service, in <code>db/&lt;service&gt;/migrations/</code>, run as k8s pre-deploy Job</td></tr>
+      </tbody>
+    </table>
+
+    <h3>12.2 Splitting later (no code changes)</h3>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+flowchart LR
+  classDef before fill:#1a2234,stroke:#243049,color:#8a98b3
+  classDef after fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+
+  subgraph BEFORE["P1 → P5: 1 cluster, 10 DBs"]
+    PG1[(PostgreSQL · single cluster<br/>lead_db, property_db, crm_db,<br/>visit_db, notif_db, ...)]:::before
+  end
+
+  subgraph AFTER["P6+: 3 clusters, same DBs"]
+    CORE[(core-cluster<br/>lead_db<br/>property_db<br/>crm_db)]:::after
+    OPS[(ops-cluster<br/>visit_db<br/>notif_db<br/>user_db<br/>media_db)]:::after
+    AI[(ai-cluster<br/>ai_db<br/>concierge_db<br/>analytics_db)]:::after
+  end
+
+  BEFORE -. pg_dump + restore<br/>+ update connection string .-> AFTER
+      </pre>
+      <div class="caption">Splitting is operations only. <b>Zero code changes</b> because services never knew their DBs were on the same cluster.</div>
+    </div>
+  </section>
+
+  <!-- ======== DEPLOYMENT ======== -->
+  <section id="deploy">
+    <h2>13 · Deployment Topology</h2>
+
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+flowchart TB
+  classDef edge fill:#1a2234,stroke:#c9a86a,color:#e6ecf5
+  classDef app fill:#1a2234,stroke:#6aa9ff,color:#e6ecf5
+  classDef data fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+  classDef ext fill:#0f1422,stroke:#8a98b3,color:#e6ecf5,stroke-dasharray:3 3
+
+  USER([Users · Buyers · Operators · Field])
+  CDN[CDN + WAF<br/>CloudFront / Cloudflare]:::edge
+
+  subgraph FE["Frontend Deployments"]
+    direction LR
+    NX[Next.js apps<br/>web-public · web-portal]:::app
+    SPA[React SPAs<br/>admin · marketing · field PWA · widget]:::app
+  end
+
+  GW[API Gateway<br/>Kong / Traefik / ALB]:::edge
+
+  subgraph K8S["Kubernetes Cluster"]
+    direction TB
+    BFFS[bffs/* · 3 deployments]:::app
+    SVCS[services/* · ~14 deployments<br/>HPA on RPS]:::app
+    AGNT[agents/* · ~8 deployments<br/>HPA on queue depth]:::app
+    WF[workflows/* · Temporal worker pool]:::app
+  end
+
+  subgraph DATA["Data Plane"]
+    direction LR
+    PG[(PostgreSQL Cluster<br/>~12 logical DBs)]:::data
+    REDIS[(Redis · cache + bus)]:::data
+    OBJ[(S3 Object Store<br/>media · documents)]:::data
+    WH[(Warehouse · OLAP)]:::data
+  end
+
+  USER --> CDN
+  CDN --> NX
+  CDN --> SPA
+  NX --> GW
+  SPA --> GW
+  GW --> BFFS
+  BFFS --> SVCS
+  SVCS <--> REDIS
+  AGNT <--> REDIS
+  SVCS --> PG
+  AGNT --> PG
+  WF --> PG
+  SVCS --> OBJ
+  AGNT --> OBJ
+  PG -. CDC .-> WH
+      </pre>
+    </div>
+
+    <h3>Per-service deployment artifact</h3>
+<pre>infra/helm/lead-service/
+├── Chart.yaml
+├── values.yaml                     <span style="color:var(--muted)">defaults</span>
+├── values.staging.yaml             <span style="color:var(--muted)">staging overrides</span>
+├── values.production.yaml          <span style="color:var(--muted)">production overrides</span>
+└── templates/
+    ├── deployment.yaml
+    ├── service.yaml
+    ├── hpa.yaml                    <span style="color:var(--muted)">horizontal pod autoscaler</span>
+    ├── pdb.yaml                    <span style="color:var(--muted)">pod disruption budget</span>
+    ├── servicemonitor.yaml         <span style="color:var(--muted)">Prometheus scrape</span>
+    ├── pre-deploy-job.yaml         <span style="color:var(--muted)">runs DB migration before rollout</span>
+    └── networkpolicy.yaml          <span style="color:var(--muted)">restrict who can talk to this service</span></pre>
+  </section>
+
+  <!-- ======== CI/CD ======== -->
+  <section id="cicd">
+    <h2>14 · CI/CD Pipeline</h2>
+
+    <h3>14.1 Turborepo affected detection</h3>
+<pre># .github/workflows/ci.yml (excerpt)
+- name: Determine affected
+  run: pnpm turbo run build test lint --filter=...[origin/main]</pre>
+    <p>Only packages whose source (or transitive dependency) changed are built and tested. Average PR runs 3–5 packages instead of 30+.</p>
+
+    <h3>14.2 Pipeline stages</h3>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+flowchart TB
+  classDef pr fill:#1a2234,stroke:#6aa9ff,color:#e6ecf5
+  classDef merge fill:#1a2234,stroke:#c9a86a,color:#e6ecf5
+  classDef prod fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+
+  PR[PR opened]:::pr
+  L[Lint · eslint, spectral on openapi]:::pr
+  TC[Typecheck · affected packages]:::pr
+  B[Build · affected packages]:::pr
+  UT[Unit tests]:::pr
+  CT[Contract tests · SDK vs mock]:::pr
+  IT[Integration tests · real Postgres]:::pr
+  BS[Bundle size check · apps]:::pr
+
+  M[merge to main]:::merge
+  D1[Build Docker images for affected services]:::merge
+  D2[Push to registry · tag with SHA]:::merge
+  D3[Update Helm values in infra/argocd/]:::merge
+  D4[Argo CD detects · rolls out]:::merge
+
+  PT[production tag]:::prod
+  P1[Promote staging image to production]:::prod
+  P2[Run DB migrations as pre-deploy Job]:::prod
+
+  PR --> L --> TC --> B --> UT --> CT --> IT --> BS
+  BS --> M --> D1 --> D2 --> D3 --> D4
+  D4 --> PT --> P1 --> P2
+      </pre>
+    </div>
+
+    <h3>14.3 Caching</h3>
+    <p>Turborepo's remote cache (Vercel-hosted or self-hosted Turborepo Remote Cache server) means second CI runs of the same code are seconds, not minutes.</p>
+  </section>
+
+  <!-- ======== SCALE ======== -->
+  <section id="scale">
+    <h2>15 · Scalability Path</h2>
+    <p>The structure scales without restructuring. What changes per stage:</p>
+    <table>
+      <thead><tr><th>Stage</th><th>Lead/day</th><th>What changes</th></tr></thead>
+      <tbody>
+        <tr><td><b>MVP (P1)</b></td><td>&lt;100</td><td>Single Postgres, single Redis, one k8s cluster, 3 nodes</td></tr>
+        <tr><td><b>Growth (P3)</b></td><td>100–1k</td><td>Add read replicas, scale services horizontally, add Kafka if Redis Streams strain</td></tr>
+        <tr><td><b>Scale (P5)</b></td><td>1k–10k</td><td>Split hot DBs (Lead, Property) to dedicated clusters; add caching layer</td></tr>
+        <tr><td><b>AI-scale (P6)</b></td><td>10k+</td><td>AI Gateway becomes bottleneck — aggressive caching, semantic dedup</td></tr>
+        <tr><td><b>Multi-region (P7)</b></td><td>any</td><td>DR region with read replicas; CDN already global</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ======== PHASE 7 ======== -->
+  <section id="p7">
+    <h2>16 · Phase 7 — Vertical OS Extraction</h2>
+    <p>The only meaningful restructure is a folder move (not a rewrite). Adding Insurance becomes <code>verticals/insurance/</code>.</p>
+    <div class="diagram-wrap">
+      <pre class="mermaid">
+flowchart LR
+  classDef before fill:#1a2234,stroke:#243049,color:#8a98b3
+  classDef core fill:#1a2234,stroke:#c9a86a,color:#e6ecf5
+  classDef vert fill:#1a2234,stroke:#6aa9ff,color:#e6ecf5
+  classDef tnt fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+
+  subgraph BEFORE["Before P7"]
+    B[realty-platform/<br/>apps/<br/>services/<br/>agents/<br/>packages/]:::before
+  end
+
+  subgraph AFTER["After P7 · insignia-platform/"]
+    direction TB
+    PC[platform-core/<br/>generic services<br/>service-kit · event-bus<br/>ai-gateway · design-system]:::core
+    V[verticals/<br/>real-estate/<br/>(future: insurance, healthcare)]:::vert
+    T[tenants/<br/>kiana/<br/>branding · prompts · integrations]:::tnt
+  end
+
+  BEFORE -. folder restructure .-> AFTER
+  PC --- V
+  V --- T
+      </pre>
+    </div>
+  </section>
+
+  <!-- ======== TECH STACK ======== -->
+  <section>
+    <h2>17 · Tech Stack Decisions</h2>
+    <table>
+      <thead><tr><th>Concern</th><th>Recommendation</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Monorepo tool</td><td>Turborepo + pnpm workspaces</td><td>Fastest, simplest, best caching</td></tr>
+        <tr><td>Service framework</td><td>Fastify</td><td>Lighter than NestJS, faster, plugin ecosystem</td></tr>
+        <tr><td>ORM / migrations</td><td>Drizzle</td><td>SQL-first, lightweight, generates TS types from schema</td></tr>
+        <tr><td>API style</td><td>OpenAPI 3.1 (REST)</td><td>Tooling maturity; gRPC for service-to-service later</td></tr>
+        <tr><td>Validation</td><td>Zod (shared with Fastify route schemas)</td><td>One source of truth for runtime + types</td></tr>
+        <tr><td>Event bus (P1–P3)</td><td>Redis Streams</td><td>Cheap, simple, sufficient for early phases</td></tr>
+        <tr><td>Event bus (P3+)</td><td>Kafka</td><td>When consumer count or throughput demands it</td></tr>
+        <tr><td>Workflow engine</td><td>Temporal</td><td>Durable, inspectable, retryable</td></tr>
+        <tr><td>AI provider</td><td>Provider-agnostic via AI Gateway</td><td>Avoid lock-in, central cost telemetry</td></tr>
+        <tr><td>Frontend SSR</td><td>Next.js 14 App Router</td><td>RSC + Server Actions reduce client JS</td></tr>
+        <tr><td>Frontend SPA</td><td>Vite + React 18</td><td>Fast dev loop, TanStack Query for server state</td></tr>
+        <tr><td>Mobile</td><td>React PWA (no native)</td><td>One codebase, installable, sufficient through P6</td></tr>
+        <tr><td>Testing</td><td>Vitest · Playwright · Testcontainers</td><td>Modern, fast, good DX</td></tr>
+        <tr><td>CI/CD</td><td>GitHub Actions + Argo CD</td><td>GitHub-native + GitOps for k8s</td></tr>
+        <tr><td>Compute</td><td>Kubernetes (EKS / GKE)</td><td>Scales long-term; ECS faster to start if k8s feels heavy</td></tr>
+        <tr><td>Observability</td><td>OpenTelemetry → Grafana / Datadog</td><td>Vendor-agnostic instrumentation</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ======== DECISIONS ======== -->
+  <section>
+    <h2>18 · Decisions: Now vs Defer</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="label">Decide now</div>
+        <ul class="check" style="margin-top:8px;font-size:13.5px">
+          <li>Monorepo (Turborepo + pnpm)</li>
+          <li>Folder layout above</li>
+          <li>One Postgres cluster, DB-per-service</li>
+          <li>Node.js + TypeScript + Fastify</li>
+          <li>Drizzle ORM</li>
+          <li>OpenAPI-first → generated SDK</li>
+          <li>Feature-flag tooling</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="label">Defer</div>
+        <ul class="x" style="margin-top:8px;font-size:13.5px">
+          <li>Kafka vs Redis Streams (start Redis, decide P3)</li>
+          <li>Vercel vs self-hosted Next.js (start Vercel)</li>
+          <li>Single vs multi-region (P7 concern)</li>
+          <li>Specific LLM provider</li>
+          <li>Service mesh (not needed until P5+)</li>
+          <li>Separate clusters per environment</li>
+          <li>Splitting SDK into multiple packages (defer until P4)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== OPEN QUESTIONS ======== -->
+  <section>
+    <h2>19 · Open Questions to Confirm</h2>
+    <ol style="color:#c8d1e3">
+      <li><b>Cloud provider</b> — AWS, GCP, or Azure? (Affects Terraform, managed services.)</li>
+      <li><b>Next.js hosting</b> — Vercel or self-hosted in Kubernetes?</li>
+      <li><b>ORM</b> — Drizzle or Prisma?</li>
+      <li><b>Service framework</b> — Fastify or NestJS?</li>
+      <li><b>Repo location</b> — GitHub, GitLab, or Bitbucket?</li>
+      <li><b>Compute</b> — Kubernetes from day one, or start on simpler (Fly.io / Render / ECS) and migrate?</li>
+    </ol>
+    <p>Once answered, the scaffolding (<code>pnpm-workspace.yaml</code>, <code>turbo.json</code>, app/service skeletons, Dockerfiles, Helm charts, GitHub Actions workflows) can be generated.</p>
+  </section>
+
+  <div class="footer">
+    <div>Project Structure · v1.0</div>
+    <div>Companion to <a href="Architecture.html" style="color:var(--accent)">Architecture.html</a> · <a href="PRD.md" style="color:var(--accent)">PRD.md</a></div>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#121826',
+      primaryColor: '#1a2234',
+      primaryTextColor: '#e6ecf5',
+      primaryBorderColor: '#c9a86a',
+      lineColor: '#8a98b3',
+      secondaryColor: '#16241c',
+      tertiaryColor: '#0f1422',
+      fontFamily: 'ui-sans-serif, -apple-system, "Segoe UI", Roboto'
+    },
+    flowchart: { curve: 'basis', useMaxWidth: true },
+    sequence: { useMaxWidth: true, wrap: true },
+    er: { useMaxWidth: true }
+  });
+</script>
+</body>
+</html>

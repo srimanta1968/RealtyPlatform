@@ -1,0 +1,39 @@
+{
+  "name": "@kiana/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared types, Zod schemas, event payloads, branded IDs — the upstream source of truth.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "import": "./dist/events/index.js"
+    },
+    "./services/*": {
+      "types": "./dist/services/*.d.ts",
+      "import": "./dist/services/*.js"
+    }
+  },
+  "files": ["dist", "openapi", "asyncapi"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "echo \"@kiana/contracts: no tests yet\"",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@kiana/config": "workspace:*",
+    "typescript": "^5.3.3"
+  }
+}

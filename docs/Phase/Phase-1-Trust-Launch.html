@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phase 1 — Trust Launch · Kiana Realty Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{--bg:#0b0f17;--panel:#121826;--panel-2:#1a2234;--line:#243049;--text:#e6ecf5;--muted:#8a98b3;--accent:#c9a86a;--accent-2:#6aa9ff;--green:#5dd39e;--red:#ff6b6b;--yellow:#f5c451;--code-bg:#0f1422;}
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;line-height:1.55}
+  .page{max-width:1180px;margin:0 auto;padding:48px 32px 96px}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line)}
+  .crumbs a:hover{color:var(--accent)}
+  header.cover{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:40px}
+  header.cover .eyebrow{color:var(--accent);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600}
+  header.cover h1{font-size:40px;line-height:1.15;margin:10px 0 8px;letter-spacing:-.02em}
+  header.cover .sub{color:var(--muted);font-size:16px;max-width:780px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;color:var(--muted);font-size:13px}
+  .meta b{color:var(--text)}
+  h2{font-size:24px;margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 10px}
+  h4{font-size:13px;margin:14px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}
+  p{color:#c8d1e3}
+  .grid{display:grid;gap:14px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:900px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}header.cover h1{font-size:30px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
+  .card .title{font-weight:600;margin:6px 0}
+  .card .body{color:var(--muted);font-size:13.5px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .pill.gold{color:var(--accent);border-color:rgba(201,168,106,.4)}
+  .pill.blue{color:var(--accent-2);border-color:rgba(106,169,255,.4)}
+  .pill.green{color:var(--green);border-color:rgba(93,211,158,.4)}
+  .pill.red{color:var(--red);border-color:rgba(255,107,107,.4)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.5px}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:12px}
+  .diagram-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto}
+  .caption{color:var(--muted);font-size:12.5px;margin-top:10px;text-align:center}
+  .nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .nav a{color:var(--muted);text-decoration:none;font-size:12px;border:1px solid var(--line);padding:5px 10px;border-radius:6px}
+  .nav a:hover{color:var(--text);border-color:var(--accent)}
+  .phasebar{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .phasebar a{flex:1;min-width:110px;text-align:center;padding:8px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--muted);font-size:12px}
+  .phasebar a.current{background:var(--panel-2);color:var(--accent);border-color:var(--accent)}
+  .phasebar a:hover{color:var(--text)}
+  .footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap}
+  ul{color:#c8d1e3}
+  .checklist li{list-style:none;padding-left:22px;position:relative;margin:6px 0}
+  .checklist li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="crumbs"><a href="../Architecture.html">Architecture</a> · <a href="../PRD.md">PRD</a> · Phase 1</div>
+  <header class="cover">
+    <div class="eyebrow">Phase 1 of 7 · Architecture Detail</div>
+    <h1>Trust Launch</h1>
+    <div class="sub">Brand credibility and zero lead leakage. Every website enquiry becomes a trackable lead record. No AI yet — just capture, visibility, and a premium feel.</div>
+    <div class="meta">
+      <div><b>Duration:</b> 6–8 weeks</div>
+      <div><b>Stack:</b> Next.js · React · PostgreSQL · Node/TS</div>
+      <div><b>Outcome:</b> Brand credibility + lead visibility</div>
+    </div>
+    <div class="phasebar">
+      <a href="Phase-1-Trust-Launch.html" class="current">P1 · Trust</a>
+      <a href="Phase-2-Operations-Backbone.html">P2 · Ops</a>
+      <a href="Phase-3-Growth-Engine.html">P3 · Growth</a>
+      <a href="Phase-4-Field-Intelligence.html">P4 · Field</a>
+      <a href="Phase-5-Premium-Experience.html">P5 · Premium</a>
+      <a href="Phase-6-AI-Native-Layer.html">P6 · AI</a>
+      <a href="Phase-7-Scale-Ownership.html">P7 · Scale</a>
+    </div>
+  </header>
+
+  <h2>1 · Phase Goal</h2>
+  <p>Establish the foundation: a trust-building public surface and a capture/visibility backbone. <b>No AI yet.</b> No clever workflows. Just <b>capture + visibility + premium feel</b>.</p>
+  <p><i>Success looks like: a leadership user can see, in one place, every enquiry from the last 24 hours, who owns it, and what stage it is in.</i></p>
+
+  <div class="grid cols-2">
+    <div class="card"><div class="label">In Scope</div><div class="title">Foundation Six</div><div class="body">Public website (Next.js), Lead Service, Property Service, CRM-lite, Notification, User/Role, admin cockpit (React).</div></div>
+    <div class="card"><div class="label">Out of Scope</div><div class="title">Deferred to later phases</div><div class="body">Visit scheduling (P2), Campaigns (P3), Field PWA (P4), Customer Portal (P5), all LLM agents (P3+).</div></div>
+  </div>
+
+  <h2>2 · Architecture View</h2>
+  <p>Six microservices. One PostgreSQL cluster with one logical database per service. Two frontends: Next.js for the public site, React SPA for the admin cockpit.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef new fill:#1a2234,stroke:#c9a86a,color:#e6ecf5,stroke-width:2px
+  classDef ext fill:#0f1422,stroke:#8a98b3,color:#e6ecf5,stroke-dasharray:3 3
+  classDef db fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+
+  WEB[Public Website<br/>Next.js · SSR/ISR]:::new
+  ADM[Admin Cockpit<br/>React SPA]:::new
+  BFF[Web BFF / API Gateway]:::new
+
+  L[Lead Service]:::new
+  P[Property Service]:::new
+  C[CRM-lite]:::new
+  N[Notification Service]:::new
+  U[User / Role]:::new
+
+  PG[(PostgreSQL · per-service DBs)]:::db
+  OBJ[(S3 · property media)]:::db
+
+  EMAIL[(Email · SES/SendGrid)]:::ext
+  SMS[(SMS · MSG91/Gupshup)]:::ext
+  WA[(WhatsApp · click-to-chat link)]:::ext
+
+  WEB --> BFF
+  ADM --> BFF
+  BFF --> L
+  BFF --> P
+  BFF --> C
+  BFF --> N
+  BFF --> U
+  L --> PG
+  P --> PG
+  P --> OBJ
+  C --> PG
+  N --> PG
+  U --> PG
+  N --> EMAIL
+  N --> SMS
+  WEB -. deep-link .-> WA
+    </pre>
+    <div class="caption">Phase 1 topology. Bold borders indicate net-new components for this phase.</div>
+  </div>
+
+  <h2>3 · Microservices Introduced</h2>
+  <table>
+    <thead><tr><th>Service</th><th>Responsibility</th><th>Database</th></tr></thead>
+    <tbody>
+      <tr><td><b>Lead</b></td><td>Lead CRUD, simple state machine, assignment, timeline</td><td><code>lead_db</code></td></tr>
+      <tr><td><b>Property</b></td><td>Inventory, media refs, publish flag</td><td><code>property_db</code></td></tr>
+      <tr><td><b>CRM-lite</b></td><td>Pipeline view; manual stage transitions</td><td><code>crm_db</code></td></tr>
+      <tr><td><b>Notification</b></td><td>Email + WhatsApp template send (basic)</td><td><code>notif_db</code></td></tr>
+      <tr><td><b>User / Role</b></td><td>OIDC login, roles, RBAC</td><td><code>user_db</code></td></tr>
+      <tr><td><b>Web BFF</b></td><td>Public website API + admin cockpit API aggregator</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Lead Service · APIs</h3>
+<pre>POST   /v1/leads                    Create lead (web, WA, manual)
+GET    /v1/leads                    List with filters (stage, owner, source)
+GET    /v1/leads/{id}               Detail + timeline
+PATCH  /v1/leads/{id}/stage         Move stage
+PATCH  /v1/leads/{id}/owner         Reassign
+POST   /v1/leads/{id}/notes         Append note
+GET    /v1/leads/{id}/timeline      Full event history</pre>
+
+  <h3>Property Service · APIs</h3>
+<pre>POST   /v1/properties               Create (admin)
+PATCH  /v1/properties/{id}          Update
+PATCH  /v1/properties/{id}/publish  Toggle publish
+GET    /v1/properties               Public list (filters: location, type, price)
+GET    /v1/properties/{id}          Public detail</pre>
+
+  <h2>4 · Data Model</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+erDiagram
+  USER ||--o{ LEAD : owns
+  LEAD ||--o{ LEAD_TIMELINE_EVENT : has
+  PROPERTY ||--o{ PROPERTY_MEDIA : has
+  LEAD }o--o| PROPERTY : interest
+
+  LEAD {
+    uuid id PK
+    string source
+    string name
+    string phone
+    string email
+    string location_interest
+    string budget_band
+    string stage
+    uuid owner_id FK
+    bool consent_marketing
+    timestamp created_at
+  }
+  LEAD_TIMELINE_EVENT {
+    uuid id PK
+    uuid lead_id FK
+    string type
+    json payload
+    string actor
+    timestamp at
+  }
+  PROPERTY {
+    uuid id PK
+    string title
+    string type
+    string location
+    int price_min
+    int price_max
+    string status
+    string slug
+  }
+  PROPERTY_MEDIA {
+    uuid id PK
+    uuid property_id FK
+    string url
+    string kind
+  }
+  USER {
+    uuid id PK
+    string name
+    string email
+    string role
+  }
+    </pre>
+  </div>
+
+  <h3>Lead State Machine</h3>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+stateDiagram-v2
+  [*] --> NEW
+  NEW --> QUALIFIED
+  QUALIFIED --> VISIT_SCHEDULED
+  VISIT_SCHEDULED --> VISITED
+  VISITED --> NEGOTIATION
+  NEGOTIATION --> CLOSED
+  NEGOTIATION --> NURTURE
+  VISITED --> NURTURE
+  NURTURE --> QUALIFIED
+    </pre>
+    <div class="caption">All transitions are <b>manual</b> in Phase 1. Phase 2 introduces enforced rules.</div>
+  </div>
+
+  <h2>5 · Event Stream (foundation)</h2>
+  <p>Even with no agents in Phase 1, events are emitted from day one so later phases plug in without retrofitting.</p>
+
+  <table>
+    <thead><tr><th>Event</th><th>Producer</th><th>Consumers (P1)</th></tr></thead>
+    <tbody>
+      <tr><td><code>lead.created</code></td><td>Lead</td><td>Notification (alert presales)</td></tr>
+      <tr><td><code>lead.stage_changed</code></td><td>Lead</td><td>Notification (templated)</td></tr>
+      <tr><td><code>lead.assigned</code></td><td>Lead</td><td>Notification (notify new owner)</td></tr>
+      <tr><td><code>property.published</code></td><td>Property</td><td>(none — future SEO/feed consumers)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Lead Capture Flow</h3>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant V as Visitor
+  participant W as Public Website (Next.js)
+  participant B as BFF
+  participant L as Lead Service
+  participant N as Notification
+  participant P as Presales
+  V->>W: Submit enquiry form
+  W->>B: Server Action (form data)
+  B->>L: POST /v1/leads
+  L-->>B: 201 Created
+  B-->>W: success
+  W-->>V: confirmation page
+  L->>N: lead.created
+  N->>P: Email + WA alert
+    </pre>
+  </div>
+
+  <h2>6 · Frontend Architecture</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <div class="label">Next.js · Public Site</div>
+      <div class="title">Marketing &amp; Discovery</div>
+      <div class="body">App Router. Server Components. ISR for property pages, revalidated on <code>property.published</code>. Server Actions submit forms directly to BFF. Edge runtime for fast first paint. SEO basics (meta, sitemap, schema.org).</div>
+    </div>
+    <div class="card">
+      <div class="label">React · Admin Cockpit</div>
+      <div class="title">Operator SPA</div>
+      <div class="body">Vite + React + TypeScript. TanStack Query for server state. TanStack Table for the lead inbox. Kanban view by stage. Role-aware route guards via User/Role service.</div>
+    </div>
+  </div>
+
+  <h2>7 · Customer-Facing Surface</h2>
+  <ul>
+    <li><b>Discovery pages:</b> Lonavala/Khandala, Alibaug, Karjat, Navi Mumbai/Panvel</li>
+    <li><b>Lifestyle filters:</b> Villas, Land, Retreats, Investments</li>
+    <li><b>Property detail:</b> high-res images, brochure download, map, CTAs</li>
+    <li><b>CTAs:</b> Book consultation · WhatsApp connect · Schedule visit (creates lead; scheduling deferred to Phase 2)</li>
+    <li>Page load &lt;2s P75; mobile-first</li>
+  </ul>
+
+  <h2>8 · Non-Functional Requirements</h2>
+  <table>
+    <thead><tr><th>Concern</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Lead capture latency</td><td>P99 &lt; 500ms</td></tr>
+      <tr><td>Public site load</td><td>P75 &lt; 2s</td></tr>
+      <tr><td>Availability (capture endpoints)</td><td>99.9%</td></tr>
+      <tr><td>Encryption</td><td>TLS 1.2+ in transit; AES-256 at rest</td></tr>
+      <tr><td>Audit</td><td>Every stage change and reassignment logged</td></tr>
+      <tr><td>Backup</td><td>Daily OLTP backup, point-in-time recovery</td></tr>
+    </tbody>
+  </table>
+
+  <h2>9 · Deliverables</h2>
+  <ul class="checklist">
+    <li>Public website (responsive, premium)</li>
+    <li>Admin cockpit (lead + property + user management)</li>
+    <li>Six microservices deployed</li>
+    <li>CI/CD pipeline + staging + prod environments</li>
+    <li>Observability baseline (logs, metrics, traces)</li>
+    <li>Runbook + on-call rotation</li>
+    <li>Staff training: presales (lead inbox), admin (property manager)</li>
+  </ul>
+
+  <h2>10 · Exit Criteria</h2>
+  <ul class="checklist">
+    <li>100% of website enquiries land as leads (verified via reconciliation for 7 days)</li>
+    <li>Median time from enquiry → first presales touch &lt;30 min during business hours</li>
+    <li>Zero lead loss across 14-day soak test</li>
+    <li>Leadership dashboard live (even if just lead-count widget)</li>
+    <li>All staff trained; &gt;90% logging into cockpit daily</li>
+  </ul>
+
+  <h2>11 · Risks</h2>
+  <table>
+    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Brand site overruns scope</td><td>Lock design system early; defer custom animations</td></tr>
+      <tr><td>Presales bypasses cockpit (uses WA directly)</td><td>Daily reconciliation report; gamify usage</td></tr>
+      <tr><td>Property data not ready</td><td>Acquisition team commitment; min 20 properties to launch</td></tr>
+      <tr><td>Staff resists CRM</td><td>Insignia ops co-pilot first 30 days</td></tr>
+    </tbody>
+  </table>
+
+  <h2>12 · Hand-off to Phase 2</h2>
+  <p>By end of Phase 1, the platform must produce a clean <code>lead.created</code> → <code>lead.stage_changed</code> event stream. Phase 2 builds the Visit Service and full CRM workflow on top of these events without modifying Lead or Property services. <a href="Phase-2-Operations-Backbone.html" style="color:var(--accent)">Continue to Phase 2 →</a></p>
+
+  <div class="footer">
+    <div>Phase 1 · Trust Launch · v1.0</div>
+    <div>Companion: <a href="../Architecture.html" style="color:var(--accent)">Architecture.html</a></div>
+  </div>
+</div>
+<script>
+  mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{darkMode:true,background:'#121826',primaryColor:'#1a2234',primaryTextColor:'#e6ecf5',primaryBorderColor:'#c9a86a',lineColor:'#8a98b3',secondaryColor:'#16241c',tertiaryColor:'#0f1422',fontFamily:'ui-sans-serif'},flowchart:{curve:'basis',useMaxWidth:true},sequence:{useMaxWidth:true,wrap:true},er:{useMaxWidth:true}});
+</script>
+</body>
+</html>

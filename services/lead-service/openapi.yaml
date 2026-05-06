@@ -1,0 +1,16 @@
+openapi: 3.1.0
+info:
+  title: Kiana Lead Service
+  version: 0.1.0
+  description: Leads, timeline, scores, qualification metadata. Owns lead_db. (Phase 1)
+servers:
+  - url: http://localhost:4011
+paths:
+  /api/leads/_status:
+    get:
+      operationId: leadServiceStatus
+      summary: Scaffold-only health echo (real lead routes land in Tasks 5-8)
+      tags: [meta]
+      responses:
+        '200':
+          description: OK

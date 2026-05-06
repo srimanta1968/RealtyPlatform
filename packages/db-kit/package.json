@@ -1,0 +1,35 @@
+{
+  "name": "@kiana/db-kit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Drizzle helpers, pg pool, transaction patterns, migration runner.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "echo \"@kiana/db-kit: no tests yet\"",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.30.0",
+    "pg": "^8.11.3",
+    "postgres": "^3.4.4"
+  },
+  "devDependencies": {
+    "@kiana/config": "workspace:*",
+    "@types/pg": "^8.10.9",
+    "drizzle-kit": "^0.20.14",
+    "typescript": "^5.3.3"
+  }
+}

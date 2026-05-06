@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phase 2 — Operations Backbone · Kiana Realty Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{--bg:#0b0f17;--panel:#121826;--panel-2:#1a2234;--line:#243049;--text:#e6ecf5;--muted:#8a98b3;--accent:#c9a86a;--accent-2:#6aa9ff;--green:#5dd39e;--red:#ff6b6b;--yellow:#f5c451;--code-bg:#0f1422;}
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;line-height:1.55}
+  .page{max-width:1180px;margin:0 auto;padding:48px 32px 96px}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line)}
+  .crumbs a:hover{color:var(--accent)}
+  header.cover{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:40px}
+  header.cover .eyebrow{color:var(--accent);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600}
+  header.cover h1{font-size:40px;line-height:1.15;margin:10px 0 8px;letter-spacing:-.02em}
+  header.cover .sub{color:var(--muted);font-size:16px;max-width:780px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;color:var(--muted);font-size:13px}
+  .meta b{color:var(--text)}
+  h2{font-size:24px;margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 10px}
+  h4{font-size:13px;margin:14px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}
+  p{color:#c8d1e3}
+  .grid{display:grid;gap:14px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:900px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}header.cover h1{font-size:30px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
+  .card .title{font-weight:600;margin:6px 0}
+  .card .body{color:var(--muted);font-size:13.5px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .pill.gold{color:var(--accent);border-color:rgba(201,168,106,.4)}
+  .pill.blue{color:var(--accent-2);border-color:rgba(106,169,255,.4)}
+  .pill.green{color:var(--green);border-color:rgba(93,211,158,.4)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.5px}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:12px}
+  .diagram-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto}
+  .caption{color:var(--muted);font-size:12.5px;margin-top:10px;text-align:center}
+  .phasebar{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .phasebar a{flex:1;min-width:110px;text-align:center;padding:8px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--muted);font-size:12px}
+  .phasebar a.current{background:var(--panel-2);color:var(--accent);border-color:var(--accent)}
+  .phasebar a:hover{color:var(--text)}
+  .footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap}
+  ul{color:#c8d1e3}
+  .checklist li{list-style:none;padding-left:22px;position:relative;margin:6px 0}
+  .checklist li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="crumbs"><a href="../Architecture.html">Architecture</a> · <a href="../PRD.md">PRD</a> · Phase 2</div>
+  <header class="cover">
+    <div class="eyebrow">Phase 2 of 7 · Architecture Detail</div>
+    <h1>Operations Backbone</h1>
+    <div class="sub">Process discipline. The lead-to-visit-to-follow-up journey runs on the system, not human memory. Every visit has an outcome. Every lead has a next action.</div>
+    <div class="meta">
+      <div><b>Duration:</b> 6–8 weeks</div>
+      <div><b>Adds:</b> Visit · Analytics · Temporal · Event Bus</div>
+      <div><b>Outcome:</b> Process discipline</div>
+    </div>
+    <div class="phasebar">
+      <a href="Phase-1-Trust-Launch.html">P1 · Trust</a>
+      <a href="Phase-2-Operations-Backbone.html" class="current">P2 · Ops</a>
+      <a href="Phase-3-Growth-Engine.html">P3 · Growth</a>
+      <a href="Phase-4-Field-Intelligence.html">P4 · Field</a>
+      <a href="Phase-5-Premium-Experience.html">P5 · Premium</a>
+      <a href="Phase-6-AI-Native-Layer.html">P6 · AI</a>
+      <a href="Phase-7-Scale-Ownership.html">P7 · Scale</a>
+    </div>
+  </header>
+
+  <h2>1 · Phase Goal</h2>
+  <p>Phase 1 captured leads. Phase 2 makes the <b>operational machine</b> real: pipeline stages enforced by workflow, visits scheduled and executed in-system, tasks generated automatically (rule-based), basic analytics so leadership answers "how are we doing?" without asking anyone.</p>
+
+  <div class="grid cols-2">
+    <div class="card"><div class="label">In Scope</div><div class="title">Operational Backbone</div><div class="body">Visit Service · full CRM · Analytics · Notification expansion · WhatsApp Business API · rule-based Next-Best-Action · Temporal · formal event bus.</div></div>
+    <div class="card"><div class="label">Out of Scope</div><div class="title">Deferred</div><div class="body">Campaigns (P3) · Field PWA (P4) · LLM agents (P3+) · Customer Portal (P5).</div></div>
+  </div>
+
+  <h2>2 · Architecture View</h2>
+  <p>Phase 2 introduces two infrastructure pillars — <b>Temporal</b> for long-running workflows, and a formal <b>event bus</b> (Redis Streams) — plus three new services.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef new fill:#1a2234,stroke:#c9a86a,color:#e6ecf5,stroke-width:2px
+  classDef existing fill:#1a2234,stroke:#243049,color:#8a98b3
+  classDef bus fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+  classDef ext fill:#0f1422,stroke:#8a98b3,color:#e6ecf5,stroke-dasharray:3 3
+
+  ADM[Admin Cockpit · React]:::existing
+  WEB[Public Website · Next.js]:::existing
+  BFF[BFF / API Gateway]:::existing
+
+  L[Lead Service]:::existing
+  P[Property Service]:::existing
+  C[CRM Service · upgraded]:::new
+  V[Visit Service · NEW]:::new
+  A[Analytics Service · NEW]:::new
+  N[Notification · expanded]:::new
+  U[User / Role]:::existing
+
+  BUS{{Event Bus · Redis Streams}}:::bus
+  T{{Temporal · workflows}}:::bus
+
+  PG[(PostgreSQL · per service)]:::existing
+  WH[(Warehouse · OLAP)]:::new
+
+  WA[(WhatsApp Business API)]:::ext
+  EM[(Email)]:::ext
+  SM[(SMS)]:::ext
+  GC[(Google Calendar)]:::ext
+
+  ADM --> BFF
+  WEB --> BFF
+  BFF --> L
+  BFF --> P
+  BFF --> C
+  BFF --> V
+  BFF --> A
+  L --> BUS
+  C --> BUS
+  V --> BUS
+  P --> BUS
+  BUS --> N
+  BUS --> A
+  BUS --> T
+  T --> V
+  T --> C
+  T --> N
+  V --> GC
+  N --> WA
+  N --> EM
+  N --> SM
+  L --> PG
+  C --> PG
+  V --> PG
+  A --> PG
+  PG -. CDC .-> WH
+    </pre>
+    <div class="caption">Phase 2 topology. Bold borders indicate net-new or upgraded components.</div>
+  </div>
+
+  <h2>3 · Microservices Added / Upgraded</h2>
+  <table>
+    <thead><tr><th>Service</th><th>Status</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><b>CRM / Workflow</b></td><td><span class="pill gold">UPGRADE</span></td><td>From lite to full pipeline + task engine + SLAs</td></tr>
+      <tr><td><b>Visit</b></td><td><span class="pill green">NEW</span></td><td>Scheduling, assignment, lifecycle, outcomes</td></tr>
+      <tr><td><b>Analytics</b></td><td><span class="pill green">NEW</span></td><td>Funnel, conversion, source attribution</td></tr>
+      <tr><td><b>Notification</b></td><td><span class="pill blue">EXTEND</span></td><td>Reminder scheduling, SLA breach alerts, WA Business API</td></tr>
+      <tr><td><b>Temporal</b></td><td><span class="pill green">NEW (infra)</span></td><td>Long-running, retryable workflows</td></tr>
+      <tr><td><b>Event Bus</b></td><td><span class="pill green">NEW (infra)</span></td><td>Redis Streams; Kafka migration path</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Visit Service · APIs</h3>
+<pre>POST   /v1/visits                   Create visit (lead, property, slot, agent)
+GET    /v1/visits?date=&amp;agent=      Day plan
+PATCH  /v1/visits/{id}/confirm      Customer confirmed
+PATCH  /v1/visits/{id}/start        Field check-in
+PATCH  /v1/visits/{id}/complete     Outcome + notes
+PATCH  /v1/visits/{id}/cancel       Cancel with reason
+GET    /v1/availability?agent=&amp;date=</pre>
+
+  <h3>CRM Service · APIs (additions)</h3>
+<pre>GET    /v1/pipeline                 Aggregate by stage with counts
+POST   /v1/tasks                    Create task (manual or system)
+GET    /v1/tasks?owner=&amp;due=        Task inbox
+PATCH  /v1/tasks/{id}/complete      Close task
+POST   /v1/leads/{id}/follow-up     Schedule follow-up
+GET    /v1/sla/breaches             SLA breach report</pre>
+
+  <h2>4 · Data Model Additions</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+erDiagram
+  LEAD ||--o{ VISIT : has
+  LEAD ||--o{ TASK : owns
+  PROPERTY ||--o{ VISIT : visited
+  USER ||--o{ VISIT : conducts
+  USER ||--o{ TASK : assigned
+
+  VISIT {
+    uuid id PK
+    uuid lead_id FK
+    uuid property_id FK
+    timestamp slot_start
+    timestamp slot_end
+    uuid agent_id FK
+    string status
+    string outcome
+    text notes
+  }
+  TASK {
+    uuid id PK
+    uuid lead_id FK
+    uuid visit_id FK
+    uuid owner_id FK
+    string type
+    timestamp due_at
+    timestamp sla_at
+    string status
+    string source
+  }
+  SLA_POLICY {
+    uuid id PK
+    string stage
+    int max_age_hours
+    string escalation_role
+  }
+    </pre>
+  </div>
+
+  <h2>5 · Visit Lifecycle Workflow (Temporal)</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart LR
+  S[scheduled] --> CONF[send confirmation]
+  CONF --> R24[reminder T-24h]
+  R24 --> R2[reminder T-2h]
+  R2 --> CHECK{outcome}
+  CHECK -->|completed| CAP[trigger outcome capture task]
+  CHECK -->|no_show| RES[create reschedule task]
+  CHECK -->|cancelled| REENG[create re-engagement task]
+  CAP --> END[end]
+  RES --> END
+  REENG --> END
+    </pre>
+  </div>
+
+  <h3>Lead Nurture Cadence (rule-based NBA)</h3>
+<pre>on stage = QUALIFIED + no activity for 48h → create "follow-up call" task
+on stage = VISITED + no follow-up in 24h → escalate to lead owner manager
+on stage = NEGOTIATION + no movement for 5d → leadership digest</pre>
+  <p class="muted" style="font-size:13px">Rules live in a versioned config inside CRM Service. Phase 6 replaces with an LLM agent.</p>
+
+  <h2>6 · Event Catalogue (additions)</h2>
+  <table>
+    <thead><tr><th>Event</th><th>Producer</th><th>Consumers</th></tr></thead>
+    <tbody>
+      <tr><td><code>visit.scheduled</code></td><td>Visit</td><td>Notification, Temporal, Analytics</td></tr>
+      <tr><td><code>visit.confirmed</code></td><td>Visit</td><td>Notification (reminder cadence)</td></tr>
+      <tr><td><code>visit.completed</code></td><td>Visit</td><td>CRM (auto stage), Analytics</td></tr>
+      <tr><td><code>visit.cancelled</code></td><td>Visit</td><td>CRM (re-schedule task), Analytics</td></tr>
+      <tr><td><code>task.created</code></td><td>CRM</td><td>Notification (assign), Analytics</td></tr>
+      <tr><td><code>task.sla_breached</code></td><td>CRM</td><td>Notification (escalate), Analytics</td></tr>
+      <tr><td><code>lead.inactive</code></td><td>CRM (scheduled)</td><td>NBA rules</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Visit Lifecycle Sequence</h3>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant O as Operator (Cockpit)
+  participant V as Visit Service
+  participant B as Event Bus
+  participant T as Temporal
+  participant N as Notification
+  participant C as CRM
+  O->>V: POST /v1/visits
+  V->>B: visit.scheduled
+  B-->>T: start visit lifecycle workflow
+  B-->>N: send confirmation
+  T->>N: T-24h reminder
+  T->>N: T-2h reminder
+  O->>V: PATCH /complete (outcome)
+  V->>B: visit.completed
+  B-->>C: auto stage move
+  B-->>N: thank-you message
+    </pre>
+  </div>
+
+  <h2>7 · Day-1 Dashboards</h2>
+  <table>
+    <thead><tr><th>Dashboard</th><th>Audience</th><th>Metrics</th></tr></thead>
+    <tbody>
+      <tr><td>Leadership Funnel</td><td>CEO / Head of Sales</td><td>Lead → Qualified → Visit → Closed counts + conversion rates</td></tr>
+      <tr><td>Source Attribution</td><td>Marketing</td><td>Leads by source, qualified rate per source</td></tr>
+      <tr><td>Agent Performance</td><td>Ops Manager</td><td>Visits/agent, completion rate, outcome quality</td></tr>
+      <tr><td>SLA Health</td><td>Ops Manager</td><td>Open tasks, breached SLAs, avg follow-up time</td></tr>
+    </tbody>
+  </table>
+  <p>Data flow: services emit events → bus → consumer writes to OLAP store (BigQuery / ClickHouse) → dashboards (Metabase / Looker).</p>
+
+  <h2>8 · Non-Functional Requirements</h2>
+  <table>
+    <thead><tr><th>Concern</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Event delivery</td><td>At-least-once; consumer idempotency required</td></tr>
+      <tr><td>Workflow durability</td><td>Resumable across restarts</td></tr>
+      <tr><td>Reminder accuracy</td><td>±5 minutes of scheduled time</td></tr>
+      <tr><td>Dashboard freshness</td><td>&lt;5 min from source event</td></tr>
+      <tr><td>Backfill window</td><td>24h tolerated</td></tr>
+    </tbody>
+  </table>
+
+  <h2>9 · Deliverables</h2>
+  <ul class="checklist">
+    <li>Visit Service deployed</li>
+    <li>CRM Service upgraded with task engine + SLA policies</li>
+    <li>Analytics Service + Day-1 dashboards live</li>
+    <li>WhatsApp Business API integration certified (templates approved)</li>
+    <li>Temporal cluster + event bus operational</li>
+    <li>Runbook updated; SLO targets published per service</li>
+    <li>Staff training: visit scheduling, task inbox, outcome capture</li>
+  </ul>
+
+  <h2>10 · Exit Criteria</h2>
+  <ul class="checklist">
+    <li>≥95% of scheduled visits have a recorded outcome within 24h</li>
+    <li>≥80% of qualified leads have an open task during business hours</li>
+    <li>Leadership funnel dashboard adopted as the weekly review artifact</li>
+    <li>Median follow-up time from enquiry: &lt;4h</li>
+    <li>SLA breach rate &lt;10% in steady state</li>
+  </ul>
+
+  <h2>11 · Risks</h2>
+  <table>
+    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Workflow engine learning curve</td><td>Start with 2 workflows only; expand after stable</td></tr>
+      <tr><td>WhatsApp template rejection</td><td>Submit Week 1; email fallback</td></tr>
+      <tr><td>Agents skip outcome capture</td><td>Field UX in Phase 4; end-of-day sweep meanwhile</td></tr>
+      <tr><td>Dashboard misinterpretation</td><td>Metric definition documented inline</td></tr>
+    </tbody>
+  </table>
+
+  <h2>12 · Hand-off to Phase 3</h2>
+  <p>By end of Phase 2 the system has clean <b>funnel data</b> and <b>engagement signal</b>. Phase 3 layers Campaign Service on top of this signal to drive proactive outreach. <a href="Phase-3-Growth-Engine.html" style="color:var(--accent)">Continue to Phase 3 →</a></p>
+
+  <div class="footer">
+    <div>Phase 2 · Operations Backbone · v1.0</div>
+    <div>Companion: <a href="../Architecture.html" style="color:var(--accent)">Architecture.html</a></div>
+  </div>
+</div>
+<script>
+  mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{darkMode:true,background:'#121826',primaryColor:'#1a2234',primaryTextColor:'#e6ecf5',primaryBorderColor:'#c9a86a',lineColor:'#8a98b3',secondaryColor:'#16241c',tertiaryColor:'#0f1422',fontFamily:'ui-sans-serif'},flowchart:{curve:'basis',useMaxWidth:true},sequence:{useMaxWidth:true,wrap:true},er:{useMaxWidth:true}});
+</script>
+</body>
+</html>

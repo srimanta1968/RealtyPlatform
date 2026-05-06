@@ -1,0 +1,27 @@
+{
+  "1c9d9f65-bfe5-49a6-9862-34c59652ddf3": {
+    "projectId": "1c9d9f65-bfe5-49a6-9862-34c59652ddf3",
+    "projectName": "RealtyPlatform",
+    "projectPath": "/c/Users/srima/projex_verticals/RealtyPlatform",
+    "workspacePath": "/c/Users/srima/projex_verticals/RealtyPlatform",
+    "containerPath": "/projects/additional1",
+    "databaseName": "kiana_realty_growth_platform_db",
+    "databaseType": "postgresql",
+    "databaseConfig": {
+      "enabled": true,
+      "type": "postgresql",
+      "host": "host.docker.internal",
+      "port": 5432,
+      "database": "kiana_realty_growth_platform_db",
+      "username": "postgres",
+      "password": "postgres"
+    },
+    "apiKey": "dmjeiseG/6NKmCvpw2xAdlSZG32lAXMN/WFQ++BZxyE5Bk+P1wBBU3ei4f5AU2tSK9CnhSkVE2ZwKgU94Lmb/V5Wb8BPjqAErEMwDUWqpAE6hI9NfIhw9cA2jR37AKNZMiwhR78MQxIK7tQsJU0XVBtAHclg44wJYUPiC35/SgXROte1uQfvj/AuPbrxajKsFfPifzyF3ER/Dfmblg==",
+    "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+    "registeredAt": "2026-05-06T00:27:00.921043Z",
+    "lastSeen": "2026-05-06T00:27:00.921064Z",
+    "status": "active",
+    "isOwner": false,
+    "schemaSyncEnabled": true
+  }
+}

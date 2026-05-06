@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phase 4 — Field Intelligence · Kiana Realty Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{--bg:#0b0f17;--panel:#121826;--panel-2:#1a2234;--line:#243049;--text:#e6ecf5;--muted:#8a98b3;--accent:#c9a86a;--accent-2:#6aa9ff;--green:#5dd39e;--red:#ff6b6b;--yellow:#f5c451;--code-bg:#0f1422;}
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;line-height:1.55}
+  .page{max-width:1180px;margin:0 auto;padding:48px 32px 96px}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line)}
+  .crumbs a:hover{color:var(--accent)}
+  header.cover{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:40px}
+  header.cover .eyebrow{color:var(--accent);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600}
+  header.cover h1{font-size:40px;line-height:1.15;margin:10px 0 8px;letter-spacing:-.02em}
+  header.cover .sub{color:var(--muted);font-size:16px;max-width:780px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;color:var(--muted);font-size:13px}
+  .meta b{color:var(--text)}
+  h2{font-size:24px;margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 10px}
+  h4{font-size:13px;margin:14px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}
+  p{color:#c8d1e3}
+  .grid{display:grid;gap:14px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:900px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}header.cover h1{font-size:30px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
+  .card .title{font-weight:600;margin:6px 0}
+  .card .body{color:var(--muted);font-size:13.5px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .pill.gold{color:var(--accent);border-color:rgba(201,168,106,.4)}
+  .pill.blue{color:var(--accent-2);border-color:rgba(106,169,255,.4)}
+  .pill.green{color:var(--green);border-color:rgba(93,211,158,.4)}
+  .pill.red{color:var(--red);border-color:rgba(255,107,107,.4)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.5px}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:12px}
+  .diagram-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto}
+  .caption{color:var(--muted);font-size:12.5px;margin-top:10px;text-align:center}
+  .phasebar{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .phasebar a{flex:1;min-width:110px;text-align:center;padding:8px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--muted);font-size:12px}
+  .phasebar a.current{background:var(--panel-2);color:var(--accent);border-color:var(--accent)}
+  .phasebar a:hover{color:var(--text)}
+  .footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap}
+  ul{color:#c8d1e3}
+  .checklist li{list-style:none;padding-left:22px;position:relative;margin:6px 0}
+  .checklist li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+  .agent-card{background:linear-gradient(180deg,#1a2234,#161e2e);border:1px solid rgba(201,168,106,.4);border-radius:12px;padding:16px}
+  .agent-card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="crumbs"><a href="../Architecture.html">Architecture</a> · <a href="../PRD.md">PRD</a> · Phase 4</div>
+  <header class="cover">
+    <div class="eyebrow">Phase 4 of 7 · Architecture Detail</div>
+    <h1>Field Intelligence</h1>
+    <div class="sub">Put the system in the field agent's pocket — and make every visit smarter than the last. Solves the "Karjat enquiry → Lonavala villa" problem.</div>
+    <div class="meta">
+      <div><b>Duration:</b> 6–8 weeks</div>
+      <div><b>Adds:</b> Field PWA · Media expansion · Matching + Summary agents</div>
+      <div><b>Outcome:</b> Improved field efficiency</div>
+    </div>
+    <div class="phasebar">
+      <a href="Phase-1-Trust-Launch.html">P1 · Trust</a>
+      <a href="Phase-2-Operations-Backbone.html">P2 · Ops</a>
+      <a href="Phase-3-Growth-Engine.html">P3 · Growth</a>
+      <a href="Phase-4-Field-Intelligence.html" class="current">P4 · Field</a>
+      <a href="Phase-5-Premium-Experience.html">P5 · Premium</a>
+      <a href="Phase-6-AI-Native-Layer.html">P6 · AI</a>
+      <a href="Phase-7-Scale-Ownership.html">P7 · Scale</a>
+    </div>
+  </header>
+
+  <h2>1 · Phase Goal</h2>
+  <p>Phases 1–3 built the back office. Phase 4 closes the loop on the <b>moment of truth</b> — the site visit. Field agents arrive prepared, capture rich outcomes effortlessly, and present intelligent alternatives on the spot. The system stops feeling like CRM and starts feeling like an <b>operating system</b>.</p>
+
+  <div class="grid cols-2">
+    <div class="card"><div class="label">In Scope</div><div class="title">Field-first capability</div><div class="body">Field App Backend (BFF), React PWA for agents, expanded Media Service, Property Matching Agent, Visit Summary Agent, property intake flow, offline-tolerant capture.</div></div>
+    <div class="card"><div class="label">Out of Scope</div><div class="title">Deferred</div><div class="body">Native iOS/Android apps (PWA suffices), Customer Portal (P5), Concierge (P6).</div></div>
+  </div>
+
+  <h2>2 · Architecture View</h2>
+  <p>A new mobile-optimized React PWA for field agents, backed by a dedicated Field BFF. Property Service gains a vector index (pgvector). Two new agents — <b>Property Matching</b> and <b>Visit Summary</b> — close the visit loop.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef new fill:#1a2234,stroke:#c9a86a,color:#e6ecf5,stroke-width:2px
+  classDef existing fill:#1a2234,stroke:#243049,color:#8a98b3
+  classDef agent fill:#1a2234,stroke:#c9a86a,color:#c9a86a,stroke-width:2px
+  classDef bus fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+  classDef ext fill:#0f1422,stroke:#8a98b3,color:#e6ecf5,stroke-dasharray:3 3
+  classDef db fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+
+  FIELD[Field App · React PWA · NEW]:::new
+  ADM[Admin Cockpit]:::existing
+  WEB[Public Site]:::existing
+  FBFF[Field BFF · NEW]:::new
+  BFF[Web/Admin BFF]:::existing
+
+  L[Lead]:::existing
+  P[Property · embeddings · NEW pgvector]:::new
+  V[Visit · expanded]:::new
+  ME[Media Service · expanded]:::new
+  N[Notification]:::existing
+  C[CRM]:::existing
+
+  BUS{{Event Bus}}:::bus
+  T{{Temporal}}:::bus
+
+  PMA((Property Matching Agent · vector + LLM)):::agent
+  VSA((Visit Summary Agent · Whisper + LLM)):::agent
+
+  PG[(PostgreSQL · pgvector enabled)]:::db
+  OBJ[(S3 Object Store · CDN)]:::db
+  LLM[(Claude · Whisper)]:::ext
+  MAPS[(Google Maps)]:::ext
+
+  FIELD --> FBFF
+  ADM --> BFF
+  WEB --> BFF
+  FBFF --> V
+  FBFF --> P
+  FBFF --> L
+  FBFF --> ME
+  FBFF --> PMA
+  FIELD --> MAPS
+  V --> BUS
+  ME --> BUS
+  P --> BUS
+  BUS --> VSA
+  BUS --> PMA
+  VSA --> V
+  VSA --> C
+  VSA --> LLM
+  PMA --> P
+  PMA --> LLM
+  P --> PG
+  V --> PG
+  ME --> OBJ
+  ME --> PG
+    </pre>
+    <div class="caption">Phase 4 topology. The Field BFF is dedicated so the mobile PWA is decoupled from the operator/web traffic.</div>
+  </div>
+
+  <h2>3 · Components Added</h2>
+  <table>
+    <thead><tr><th>Component</th><th>Status</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><b>Field App Backend</b></td><td><span class="pill green">NEW</span></td><td>Auth, day-plan, lead/property fetch, sync, upload signing</td></tr>
+      <tr><td><b>Field App (React PWA)</b></td><td><span class="pill green">NEW</span></td><td>Installable PWA · IndexedDB · service worker · offline queue</td></tr>
+      <tr><td><b>Media Service</b></td><td><span class="pill blue">EXTEND</span></td><td>Multipart upload, transcoding, thumbnails, CDN delivery</td></tr>
+      <tr><td><b>Property Service</b></td><td><span class="pill blue">EXTEND</span></td><td>Embeddings (pgvector), DRAFT intake pipeline</td></tr>
+      <tr><td><b>Visit Service</b></td><td><span class="pill blue">EXTEND</span></td><td>In-flow notes, voice memo refs, alternative-shown tracking</td></tr>
+      <tr><td><b>Property Matching Agent</b></td><td><span class="pill red">NEW</span></td><td>kNN over embeddings + rule re-rank + LLM reasoning</td></tr>
+      <tr><td><b>Visit Summary Agent</b></td><td><span class="pill red">NEW</span></td><td>Whisper transcription + LLM extraction</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Field App Backend · APIs</h3>
+<pre>GET    /v1/field/me/day-plan?date=          Today's visits + travel-optimized order
+GET    /v1/field/visits/{id}                Lead context + property pack + alternatives
+POST   /v1/field/visits/{id}/checkin        Geo-stamped check-in
+POST   /v1/field/visits/{id}/notes          Append text / voice ref
+POST   /v1/field/visits/{id}/media          Signed upload URL + linkage
+POST   /v1/field/visits/{id}/outcome        Structured outcome + free text
+GET    /v1/field/match?lead_id=             Alternatives from Matching Agent
+POST   /v1/field/properties/intake          New property captured in field (DRAFT)
+POST   /v1/field/sync                       Bulk sync queued offline operations</pre>
+
+  <h2>4 · Data Model Additions</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+erDiagram
+  VISIT ||--o{ VISIT_MEDIA : captures
+  VISIT ||--|| VISIT_OUTCOME : has
+  VISIT ||--o{ ALTERNATIVE_SHOWN : suggested
+  PROPERTY ||--o{ ALTERNATIVE_SHOWN : as_alternative
+  PROPERTY ||--|| PROPERTY_EMBEDDING : indexed_by
+
+  PROPERTY_EMBEDDING {
+    uuid property_id PK
+    vector embedding
+    string model_version
+    timestamp updated_at
+  }
+  VISIT_MEDIA {
+    uuid id PK
+    uuid visit_id FK
+    string type
+    uuid media_id FK
+    timestamp captured_at
+    point geo
+    string caption
+  }
+  VISIT_OUTCOME {
+    uuid visit_id PK
+    string sentiment
+    json objections
+    int interest_level
+    string next_step
+    string source
+    string agent_version
+  }
+  ALTERNATIVE_SHOWN {
+    uuid id PK
+    uuid visit_id FK
+    uuid suggested_property_id FK
+    string source
+    bool shown
+    string customer_reaction
+  }
+  OFFLINE_SYNC_OP {
+    uuid id PK
+    uuid agent_id FK
+    string op_type
+    json payload
+    timestamp client_ts
+    timestamp server_ts
+    string status
+  }
+    </pre>
+  </div>
+
+  <h2>5 · LLM Agents</h2>
+  <div class="grid cols-2">
+    <div class="agent-card">
+      <div class="label">Agent · Phase 4</div>
+      <h3 style="margin:6px 0">Property Matching</h3>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Trigger:</b> <code>lead.qualified</code>, <code>visit.outcome</code> (esp. "wants_alternative"), or <code>/field/match</code> API call.</p>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Logic:</b> kNN vector search over property embeddings → rule re-rank (budget fit, availability, drive-time) → optional LLM re-rank with reasoning.</p>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Output:</b> ranked list with <code>reason</code> per item shown in Field App.</p>
+    </div>
+    <div class="agent-card">
+      <div class="label">Agent · Phase 4</div>
+      <h3 style="margin:6px 0">Visit Summary</h3>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Trigger:</b> <code>visit.completed</code> + voice memo or notes ≥N chars.</p>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Logic:</b> Whisper transcribes voice → LLM extracts sentiment, objections, interest level, next step → writes structured outcome.</p>
+      <p style="font-size:13.5px;color:var(--muted)"><b>Guardrail:</b> never auto-closes a lead; agent confirms with one tap (flips source to HUMAN).</p>
+    </div>
+  </div>
+
+  <h2>6 · Field App Architecture</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef ui fill:#1a2234,stroke:#6aa9ff,color:#e6ecf5
+  classDef store fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+  classDef sw fill:#1a2234,stroke:#c9a86a,color:#c9a86a
+
+  UI[React UI · Day Plan · Capture]:::ui
+  SW[Service Worker · Network Strategy]:::sw
+  IDB[(IndexedDB · Day Plan Cache · Op Queue)]:::store
+  CACHE[(Cache API · Map Tiles · Property Images)]:::store
+  REC[MediaRecorder · Voice + Photo]:::ui
+  BG[Background Sync]:::sw
+  NET((Field BFF))
+
+  UI <--> SW
+  SW --> IDB
+  SW --> CACHE
+  UI --> REC
+  REC --> IDB
+  BG --> IDB
+  BG --> NET
+  SW --> NET
+    </pre>
+    <div class="caption">Offline-first PWA: every action queues to IndexedDB and syncs via Background Sync when connectivity returns.</div>
+  </div>
+
+  <h2>7 · Field Visit Flow</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant A as Field Agent (PWA)
+  participant FB as Field BFF
+  participant V as Visit Service
+  participant PMA as Matching Agent
+  participant ME as Media Service
+  participant VSA as Summary Agent
+  participant C as CRM
+  A->>FB: GET /day-plan (cached if offline)
+  A->>FB: PATCH /visits/{id}/checkin (geo)
+  FB->>V: update status
+  A->>FB: GET /match?lead_id
+  FB->>PMA: invoke
+  PMA-->>FB: ranked alternatives + reasons
+  FB-->>A: alternatives
+  A->>ME: upload photos / voice (signed URL)
+  A->>FB: POST /outcome (notes + media refs)
+  FB->>V: complete (visit.completed event)
+  V-->>VSA: deliver event
+  VSA->>VSA: transcribe + extract
+  VSA->>V: write structured outcome (DRAFT)
+  A->>V: confirm (one tap → HUMAN source)
+  V->>C: create next-best-action task
+    </pre>
+  </div>
+
+  <h2>8 · Property Acquisition Flow (NEW)</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart LR
+  F[Field agent finds property] --> I[Field intake form<br/>photos · geo · owner · price]
+  I --> D[Property Service · DRAFT]
+  D --> R[Acquisition team review]
+  R -->|enrich + tag| PUB[PUBLISHED]
+  R -->|reject| REJ[REJECTED w/ reason]
+  PUB --> EM((property.indexed)):::evt
+    </pre>
+  </div>
+
+  <h2>9 · Non-Functional Requirements</h2>
+  <table>
+    <thead><tr><th>Concern</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>PWA install</td><td>Initial bundle &lt;10MB; works on 3G</td></tr>
+      <tr><td>Offline tolerance</td><td>8h disconnection; conflict resolution last-write-wins with audit</td></tr>
+      <tr><td>Photo upload</td><td>Resumable multipart; on-device compression</td></tr>
+      <tr><td>Voice memo</td><td>Max 5min; transcript ready &lt;60s</td></tr>
+      <tr><td>Matching Agent</td><td>P95 &lt;2s</td></tr>
+      <tr><td>Summary Agent</td><td>End-to-end &lt;5min after visit completion</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10 · Deliverables</h2>
+  <ul class="checklist">
+    <li>Field App Backend deployed</li>
+    <li>React PWA installed by all field agents</li>
+    <li>Media Service handling property + visit assets at scale</li>
+    <li>Property Matching Agent in production with explainability</li>
+    <li>Visit Summary Agent producing structured outcomes</li>
+    <li>Property acquisition flow live; first 10 field-sourced properties published</li>
+    <li>Field agent training + on-site shadowing for 2 weeks</li>
+  </ul>
+
+  <h2>11 · Exit Criteria</h2>
+  <ul class="checklist">
+    <li>≥90% of completed visits have structured outcome within 1h</li>
+    <li>≥40% of "wants alternative" outcomes converted to a follow-up visit</li>
+    <li>Field agent NPS for the app ≥40</li>
+    <li>≥1 alternative property suggested in ≥70% of relevant visits</li>
+    <li>Acquisition team processes new field intake within 48h SLA</li>
+  </ul>
+
+  <h2>12 · Risks</h2>
+  <table>
+    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Field agents don't adopt the app</td><td>Co-design sessions; gamified leaderboard; ops shadows first 2 weeks</td></tr>
+      <tr><td>Connectivity in remote sites (Karjat hills)</td><td>Aggressive caching + offline queue + cached map tiles</td></tr>
+      <tr><td>Matching agent suggests irrelevant properties</td><td>Human override; reason shown; feedback loop</td></tr>
+      <tr><td>Voice transcription on Hindi/Marathi mix</td><td>Multilingual model; fallback to text capture</td></tr>
+      <tr><td>Photo storage cost spike</td><td>Compression + lifecycle policy (cold storage after 90d)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>13 · Hand-off to Phase 5</h2>
+  <p>Field intelligence closed the "moment of truth" loop. Phase 5 closes the <b>post-visit, pre-closure</b> loop with a Customer Portal so buyers can shortlist, compare, upload documents, and feel the premium experience the brand promises. <a href="Phase-5-Premium-Experience.html" style="color:var(--accent)">Continue to Phase 5 →</a></p>
+
+  <div class="footer">
+    <div>Phase 4 · Field Intelligence · v1.0</div>
+    <div>Companion: <a href="../Architecture.html" style="color:var(--accent)">Architecture.html</a></div>
+  </div>
+</div>
+<script>
+  mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{darkMode:true,background:'#121826',primaryColor:'#1a2234',primaryTextColor:'#e6ecf5',primaryBorderColor:'#c9a86a',lineColor:'#8a98b3',secondaryColor:'#16241c',tertiaryColor:'#0f1422',fontFamily:'ui-sans-serif'},flowchart:{curve:'basis',useMaxWidth:true},sequence:{useMaxWidth:true,wrap:true},er:{useMaxWidth:true}});
+</script>
+</body>
+</html>

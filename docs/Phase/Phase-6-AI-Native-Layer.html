@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phase 6 — AI-Native Layer · Kiana Realty Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root{--bg:#0b0f17;--panel:#121826;--panel-2:#1a2234;--line:#243049;--text:#e6ecf5;--muted:#8a98b3;--accent:#c9a86a;--accent-2:#6aa9ff;--green:#5dd39e;--red:#ff6b6b;--yellow:#f5c451;--code-bg:#0f1422;}
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;line-height:1.55}
+  .page{max-width:1180px;margin:0 auto;padding:48px 32px 96px}
+  .crumbs{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line)}
+  .crumbs a:hover{color:var(--accent)}
+  header.cover{border-bottom:1px solid var(--line);padding-bottom:32px;margin-bottom:40px}
+  header.cover .eyebrow{color:var(--accent);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600}
+  header.cover h1{font-size:40px;line-height:1.15;margin:10px 0 8px;letter-spacing:-.02em}
+  header.cover .sub{color:var(--muted);font-size:16px;max-width:780px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;color:var(--muted);font-size:13px}
+  .meta b{color:var(--text)}
+  h2{font-size:24px;margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 10px}
+  h4{font-size:13px;margin:14px 0 6px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}
+  p{color:#c8d1e3}
+  .grid{display:grid;gap:14px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:900px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}header.cover h1{font-size:30px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
+  .card .title{font-weight:600;margin:6px 0}
+  .card .body{color:var(--muted);font-size:13.5px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .pill.gold{color:var(--accent);border-color:rgba(201,168,106,.4)}
+  .pill.blue{color:var(--accent-2);border-color:rgba(106,169,255,.4)}
+  .pill.green{color:var(--green);border-color:rgba(93,211,158,.4)}
+  .pill.red{color:var(--red);border-color:rgba(255,107,107,.4)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.5px}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:12px}
+  .diagram-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto}
+  .caption{color:var(--muted);font-size:12.5px;margin-top:10px;text-align:center}
+  .phasebar{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .phasebar a{flex:1;min-width:110px;text-align:center;padding:8px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--muted);font-size:12px}
+  .phasebar a.current{background:var(--panel-2);color:var(--accent);border-color:var(--accent)}
+  .phasebar a:hover{color:var(--text)}
+  .footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap}
+  ul{color:#c8d1e3}
+  .checklist li{list-style:none;padding-left:22px;position:relative;margin:6px 0}
+  .checklist li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+  .agent-card{background:linear-gradient(180deg,#1a2234,#161e2e);border:1px solid rgba(201,168,106,.4);border-radius:12px;padding:16px}
+  .agent-card .label{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.14em}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="crumbs"><a href="../Architecture.html">Architecture</a> · <a href="../PRD.md">PRD</a> · Phase 6</div>
+  <header class="cover">
+    <div class="eyebrow">Phase 6 of 7 · Architecture Detail</div>
+    <h1>AI-Native Layer</h1>
+    <div class="sub">Productivity at scale — the system anticipates, drafts, and acts. Each presales person handles 3× the lead volume at higher quality. Every agent decision is explainable, overridable, auditable.</div>
+    <div class="meta">
+      <div><b>Duration:</b> 8–10 weeks</div>
+      <div><b>Adds:</b> AI Gateway · Concierge · Advanced Scoring · 4 LLM agents</div>
+      <div><b>Outcome:</b> Semi-autonomous revenue engine</div>
+    </div>
+    <div class="phasebar">
+      <a href="Phase-1-Trust-Launch.html">P1 · Trust</a>
+      <a href="Phase-2-Operations-Backbone.html">P2 · Ops</a>
+      <a href="Phase-3-Growth-Engine.html">P3 · Growth</a>
+      <a href="Phase-4-Field-Intelligence.html">P4 · Field</a>
+      <a href="Phase-5-Premium-Experience.html">P5 · Premium</a>
+      <a href="Phase-6-AI-Native-Layer.html" class="current">P6 · AI</a>
+      <a href="Phase-7-Scale-Ownership.html">P7 · Scale</a>
+    </div>
+  </header>
+
+  <h2>1 · Phase Goal</h2>
+  <p>Phases 1–5 built the <b>organism</b>. Phase 6 layers a full <b>AI cortex</b>: Concierge handles inbound 24/7, scoring becomes hybrid LLM+ML, Property Intelligence keeps inventory fresh, Campaign Copy drafts outreach, and NBA upgrades from rules to LLM. <b>No agent makes terminal decisions alone.</b></p>
+
+  <div class="grid cols-2">
+    <div class="card"><div class="label">In Scope</div><div class="title">Full AI cortex</div><div class="body">AI Gateway · Concierge Service · Agent Runtime · Advanced Lead Scoring · Property Intelligence · Campaign Copy · LLM-powered NBA · agent observability · review queues.</div></div>
+    <div class="card"><div class="label">Out of Scope</div><div class="title">Deferred</div><div class="body">Fully autonomous closure (humans always close) · outbound voice AI · generative property visualization.</div></div>
+  </div>
+
+  <h2>2 · Architecture View</h2>
+  <p>The <b>AI Gateway</b> is the single chokepoint for all model calls — provider-agnostic, with prompt registry, PII scrubbing, cost telemetry, and budgets. Agents run inside the <b>Agent Runtime</b>, subscribed to events, and act through the same APIs operators use.</p>
+
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+flowchart TB
+  classDef new fill:#1a2234,stroke:#c9a86a,color:#e6ecf5,stroke-width:2px
+  classDef existing fill:#1a2234,stroke:#243049,color:#8a98b3
+  classDef agent fill:#1a2234,stroke:#c9a86a,color:#c9a86a,stroke-width:2px
+  classDef bus fill:#16241c,stroke:#5dd39e,color:#e6ecf5
+  classDef ext fill:#0f1422,stroke:#8a98b3,color:#e6ecf5,stroke-dasharray:3 3
+  classDef gw fill:#1a2234,stroke:#6aa9ff,color:#6aa9ff,stroke-width:2px
+
+  WEB[Public + Portal · Next.js]:::existing
+  ADM[Admin Cockpit]:::existing
+  WID[Concierge Widget · NEW]:::new
+  WAH[(WhatsApp inbound)]:::ext
+
+  CON[Concierge Service · NEW]:::new
+  AR[Agent Runtime · NEW]:::new
+  AIGW[AI Gateway · NEW]:::gw
+
+  Q((Qualification)):::agent
+  S((Scoring v2 · LLM+ML)):::agent
+  M((Matching)):::agent
+  PI((Property Intelligence)):::agent
+  CC((Campaign Copy)):::agent
+  NBA((NBA · LLM)):::agent
+
+  L[Lead]:::existing
+  P[Property]:::existing
+  C[CRM]:::existing
+  V[Visit]:::existing
+  CAMP[Campaign]:::existing
+  N[Notification]:::existing
+  BUS{{Event Bus}}:::bus
+
+  LLM1[(Claude)]:::ext
+  LLM2[(OpenAI)]:::ext
+  WSP[(Whisper)]:::ext
+
+  WID --> CON
+  WAH --> CON
+  WEB --> CON
+  CON --> AR
+  CON --> P
+  CON --> V
+  CON --> L
+  CON --> C
+  ADM --> AR
+
+  L --> BUS
+  V --> BUS
+  P --> BUS
+  CAMP --> BUS
+  C --> BUS
+  BUS --> AR
+
+  AR --> Q
+  AR --> S
+  AR --> M
+  AR --> PI
+  AR --> CC
+  AR --> NBA
+  AR --> CON
+
+  Q --> AIGW
+  S --> AIGW
+  M --> AIGW
+  PI --> AIGW
+  CC --> AIGW
+  NBA --> AIGW
+  CON --> AIGW
+
+  AIGW --> LLM1
+  AIGW --> LLM2
+  AIGW --> WSP
+
+  Q --> L
+  S --> L
+  PI --> P
+  CC --> CAMP
+  NBA --> C
+  M --> P
+    </pre>
+    <div class="caption">All agents go through the AI Gateway. The Agent Runtime subscribes to events and dispatches the right agent.</div>
+  </div>
+
+  <h2>3 · Components Added</h2>
+  <table>
+    <thead><tr><th>Component</th><th>Status</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><b>AI Gateway</b></td><td><span class="pill green">NEW</span></td><td>Provider-agnostic LLM access · prompt registry · PII scrubbing · cost telemetry · failover</td></tr>
+      <tr><td><b>Concierge Service</b></td><td><span class="pill green">NEW</span></td><td>Web chat + WhatsApp inbound conversation orchestration</td></tr>
+      <tr><td><b>Agent Runtime</b></td><td><span class="pill green">NEW</span></td><td>Hosts agent code · event-subscribed</td></tr>
+      <tr><td><b>Concierge Widget</b></td><td><span class="pill green">NEW (React)</span></td><td>Embeddable chat for public site + portal</td></tr>
+      <tr><td><b>Lead Service</b></td><td><span class="pill blue">EXTEND</span></td><td>Score from agent · reasoning surfaced</td></tr>
+      <tr><td><b>Property Service</b></td><td><span class="pill blue">EXTEND</span></td><td>Accepts agent-suggested edits as DRAFTs</td></tr>
+      <tr><td><b>Campaign Service</b></td><td><span class="pill blue">EXTEND</span></td><td>Accepts agent-drafted copy as DRAFT variants</td></tr>
+    </tbody>
+  </table>
+
+  <h3>AI Gateway · APIs (internal)</h3>
+<pre>POST   /v1/ai/complete              { prompt_id, vars, context, route_hint }
+POST   /v1/ai/chat                  Multi-turn with state
+POST   /v1/ai/embed                 Batch embedding
+GET    /v1/ai/prompts/{id}          Versioned prompt template
+GET    /v1/ai/usage                 Per-agent cost &amp; latency</pre>
+
+  <p><b>Routing rules</b> per <code>route_hint</code>: <span class="pill gold">quality</span> → top-tier model · <span class="pill blue">latency</span> → fast small model · <span class="pill green">cost</span> → cheapest acceptable.</p>
+
+  <h3>Concierge Service · APIs</h3>
+<pre>POST   /v1/concierge/sessions                Open new chat
+POST   /v1/concierge/sessions/{id}/messages  Append user message
+GET    /v1/concierge/sessions/{id}           Transcript
+POST   /v1/concierge/sessions/{id}/handoff   Transfer to human (with summary)</pre>
+
+  <h2>4 · Data Model Additions</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+erDiagram
+  AGENT_INVOCATION ||--o| AGENT_REVIEW_ITEM : reviewed_by
+  CONCIERGE_SESSION ||--o{ CONCIERGE_MESSAGE : contains
+  CONCIERGE_SESSION ||--o| LEAD : produced
+
+  AGENT_INVOCATION {
+    uuid id PK
+    string agent_name
+    string agent_version
+    string prompt_id
+    string prompt_version
+    string input_hash
+    json output
+    float confidence
+    int cost_micro_usd
+    int tokens_in
+    int tokens_out
+    int latency_ms
+    string route
+    timestamp occurred_at
+    string related_entity_type
+    uuid related_entity_id
+  }
+  AGENT_REVIEW_ITEM {
+    uuid id PK
+    uuid agent_invocation_id FK
+    string status
+    uuid reviewer_id FK
+    text reviewer_note
+    timestamp reviewed_at
+  }
+  CONCIERGE_SESSION {
+    uuid id PK
+    string customer_phone
+    string customer_email
+    uuid lead_id FK
+    string channel
+    string state
+    timestamp opened_at
+    timestamp closed_at
+    uuid handoff_to_user_id FK
+  }
+  CONCIERGE_MESSAGE {
+    uuid id PK
+    uuid session_id FK
+    string role
+    text content
+    timestamp at
+  }
+    </pre>
+  </div>
+
+  <h2>5 · The Six Agents</h2>
+  <div class="grid cols-3">
+    <div class="agent-card">
+      <div class="label">P6 · NEW</div>
+      <h3 style="margin:6px 0">Concierge</h3>
+      <p style="font-size:13px;color:var(--muted)">24/7 web + WA. Cites Property facts only. Books slots via Visit availability. Hands off on low confidence or HNI signal.</p>
+    </div>
+    <div class="agent-card">
+      <div class="label">P6 · UPGRADE</div>
+      <h3 style="margin:6px 0">Advanced Scoring</h3>
+      <p style="font-size:13px;color:var(--muted)">Hybrid ML on structured features + LLM extraction from free-text. Replaces Phase 3 scorer.</p>
+    </div>
+    <div class="agent-card">
+      <div class="label">P6 · NEW</div>
+      <h3 style="margin:6px 0">Property Intelligence</h3>
+      <p style="font-size:13px;color:var(--muted)">Suggests description improvements, tags, stale-flag, price band hints. All DRAFTs requiring approval.</p>
+    </div>
+    <div class="agent-card">
+      <div class="label">P6 · NEW</div>
+      <h3 style="margin:6px 0">Campaign Copy</h3>
+      <p style="font-size:13px;color:var(--muted)">Drafts subjects + bodies per segment. Multiple variants for A/B. Marketer approves before send.</p>
+    </div>
+    <div class="agent-card">
+      <div class="label">P6 · UPGRADE</div>
+      <h3 style="margin:6px 0">Next-Best-Action (LLM)</h3>
+      <p style="font-size:13px;color:var(--muted)">Synthesizes lead history + recent context. Suggests one specific action with timing &amp; channel. Surfaces as task; never auto-executes.</p>
+    </div>
+    <div class="agent-card">
+      <div class="label">P3 · CONTINUES</div>
+      <h3 style="margin:6px 0">Qualification &amp; Matching</h3>
+      <p style="font-size:13px;color:var(--muted)">Continue from earlier phases. Now use AI Gateway routing. Costs and latency tracked alongside new agents.</p>
+    </div>
+  </div>
+
+  <h2>6 · Concierge Conversation Flow</h2>
+  <div class="diagram-wrap">
+    <pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant U as Visitor
+  participant W as Concierge Widget
+  participant CS as Concierge Service
+  participant AR as Agent Runtime
+  participant AI as AI Gateway
+  participant PR as Property Service
+  participant V as Visit Service
+  participant N as Notification
+  participant P as Presales
+  U->>W: opens chat
+  W->>CS: open session
+  loop conversation
+    U->>CS: message
+    CS->>AR: invoke concierge agent
+    AR->>AI: complete (route=quality)
+    AI-->>AR: response
+    AR->>PR: cite property facts
+    AR-->>CS: assistant message
+    CS-->>W: stream tokens
+  end
+  alt confidence high &amp; intent clear
+    AR->>V: book consultation slot
+    V-->>AR: confirmed
+    CS-->>U: "Visit booked Sat 11am"
+  else low confidence or HNI signal
+    CS->>N: page presales (with summary)
+    N-->>P: notify
+    P->>CS: take over
+    CS-->>U: "John from Kiana will continue"
+  end
+    </pre>
+  </div>
+
+  <h2>7 · Human-in-the-Loop Review</h2>
+  <table>
+    <thead><tr><th>Agent</th><th>Auto-apply threshold</th><th>Default reviewer</th></tr></thead>
+    <tbody>
+      <tr><td>Concierge</td><td>n/a (live conversation, handoff-on-low-confidence)</td><td>Presales</td></tr>
+      <tr><td>Scoring</td><td>Always auto-applies (low blast radius)</td><td>n/a</td></tr>
+      <tr><td>Property Intelligence</td><td>Never auto-applies</td><td>Acquisition lead</td></tr>
+      <tr><td>Campaign Copy</td><td>Never auto-applies</td><td>Marketing lead</td></tr>
+      <tr><td>NBA</td><td>Never auto-executes; surfaces as task</td><td>Lead owner</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8 · Agent Observability</h2>
+  <p>A dedicated <b>Agent Ops dashboard</b> tracks:</p>
+  <div class="grid cols-3">
+    <div class="card"><div class="label">Volume</div><div class="title">Invocations / day</div><div class="body">Per agent · per route hint · per provider</div></div>
+    <div class="card"><div class="label">Cost</div><div class="title">USD / day</div><div class="body">Per agent · monthly budget alert at 80%</div></div>
+    <div class="card"><div class="label">Latency</div><div class="title">P50 / P95 / P99</div><div class="body">Per agent · per provider</div></div>
+    <div class="card"><div class="label">Quality</div><div class="title">Override / reject rate</div><div class="body">Drift alert when override &gt; baseline + 3σ</div></div>
+    <div class="card"><div class="label">Confidence</div><div class="title">Distribution</div><div class="body">Per agent — flag bimodal distributions</div></div>
+    <div class="card"><div class="label">Failures</div><div class="title">Top failure modes</div><div class="body">Sampled, reviewed weekly by Agent Review Board</div></div>
+  </div>
+
+  <h2>9 · Prompt &amp; Model Governance</h2>
+  <ul>
+    <li>All prompts versioned in registry; rollouts gated</li>
+    <li>Model upgrades tested against golden set before promotion</li>
+    <li>Eval harness with offline regression suite per agent</li>
+    <li>Cost guardrails: per-agent monthly budget with alerts</li>
+    <li>Provider failover (primary → secondary) on API errors</li>
+    <li>PII scrubbing layer in AI Gateway before egress</li>
+  </ul>
+
+  <h2>10 · Non-Functional Requirements</h2>
+  <table>
+    <thead><tr><th>Concern</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Concierge response</td><td>P95 &lt;3s</td></tr>
+      <tr><td>NBA freshness</td><td>&lt;60s after triggering event</td></tr>
+      <tr><td>AI Gateway availability</td><td>99.9% with provider failover</td></tr>
+      <tr><td>Cost telemetry</td><td>Granular to agent + invocation</td></tr>
+      <tr><td>Reversibility</td><td>All agent decisions reversible within 7 days</td></tr>
+    </tbody>
+  </table>
+
+  <h2>11 · Deliverables</h2>
+  <ul class="checklist">
+    <li>AI Gateway in production with cost &amp; prompt registry</li>
+    <li>AI Concierge live on website + WhatsApp</li>
+    <li>Advanced Lead Scoring replacing rule-based scoring</li>
+    <li>Property Intelligence and Campaign Copy review queues operational</li>
+    <li>LLM Next-Best-Action surfacing in CRM cockpit</li>
+    <li>Agent Ops dashboard live; weekly review ritual established</li>
+    <li>Eval harness + golden sets per agent; CI gate before model upgrades</li>
+  </ul>
+
+  <h2>12 · Exit Criteria</h2>
+  <ul class="checklist">
+    <li>≥40% of inbound web/WA enquiries fully handled by Concierge</li>
+    <li>Concierge handoff context rated useful by presales in ≥85% of handoffs</li>
+    <li>Advanced scoring outperforms Phase 3 on closure prediction (offline eval)</li>
+    <li>Marketer-edit rate on Copy Agent drafts &lt;40%</li>
+    <li>NBA suggestion acceptance rate ≥50%</li>
+    <li>Agent monthly cost within budget; cost-per-qualified-lead trending down</li>
+  </ul>
+
+  <h2>13 · Risks</h2>
+  <table>
+    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Concierge gives wrong information</td><td>Strict citation to Property Service; never fabricate; handoff on uncertainty</td></tr>
+      <tr><td>LLM cost spike</td><td>Per-agent budgets · route_hint cost mode · aggressive caching</td></tr>
+      <tr><td>Provider outage</td><td>Multi-provider abstraction · degraded mode with rule-based fallbacks</td></tr>
+      <tr><td>"Talked to by AI" perception</td><td>Transparency · smooth handoff · humans primary for HNI</td></tr>
+      <tr><td>Drift in agent quality</td><td>Continuous eval · override rate monitoring · weekly review</td></tr>
+      <tr><td>Compliance (PII in prompts)</td><td>PII scrubbing in AI Gateway · provider DPA reviewed</td></tr>
+    </tbody>
+  </table>
+
+  <h2>14 · Hand-off to Phase 7</h2>
+  <p>By Phase 6 the platform is <b>AI-native</b>. Phase 7 productizes the operating model itself — training, governance, hybrid handover, and the playbook for replicating this OS into the next vertical. <a href="Phase-7-Scale-Ownership.html" style="color:var(--accent)">Continue to Phase 7 →</a></p>
+
+  <div class="footer">
+    <div>Phase 6 · AI-Native Layer · v1.0</div>
+    <div>Companion: <a href="../Architecture.html" style="color:var(--accent)">Architecture.html</a></div>
+  </div>
+</div>
+<script>
+  mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{darkMode:true,background:'#121826',primaryColor:'#1a2234',primaryTextColor:'#e6ecf5',primaryBorderColor:'#c9a86a',lineColor:'#8a98b3',secondaryColor:'#16241c',tertiaryColor:'#0f1422',fontFamily:'ui-sans-serif'},flowchart:{curve:'basis',useMaxWidth:true},sequence:{useMaxWidth:true,wrap:true},er:{useMaxWidth:true}});
+</script>
+</body>
+</html>
