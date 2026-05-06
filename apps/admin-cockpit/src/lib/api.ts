@@ -8,6 +8,7 @@ import {
   type StaleLeadsReport,
 } from '@kiana/sdk';
 import type {
+  LeadCreateRequest,
   LeadRecord,
   LeadSourceSummary,
   LeadStage,
@@ -28,6 +29,11 @@ export const workflowClient = new WorkflowClient(http);
 /** GET /api/leads — list every captured lead in creation-time order. */
 export async function listLeads(): Promise<LeadRecord[]> {
   return leadClient.list();
+}
+
+/** POST /api/leads — capture a new lead from operator-side input (walk-in, broker, etc.). */
+export async function createLead(input: LeadCreateRequest): Promise<LeadRecord> {
+  return leadClient.create(input);
 }
 
 /** GET /api/leads/:id — fetch a single captured lead. */

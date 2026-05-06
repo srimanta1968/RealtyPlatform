@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { Button } from '@kiana/design-system';
 import type { LeadRecord, LeadSource, LeadSourceSummary } from '@kiana/contracts';
 
 import { fetchLeadSources, listLeads } from '../lib/api.js';
@@ -75,11 +76,18 @@ export function LeadInboxPage(): JSX.Element {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Lead inbox</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          {leads.length} captured {leads.length === 1 ? 'lead' : 'leads'} · pipeline triage.
-        </p>
+      <header className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Lead inbox</h1>
+          <p className="mt-1 text-sm text-slate-600">
+            {leads.length} captured {leads.length === 1 ? 'lead' : 'leads'} · pipeline triage.
+          </p>
+        </div>
+        <Link to="/leads/new">
+          <Button type="button" size="sm">
+            + New lead
+          </Button>
+        </Link>
       </header>
 
       <div className="mb-6 flex flex-wrap gap-2">

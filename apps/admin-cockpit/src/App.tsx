@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppShell } from './components/AppShell.js';
 import { RequireAuth } from './components/RequireAuth.js';
+import { CreateLeadPage } from './pages/CreateLeadPage.js';
 import { DashboardPage } from './pages/DashboardPage.js';
 import { LeadDetailPage } from './pages/LeadDetailPage.js';
 import { LeadInboxPage } from './pages/LeadInboxPage.js';
@@ -23,6 +24,7 @@ export function App(): JSX.Element {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/leads" element={<LeadInboxPage />} />
+        <Route path="/leads/new" element={<CreateLeadPage />} />
         <Route path="/leads/:id" element={<LeadDetailPage />} />
         <Route path="/workflows" element={<WorkflowsPage />} />
       </Route>
