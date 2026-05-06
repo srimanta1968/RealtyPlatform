@@ -53,3 +53,31 @@ export const leadTimelineEvents = pgTable(
 
 export type LeadTimelineEventRow = typeof leadTimelineEvents.$inferSelect;
 export type LeadTimelineEventInsert = typeof leadTimelineEvents.$inferInsert;
+
+/**
+ * Append-only audit trail for every state-changing action on entities owned
+ * by lead-service. Phase-1 captures lead.stage_changed + lead.assigned;
+ * Phase-2+ services can write here too. Append-only is enforced by a
+ * Postgres trigger (see bootstrap.ts) — UPDATE / DELETE raise.
+ */
+export const auditLog = pgTable(
+  'audit_log',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    actorId: uuid('actor_id'),
+    action: varchar('action', { length: 100 }).notNull(),
+    entityType: varchar('entity_type', { length: 50 }).notNull(),
+    entityId: uuid('entity_id').notNull(),
+    before: jsonb('before'),
+    after: jsonb('after'),
+    requestId: varchar('request_id', { length: 100 }),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    entityIdx: index('audit_log_entity_idx').on(table.entityType, table.entityId),
+    occurredIdx: index('audit_log_occurred_idx').on(table.occurredAt),
+  }),
+);
+
+export type AuditLogRow = typeof auditLog.$inferSelect;
+export type AuditLogInsert = typeof auditLog.$inferInsert;

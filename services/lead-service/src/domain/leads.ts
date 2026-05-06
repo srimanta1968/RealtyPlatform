@@ -12,6 +12,13 @@ import {
 } from '@kiana/contracts';
 
 import type { LeadRepository } from '../infra/leadRepository.js';
+import type { AuditRepository } from '../infra/auditRepository.js';
+
+/** Captured at the route boundary and threaded through mutating domain calls. */
+export interface AuditContext {
+  actorId?: string | null;
+  requestId?: string | null;
+}
 
 export class LeadNotFoundError extends Error {
   constructor(id: string) {
@@ -62,6 +69,8 @@ function resolveWorkflow(slug?: string): WorkflowDefinition {
 
 export interface LeadDomainOptions {
   repository: LeadRepository;
+  /** When provided, mutating methods append an audit_log row on each detected change. */
+  audit?: AuditRepository;
 }
 
 export class LeadDomain {
@@ -124,12 +133,32 @@ export class LeadDomain {
    * the two), throws LeadNotFoundError when the id does not resolve. Free
    * transitions for now — workflow gates (e.g. "qualified → visit_scheduled
    * requires owner_id") land later.
+   *
+   * When the LeadDomain was constructed with an audit repository, every
+   * detected stage change appends a 'lead.stage_changed' row to audit_log.
    */
-  async updateLead(id: string, input: unknown): Promise<LeadRecord> {
+  async updateLead(
+    id: string,
+    input: unknown,
+    context: AuditContext = {},
+  ): Promise<LeadRecord> {
     const parsed = LeadUpdateRequestSchema.parse(input);
-    const lead = await this.options.repository.updateFields(id, parsed);
-    if (!lead) throw new LeadNotFoundError(id);
-    return lead;
+    const before = await this.options.repository.findById(id);
+    if (!before) throw new LeadNotFoundError(id);
+    const after = await this.options.repository.updateFields(id, parsed);
+    if (!after) throw new LeadNotFoundError(id);
+    if (this.options.audit && before.stage !== after.stage) {
+      await this.options.audit.record({
+        actorId: context.actorId,
+        action: 'lead.stage_changed',
+        entityType: 'lead',
+        entityId: id,
+        before: { stage: before.stage },
+        after: { stage: after.stage },
+        requestId: context.requestId,
+      });
+    }
+    return after;
   }
 
   /**
@@ -188,9 +217,14 @@ export class LeadDomain {
 
   /**
    * Persist the lead onto the next workflow step's stage. Refuses when the
-   * lead has already reached a terminal stage or the final step.
+   * lead has already reached a terminal stage or the final step. Same
+   * audit-on-stage-change behaviour as updateLead.
    */
-  async advanceWorkflow(id: string, slug?: string): Promise<WorkflowExecutionResult> {
+  async advanceWorkflow(
+    id: string,
+    slug?: string,
+    context: AuditContext = {},
+  ): Promise<WorkflowExecutionResult> {
     const lead = await this.options.repository.findById(id);
     if (!lead) throw new LeadNotFoundError(id);
     const workflow = resolveWorkflow(slug);
@@ -205,6 +239,17 @@ export class LeadDomain {
       stage: execution.next_step.stage,
     });
     if (!updated) throw new LeadNotFoundError(id);
+    if (this.options.audit) {
+      await this.options.audit.record({
+        actorId: context.actorId,
+        action: 'lead.stage_changed',
+        entityType: 'lead',
+        entityId: id,
+        before: { stage: lead.stage },
+        after: { stage: updated.stage },
+        requestId: context.requestId,
+      });
+    }
     return { lead: updated, execution: computeWorkflowExecution(workflow, updated.stage) };
   }
 }

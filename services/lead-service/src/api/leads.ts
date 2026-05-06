@@ -103,7 +103,9 @@ export async function registerLeadRoutes(
 
   app.patch<{ Params: { id: string } }>('/api/leads/:id', async (request, reply) => {
     try {
-      const lead = await domain.updateLead(request.params.id, request.body);
+      const lead = await domain.updateLead(request.params.id, request.body, {
+        requestId: request.id,
+      });
       return reply.code(200).send({ success: true, data: { lead } });
     } catch (err) {
       if (err instanceof ZodError) {
@@ -161,7 +163,9 @@ export async function registerLeadRoutes(
     '/api/leads/:id/advance',
     async (request, reply) => {
       try {
-        const result = await domain.advanceWorkflow(request.params.id, request.query.workflow);
+        const result = await domain.advanceWorkflow(request.params.id, request.query.workflow, {
+          requestId: request.id,
+        });
         return reply.code(200).send({ success: true, data: result });
       } catch (err) {
         if (err instanceof LeadNotFoundError) {

@@ -37,4 +37,31 @@ CREATE TABLE IF NOT EXISTS lead_timeline_events (
 );
 CREATE INDEX IF NOT EXISTS lead_timeline_events_lead_idx ON lead_timeline_events(lead_id);
 CREATE INDEX IF NOT EXISTS lead_timeline_events_occurred_idx ON lead_timeline_events(occurred_at);
+
+CREATE TABLE IF NOT EXISTS audit_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  actor_id UUID,
+  action VARCHAR(100) NOT NULL,
+  entity_type VARCHAR(50) NOT NULL,
+  entity_id UUID NOT NULL,
+  before JSONB,
+  after JSONB,
+  request_id VARCHAR(100),
+  occurred_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+CREATE INDEX IF NOT EXISTS audit_log_entity_idx ON audit_log(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS audit_log_occurred_idx ON audit_log(occurred_at);
+
+-- Append-only enforcement: any UPDATE / DELETE against audit_log raises.
+-- Idempotent — CREATE OR REPLACE FUNCTION + DROP TRIGGER IF EXISTS guard re-runs.
+CREATE OR REPLACE FUNCTION audit_log_no_modify() RETURNS trigger AS $audit_log_no_modify$
+BEGIN
+  RAISE EXCEPTION 'audit_log is append-only — UPDATE / DELETE not permitted';
+END;
+$audit_log_no_modify$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS audit_log_no_modify_trigger ON audit_log;
+CREATE TRIGGER audit_log_no_modify_trigger
+  BEFORE UPDATE OR DELETE ON audit_log
+  FOR EACH STATEMENT EXECUTE FUNCTION audit_log_no_modify();
 `;

@@ -4,8 +4,9 @@ import { createServer, loadServiceConfig, type KianaFastify } from '@kiana/servi
 import { registerLeadRoutes } from './api/leads.js';
 import { registerWorkflowRoutes } from './api/workflows.js';
 import { LeadDomain } from './domain/leads.js';
+import { createAuditRepository } from './infra/auditRepository.js';
 import { createLeadRepository } from './infra/leadRepository.js';
-import { leads } from '../db/schema.js';
+import { auditLog, leads } from '../db/schema.js';
 import { LEAD_SERVICE_BOOTSTRAP_SQL } from '../db/bootstrap.js';
 
 const SERVICE_NAME = 'lead-service';
@@ -19,8 +20,9 @@ const DEFAULT_PORT = 4011;
  */
 export async function buildServer(): Promise<KianaFastify> {
   const config = loadServiceConfig({ service: SERVICE_NAME, defaultPort: DEFAULT_PORT });
-  const data = createDataService({ databaseUrl: config.databaseUrl }, { leads });
+  const data = createDataService({ databaseUrl: config.databaseUrl }, { leads, auditLog });
   const repository = createLeadRepository(data.db);
+  const audit = createAuditRepository(data.db);
 
   const app = await createServer({
     config,
@@ -30,7 +32,7 @@ export async function buildServer(): Promise<KianaFastify> {
       await data.query(LEAD_SERVICE_BOOTSTRAP_SQL);
     },
     registerRoutes: async (server) => {
-      const domain = new LeadDomain({ repository });
+      const domain = new LeadDomain({ repository, audit });
       await registerLeadRoutes(server, { domain });
       await registerWorkflowRoutes(server, { leadDomain: domain });
     },
