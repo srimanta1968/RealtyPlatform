@@ -26,4 +26,15 @@ CREATE TABLE IF NOT EXISTS leads (
 CREATE INDEX IF NOT EXISTS leads_owner_idx ON leads(owner_id);
 CREATE INDEX IF NOT EXISTS leads_stage_idx ON leads(stage);
 CREATE INDEX IF NOT EXISTS leads_source_idx ON leads(source);
+
+CREATE TABLE IF NOT EXISTS lead_timeline_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  lead_id UUID NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
+  type VARCHAR(50) NOT NULL,
+  payload JSONB NOT NULL DEFAULT '{}',
+  actor_id UUID,
+  occurred_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+CREATE INDEX IF NOT EXISTS lead_timeline_events_lead_idx ON lead_timeline_events(lead_id);
+CREATE INDEX IF NOT EXISTS lead_timeline_events_occurred_idx ON lead_timeline_events(occurred_at);
 `;
