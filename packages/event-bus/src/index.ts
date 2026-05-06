@@ -7,7 +7,7 @@ type RedisClient = InstanceType<typeof Redis>;
 export interface EventBus {
   publish(event: DomainEvent): Promise<void>;
   subscribe<E extends DomainEvent>(
-    eventName: E['name'],
+    eventType: E['event_type'],
     consumerGroup: string,
     handler: (event: E) => Promise<void>,
   ): Promise<void>;
@@ -30,11 +30,11 @@ export function createEventBus(options: CreateEventBusOptions): EventBus {
 
   return {
     async publish(event) {
-      const stream = `${prefix}:${event.name}`;
+      const stream = `${prefix}:${event.event_type}`;
       await client.xadd(stream, '*', 'payload', JSON.stringify(event));
     },
-    async subscribe(eventName, consumerGroup, handler) {
-      const stream = `${prefix}:${eventName}`;
+    async subscribe(eventType, consumerGroup, handler) {
+      const stream = `${prefix}:${eventType}`;
       try {
         await client.xgroup('CREATE', stream, consumerGroup, '$', 'MKSTREAM');
       } catch (err) {

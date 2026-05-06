@@ -58,7 +58,7 @@ export type SendEmailVerificationRequest = z.infer<typeof SendEmailVerificationR
 
 export interface NotificationSendResult {
   send_id: string;
-  status: 'queued' | 'logged' | 'sent' | 'failed';
+  status: 'queued' | 'logged' | 'sent' | 'dispatched' | 'failed';
   channel: NotificationChannel;
   recipient: string;
 }
