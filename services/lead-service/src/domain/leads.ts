@@ -1,4 +1,9 @@
-import { LeadCreateRequestSchema, type LeadRecord } from '@kiana/contracts';
+import {
+  LeadCreateRequestSchema,
+  LeadSourceSchema,
+  type LeadRecord,
+  type LeadSourceSummary,
+} from '@kiana/contracts';
 
 import type { LeadRepository } from '../infra/leadRepository.js';
 
@@ -59,5 +64,18 @@ export class LeadDomain {
   /** List all leads (creation-time order). Pagination lands in Task 7. */
   async list(): Promise<LeadRecord[]> {
     return this.options.repository.list();
+  }
+
+  /**
+   * Catalog of every accepted lead source plus the live per-source lead count.
+   * `all_sources` is the full enum (so admin filters render every option even
+   * before any lead lands); `sources` reflects what's in the DB right now.
+   */
+  async listSources(): Promise<LeadSourceSummary> {
+    const sources = await this.options.repository.countBySource();
+    return {
+      all_sources: [...LeadSourceSchema.options],
+      sources,
+    };
   }
 }

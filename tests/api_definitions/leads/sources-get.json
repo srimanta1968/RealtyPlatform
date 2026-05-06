@@ -1,0 +1,27 @@
+{
+  "name": "GET /api/leads/sources - Catalog of accepted lead sources + per-source counts",
+  "endpoint": "/api/leads/sources",
+  "method": "GET",
+  "taskId": "020c4945-e047-41fa-97d7-a82e2e0064ea",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": false,
+  "priority": 35,
+  "description": "Public source catalog — returns every value the LeadSource enum accepts plus the count of leads currently on file per source. Powers the admin lead-filter UI in Task 7 and confirms a submitted lead from POST /api/leads contributes to its source bucket.",
+  "dependsOn": ["POST /api/leads"],
+  "captureResponse": {
+    "leads.sources.response.data.all_sources": "data.all_sources"
+  },
+  "testCases": [
+    {
+      "name": "List sources after at least one /api/leads POST has landed",
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "all_sources": "<array>",
+          "sources": "<array>"
+        }
+      }
+    }
+  ]
+}

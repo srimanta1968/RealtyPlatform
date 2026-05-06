@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 
 import { Button, TextField } from '@kiana/design-system';
+import type { LeadSource } from '@kiana/contracts';
 
 import { createLead } from '../../lib/api';
 
@@ -16,8 +17,30 @@ interface FieldErrors {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^[+()\-\s\d]{7,20}$/;
 
+export interface LeadCaptureFormProps {
+  /**
+   * Source attribution for this submission. Marketing campaigns can drive
+   * users to /contact?source=campaign so the lead is tagged correctly without
+   * the visitor ever seeing the field.
+   */
+  initialSource?: LeadSource;
+}
+
+const SOURCE_LABEL: Record<LeadSource, string> = {
+  web_form: 'Web form',
+  whatsapp: 'WhatsApp',
+  phone: 'Phone',
+  referral: 'Referral',
+  walk_in: 'Walk-in',
+  campaign: 'Marketing campaign',
+  broker: 'Broker',
+  import: 'Imported',
+};
+
 /** Public lead-capture form. Anonymous submission → POST /api/leads. */
-export function LeadCaptureForm(): JSX.Element {
+export function LeadCaptureForm({
+  initialSource = 'web_form',
+}: LeadCaptureFormProps = {}): JSX.Element {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -66,7 +89,7 @@ export function LeadCaptureForm(): JSX.Element {
         email: email.trim() || undefined,
         phone: phone.trim() || undefined,
         notes: notes.trim() || undefined,
-        source: 'web_form',
+        source: initialSource,
       });
       setSubmittedId(lead.id);
     } catch (err) {
@@ -92,6 +115,11 @@ export function LeadCaptureForm(): JSX.Element {
 
   return (
     <div className="rounded-2xl bg-white shadow-md border border-slate-200 p-8">
+      {initialSource !== 'web_form' ? (
+        <p className="mb-5 inline-block rounded-full bg-kiana-primary/10 px-3 py-1 text-xs font-medium text-kiana-primary">
+          Tagged source · {SOURCE_LABEL[initialSource]}
+        </p>
+      ) : null}
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <TextField
           label="Full name"

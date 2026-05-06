@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import { LeadSourceSchema, type LeadSource } from '@kiana/contracts';
+
 import { LeadCaptureForm } from './LeadCaptureForm';
 
 export const metadata: Metadata = {
@@ -8,8 +10,22 @@ export const metadata: Metadata = {
     'Tell us what you are looking for and a Kiana presales specialist will reach out within one business day.',
 };
 
+interface ContactPageProps {
+  /** Next.js App Router server search-param input. */
+  searchParams?: Record<string, string | string[] | undefined>;
+}
+
+/** Parse `?source=` against the LeadSource enum; fall back to 'web_form'. */
+function resolveSource(searchParams: ContactPageProps['searchParams']): LeadSource {
+  const raw = searchParams?.source;
+  const candidate = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = LeadSourceSchema.safeParse(candidate);
+  return parsed.success ? parsed.data : 'web_form';
+}
+
 /** Server Component shell for the public lead-capture surface. */
-export default function ContactPage(): JSX.Element {
+export default function ContactPage({ searchParams }: ContactPageProps): JSX.Element {
+  const initialSource = resolveSource(searchParams);
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-12">
       <div className="mx-auto max-w-3xl">
@@ -20,7 +36,7 @@ export default function ContactPage(): JSX.Element {
             business day.
           </p>
         </header>
-        <LeadCaptureForm />
+        <LeadCaptureForm initialSource={initialSource} />
       </div>
     </main>
   );

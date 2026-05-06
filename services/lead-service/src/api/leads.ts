@@ -7,7 +7,7 @@ export interface LeadRoutesOptions {
   domain: LeadDomain;
 }
 
-/** Register POST /api/leads on the Fastify instance. */
+/** Register lead-service public routes on the Fastify instance. */
 export async function registerLeadRoutes(
   app: FastifyInstance,
   { domain }: LeadRoutesOptions,
@@ -33,6 +33,16 @@ export async function registerLeadRoutes(
         });
       }
       app.log.error({ err }, 'Lead creation failed');
+      return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+    }
+  });
+
+  app.get('/api/leads/sources', async (_request, reply) => {
+    try {
+      const data = await domain.listSources();
+      return reply.code(200).send({ success: true, data });
+    } catch (err) {
+      app.log.error({ err }, 'Lead source listing failed');
       return reply.code(500).send({ success: false, error: 'Internal Server Error' });
     }
   });

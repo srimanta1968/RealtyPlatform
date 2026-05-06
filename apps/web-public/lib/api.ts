@@ -4,6 +4,7 @@ import type {
   CurrentSession,
   LeadCreateRequest,
   LeadRecord,
+  LeadSourceSummary,
   LogoutSuccess,
   ResendVerificationSuccess,
   VerifyEmailSuccess,
@@ -50,4 +51,9 @@ export async function resendVerification(email: string): Promise<ResendVerificat
 /** Submit a public lead-capture form. Source defaults to 'web_form' if omitted. */
 export async function createLead(input: LeadCreateRequest): Promise<LeadRecord> {
   return leadClient.create(input);
+}
+
+/** Discover the catalog of accepted sources + current per-source lead counts. */
+export async function listLeadSources(): Promise<LeadSourceSummary> {
+  return leadClient.listSources();
 }

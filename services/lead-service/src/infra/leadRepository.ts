@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from '@kiana/db-kit';
 
 import {
@@ -6,6 +6,7 @@ import {
   asUserId,
   type LeadRecord,
   type LeadSource,
+  type LeadSourceCount,
   type LeadStage,
 } from '@kiana/contracts';
 
@@ -15,6 +16,7 @@ export interface LeadRepository {
   insert(values: LeadInsert): Promise<LeadRecord>;
   findById(id: string): Promise<LeadRecord | null>;
   list(): Promise<LeadRecord[]>;
+  countBySource(): Promise<LeadSourceCount[]>;
 }
 
 type Db = NodePgDatabase<{ leads: typeof leads }>;
@@ -55,6 +57,20 @@ export function createLeadRepository(db: Db): LeadRepository {
     async list() {
       const rows = await db.select().from(leads).orderBy(leads.createdAt);
       return rows.map(toRecord);
+    },
+
+    async countBySource() {
+      const rows = await db
+        .select({
+          source: leads.source,
+          count: sql<number>`count(*)::int`,
+        })
+        .from(leads)
+        .groupBy(leads.source);
+      return rows.map((row) => ({
+        source: row.source as LeadSource,
+        count: Number(row.count),
+      }));
     },
   };
 }

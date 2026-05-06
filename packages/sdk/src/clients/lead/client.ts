@@ -1,4 +1,9 @@
-import type { ApiResponse, LeadCreateRequest, LeadRecord } from '@kiana/contracts';
+import type {
+  ApiResponse,
+  LeadCreateRequest,
+  LeadRecord,
+  LeadSourceSummary,
+} from '@kiana/contracts';
 
 import { HttpClient } from '../../core/http-client.js';
 import { SdkError } from '../../core/errors.js';
@@ -11,6 +16,7 @@ export class LeadClient {
     const response = await this.http.request<ApiResponse<{ lead: LeadRecord }>>('/api/leads', {
       method: 'POST',
       body: input,
+      authenticated: false,
     });
     return unwrap(response).lead;
   }
@@ -27,6 +33,15 @@ export class LeadClient {
       `/api/leads/${encodeURIComponent(id)}`,
     );
     return unwrap(response).lead;
+  }
+
+  /** GET /api/leads/sources — catalog of supported sources + per-source lead counts. */
+  async listSources(): Promise<LeadSourceSummary> {
+    const response = await this.http.request<ApiResponse<LeadSourceSummary>>(
+      '/api/leads/sources',
+      { authenticated: false },
+    );
+    return unwrap(response);
   }
 }
 

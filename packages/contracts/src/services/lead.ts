@@ -40,3 +40,13 @@ export interface LeadRecord {
   created_at: string;
   updated_at: string;
 }
+
+export interface LeadSourceCount {
+  source: LeadSource;
+  count: number;
+}
+
+export interface LeadSourceSummary {
+  all_sources: LeadSource[];
+  sources: LeadSourceCount[];
+}
