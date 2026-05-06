@@ -7,12 +7,14 @@ import {
   type EmailVerificationRow,
   type UserRow,
 } from '../../db/schema.js';
-import { asUserId, type PublicUser } from '@kiana/contracts';
+import { asUserId, type PublicUser, type UserRole } from '@kiana/contracts';
 
 export interface CreateUserInput {
   fullName: string;
   email: string;
   passwordHash: string;
+  /** Defaults to 'presales' at the DB level; admin-only invite flow can override. */
+  role?: UserRole;
 }
 
 export interface CreateVerificationInput {
@@ -43,6 +45,7 @@ export function createUserRepository(db: Db): UserRepository {
       id: asUserId(row.id),
       full_name: row.fullName,
       email: row.email,
+      role: row.role as UserRole,
       created_at: row.createdAt.toISOString(),
       email_verified_at: row.emailVerifiedAt ? row.emailVerifiedAt.toISOString() : null,
     };
@@ -61,10 +64,10 @@ export function createUserRepository(db: Db): UserRepository {
       return row ?? null;
     },
 
-    async create({ fullName, email, passwordHash }) {
+    async create({ fullName, email, passwordHash, role }) {
       const [row] = await db
         .insert(users)
-        .values({ fullName, email, passwordHash })
+        .values({ fullName, email, passwordHash, ...(role !== undefined ? { role } : {}) })
         .returning();
       if (!row) {
         throw new Error('Failed to insert user — no row returned');

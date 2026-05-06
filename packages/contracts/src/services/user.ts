@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import type { UserRole } from '../enums/index.js';
 import type { UserId } from '../primitives/ids.js';
 
 export const RegisterRequestSchema = z.object({
@@ -29,6 +30,7 @@ export interface PublicUser {
   id: UserId;
   full_name: string;
   email: string;
+  role: UserRole;
   created_at: string;
   email_verified_at: string | null;
 }

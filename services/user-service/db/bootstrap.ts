@@ -26,6 +26,11 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name VARCHAR(200);
 UPDATE users SET full_name = email WHERE full_name IS NULL;
 ALTER TABLE users ALTER COLUMN full_name SET NOT NULL;
 
+-- Idempotent migration: add the Phase-1 RBAC role column. PostgreSQL 11+
+-- backfills existing rows with the DEFAULT in a single statement, so this
+-- one line covers both add-on-fresh-DB and add-to-pre-existing-DB.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) NOT NULL DEFAULT 'presales';
+
 CREATE TABLE IF NOT EXISTS email_verifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
