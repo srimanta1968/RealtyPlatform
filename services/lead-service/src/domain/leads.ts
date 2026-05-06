@@ -13,6 +13,7 @@ import {
 
 import type { LeadRepository } from '../infra/leadRepository.js';
 import type { AuditRepository } from '../infra/auditRepository.js';
+import { makeEnvelope, type EventPublisher } from '../infra/eventPublisher.js';
 
 /** Captured at the route boundary and threaded through mutating domain calls. */
 export interface AuditContext {
@@ -71,6 +72,8 @@ export interface LeadDomainOptions {
   repository: LeadRepository;
   /** When provided, mutating methods append an audit_log row on each detected change. */
   audit?: AuditRepository;
+  /** When provided, mutating methods emit envelope events on create / stage change. */
+  events?: EventPublisher;
 }
 
 export class LeadDomain {
@@ -79,8 +82,10 @@ export class LeadDomain {
   /**
    * Validate and persist a new lead. Throws ZodError on invalid payload or
    * BudgetRangeError when the supplied min/max budget pair is inverted.
+   * Emits a lead.created envelope event on success when an EventPublisher
+   * is configured.
    */
-  async create(input: unknown): Promise<LeadRecord> {
+  async create(input: unknown, context: AuditContext = {}): Promise<LeadRecord> {
     const parsed = LeadCreateRequestSchema.parse(input);
 
     if (
@@ -91,7 +96,7 @@ export class LeadDomain {
       throw new BudgetRangeError();
     }
 
-    return this.options.repository.insert({
+    const lead = await this.options.repository.insert({
       fullName: parsed.full_name,
       email: parsed.email ?? null,
       phone: parsed.phone ?? null,
@@ -104,6 +109,25 @@ export class LeadDomain {
         ? { consentMarketing: parsed.consent_marketing }
         : {}),
     });
+
+    if (this.options.events) {
+      await this.options.events.publish(
+        makeEnvelope(
+          'lead.created',
+          {
+            lead_id: lead.id,
+            full_name: lead.full_name,
+            email: lead.email,
+            phone: lead.phone,
+            source: lead.source,
+            stage: lead.stage,
+            owner_id: lead.owner_id,
+          },
+          context,
+        ),
+      );
+    }
+    return lead;
   }
 
   /** Fetch a lead by id; throws LeadNotFoundError when absent. */
@@ -151,16 +175,27 @@ export class LeadDomain {
     if (!before) throw new LeadNotFoundError(id);
     const after = await this.options.repository.updateFields(id, parsed);
     if (!after) throw new LeadNotFoundError(id);
-    if (this.options.audit && before.stage !== after.stage) {
-      await this.options.audit.record({
-        actorId: context.actorId,
-        action: 'lead.stage_changed',
-        entityType: 'lead',
-        entityId: id,
-        before: { stage: before.stage },
-        after: { stage: after.stage },
-        requestId: context.requestId,
-      });
+    if (before.stage !== after.stage) {
+      if (this.options.audit) {
+        await this.options.audit.record({
+          actorId: context.actorId,
+          action: 'lead.stage_changed',
+          entityType: 'lead',
+          entityId: id,
+          before: { stage: before.stage },
+          after: { stage: after.stage },
+          requestId: context.requestId,
+        });
+      }
+      if (this.options.events) {
+        await this.options.events.publish(
+          makeEnvelope(
+            'lead.stage_changed',
+            { lead_id: after.id, from_stage: before.stage, to_stage: after.stage },
+            context,
+          ),
+        );
+      }
     }
     return after;
   }
@@ -253,6 +288,15 @@ export class LeadDomain {
         after: { stage: updated.stage },
         requestId: context.requestId,
       });
+    }
+    if (this.options.events) {
+      await this.options.events.publish(
+        makeEnvelope(
+          'lead.stage_changed',
+          { lead_id: updated.id, from_stage: lead.stage, to_stage: updated.stage },
+          context,
+        ),
+      );
     }
     return { lead: updated, execution: computeWorkflowExecution(workflow, updated.stage) };
   }

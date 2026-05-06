@@ -21,7 +21,7 @@ export async function registerLeadRoutes(
 ): Promise<void> {
   app.post('/api/leads', async (request, reply) => {
     try {
-      const lead = await domain.create(request.body);
+      const lead = await domain.create(request.body, { requestId: request.id });
       return reply.code(201).send({ success: true, data: { lead } });
     } catch (err) {
       if (err instanceof ZodError) {
