@@ -1,7 +1,14 @@
 import type { FastifyInstance } from 'fastify';
 import { ZodError } from 'zod';
 
-import { BudgetRangeError, LeadNotFoundError, type LeadDomain } from '../domain/leads.js';
+import {
+  BudgetRangeError,
+  LeadNotFoundError,
+  WorkflowAtFinalStepError,
+  WorkflowAtTerminalError,
+  WorkflowNotRegisteredError,
+  type LeadDomain,
+} from '../domain/leads.js';
 
 export interface LeadRoutesOptions {
   domain: LeadDomain;
@@ -90,4 +97,48 @@ export async function registerLeadRoutes(
       return reply.code(500).send({ success: false, error: 'Internal Server Error' });
     }
   });
+
+  app.get<{ Params: { id: string }; Querystring: { workflow?: string } }>(
+    '/api/leads/:id/execution',
+    async (request, reply) => {
+      try {
+        const result = await domain.getWorkflowExecution(
+          request.params.id,
+          request.query.workflow,
+        );
+        return reply.code(200).send({ success: true, data: result });
+      } catch (err) {
+        if (err instanceof LeadNotFoundError) {
+          return reply.code(404).send({ success: false, error: err.message });
+        }
+        if (err instanceof WorkflowNotRegisteredError) {
+          return reply.code(400).send({ success: false, error: err.message, field: 'workflow' });
+        }
+        app.log.error({ err }, 'Workflow execution lookup failed');
+        return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+      }
+    },
+  );
+
+  app.post<{ Params: { id: string }; Querystring: { workflow?: string } }>(
+    '/api/leads/:id/advance',
+    async (request, reply) => {
+      try {
+        const result = await domain.advanceWorkflow(request.params.id, request.query.workflow);
+        return reply.code(200).send({ success: true, data: result });
+      } catch (err) {
+        if (err instanceof LeadNotFoundError) {
+          return reply.code(404).send({ success: false, error: err.message });
+        }
+        if (err instanceof WorkflowNotRegisteredError) {
+          return reply.code(400).send({ success: false, error: err.message, field: 'workflow' });
+        }
+        if (err instanceof WorkflowAtTerminalError || err instanceof WorkflowAtFinalStepError) {
+          return reply.code(409).send({ success: false, error: err.message });
+        }
+        app.log.error({ err }, 'Workflow advance failed');
+        return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+      }
+    },
+  );
 }

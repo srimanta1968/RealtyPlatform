@@ -1,0 +1,38 @@
+{
+  "name": "POST /api/leads/:id/advance - Advance a lead to the next workflow step",
+  "endpoint": "/api/leads/:id/advance",
+  "method": "POST",
+  "taskId": "cf1f6f08-2f88-46f4-bbe5-872823218d9b",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 70,
+  "description": "Operator-facing workflow execution endpoint behind the admin-cockpit Lead Detail screen. Resolves the lead's current step in the lead-to-customer workflow (default; ?workflow=<slug> picks another) and persists the next step's LeadStage via the same repository path PATCH /api/leads/:id uses. Returns the updated LeadRecord plus the recomputed WorkflowExecutionState. 409 when the lead is already at a terminal stage or on the final step; 404 when the id doesn't resolve.",
+  "dependsOn": ["POST /api/auth/register", "POST /api/leads"],
+  "testCases": [
+    {
+      "name": "Advance a freshly captured lead one step down the workflow",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "pathParams": {
+        "id": "{{cache:leads.create.response.data.lead.id}}"
+      },
+      "payload": {},
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "lead": {
+            "id": "<string>",
+            "stage": "<string>"
+          },
+          "execution": {
+            "workflow_slug": "<string>",
+            "current_step_index": "<number>",
+            "progress_percent": "<number>"
+          }
+        }
+      }
+    }
+  ]
+}

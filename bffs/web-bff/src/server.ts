@@ -143,6 +143,53 @@ export async function buildServer(): Promise<KianaFastify> {
           return reply.code(status).send(body);
         }
       });
+      app.get<{ Params: { id: string }; Querystring: { workflow?: string } }>(
+        '/api/leads/:id/execution',
+        async (request, reply) => {
+          try {
+            const headers = forwardAuthHeaders(request);
+            const qs = request.query.workflow
+              ? `?workflow=${encodeURIComponent(request.query.workflow)}`
+              : '';
+            const result = await leadClient.get(
+              `/api/leads/${encodeURIComponent(request.params.id)}/execution${qs}`,
+              { headers },
+            );
+            return reply.code(200).send(result);
+          } catch (err) {
+            const status = (err as { status?: number }).status ?? 500;
+            const body = (err as { body?: unknown }).body ?? {
+              success: false,
+              error: 'Upstream lead-service error',
+            };
+            return reply.code(status).send(body);
+          }
+        },
+      );
+      app.post<{ Params: { id: string }; Querystring: { workflow?: string } }>(
+        '/api/leads/:id/advance',
+        async (request, reply) => {
+          try {
+            const headers = forwardAuthHeaders(request);
+            const qs = request.query.workflow
+              ? `?workflow=${encodeURIComponent(request.query.workflow)}`
+              : '';
+            const result = await leadClient.post(
+              `/api/leads/${encodeURIComponent(request.params.id)}/advance${qs}`,
+              request.body,
+              { headers },
+            );
+            return reply.code(200).send(result);
+          } catch (err) {
+            const status = (err as { status?: number }).status ?? 500;
+            const body = (err as { body?: unknown }).body ?? {
+              success: false,
+              error: 'Upstream lead-service error',
+            };
+            return reply.code(status).send(body);
+          }
+        },
+      );
 
       // Workflows — static catalog hosted by lead-service (Task 9).
       app.get('/api/workflows', makeProxyHandler(leadClient, 'GET', '/api/workflows', 200));

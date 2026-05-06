@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { Card } from '@kiana/design-system';
-import type { LeadRecord, LeadStage } from '@kiana/contracts';
+import { Button, Card } from '@kiana/design-system';
+import type { LeadRecord, LeadStage, WorkflowExecutionState } from '@kiana/contracts';
 
-import { fetchLead, updateLeadStage } from '../lib/api.js';
+import { advanceLead, fetchLead, fetchLeadExecution, updateLeadStage } from '../lib/api.js';
 
 const STAGE_OPTIONS: ReadonlyArray<{ value: LeadStage; label: string }> = [
   { value: 'new', label: 'New' },
@@ -21,9 +21,18 @@ const STAGE_OPTIONS: ReadonlyArray<{ value: LeadStage; label: string }> = [
 export function LeadDetailPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const [lead, setLead] = useState<LeadRecord | null>(null);
+  const [execution, setExecution] = useState<WorkflowExecutionState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savingStage, setSavingStage] = useState(false);
   const [stageError, setStageError] = useState<string | null>(null);
+  const [advancing, setAdvancing] = useState(false);
+  const [advanceError, setAdvanceError] = useState<string | null>(null);
+
+  const refresh = useCallback(async (leadId: string): Promise<void> => {
+    const next = await fetchLeadExecution(leadId);
+    setLead(next.lead);
+    setExecution(next.execution);
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -31,8 +40,7 @@ export function LeadDetailPage(): JSX.Element {
     let cancelled = false;
     async function load(): Promise<void> {
       try {
-        const next = await fetchLead(leadId);
-        if (!cancelled) setLead(next);
+        if (!cancelled) await refresh(leadId);
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Lead not found.');
       }
@@ -41,19 +49,34 @@ export function LeadDetailPage(): JSX.Element {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, refresh]);
 
   async function handleStageChange(next: LeadStage): Promise<void> {
     if (!lead || next === lead.stage) return;
     setSavingStage(true);
     setStageError(null);
     try {
-      const updated = await updateLeadStage(lead.id, next);
-      setLead(updated);
+      await updateLeadStage(lead.id, next);
+      await refresh(lead.id);
     } catch (err) {
       setStageError(err instanceof Error ? err.message : 'Could not update stage.');
     } finally {
       setSavingStage(false);
+    }
+  }
+
+  async function handleAdvance(): Promise<void> {
+    if (!lead) return;
+    setAdvancing(true);
+    setAdvanceError(null);
+    try {
+      const next = await advanceLead(lead.id);
+      setLead(next.lead);
+      setExecution(next.execution);
+    } catch (err) {
+      setAdvanceError(err instanceof Error ? err.message : 'Could not advance the lead.');
+    } finally {
+      setAdvancing(false);
     }
   }
 
@@ -89,6 +112,57 @@ export function LeadDetailPage(): JSX.Element {
           Captured {captured} · last updated {updated}
         </p>
       </header>
+
+      {execution ? (
+        <Card className="mb-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">
+                Workflow · {execution.workflow_slug}
+              </h2>
+              <p className="mt-2 text-sm text-slate-700">
+                {execution.is_terminal ? (
+                  <span className="font-semibold">Terminal stage — pipeline closed.</span>
+                ) : execution.current_step ? (
+                  <>
+                    On step <span className="font-semibold">{execution.current_step.label}</span>
+                    {execution.next_step ? (
+                      <>
+                        {' '}· next: <span className="font-semibold">{execution.next_step.label}</span>
+                      </>
+                    ) : (
+                      <> · final step.</>
+                    )}
+                  </>
+                ) : (
+                  <>Lead is at stage '{lead.stage}' which isn't part of this workflow.</>
+                )}
+              </p>
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant={execution.next_step && !execution.is_terminal ? 'primary' : 'ghost'}
+              disabled={advancing || execution.is_terminal || !execution.next_step}
+              onClick={() => void handleAdvance()}
+            >
+              {advancing ? 'Advancing…' : 'Advance'}
+            </Button>
+          </div>
+          <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+            <div
+              className="h-full bg-kiana-primary transition-all"
+              style={{ width: `${execution.progress_percent}%` }}
+            />
+          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            Progress · {execution.progress_percent}%
+          </p>
+          {advanceError ? (
+            <p className="mt-2 text-xs text-red-600">{advanceError}</p>
+          ) : null}
+        </Card>
+      ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

@@ -108,3 +108,49 @@ export const LEAD_TO_CUSTOMER_WORKFLOW: WorkflowDefinition = {
 export const WORKFLOW_CATALOG: Record<string, WorkflowDefinition> = {
   [LEAD_TO_CUSTOMER_WORKFLOW.slug]: LEAD_TO_CUSTOMER_WORKFLOW,
 };
+
+/**
+ * Live position of one lead inside a workflow. Computed deterministically from
+ * the workflow definition + the lead's current stage, so this never lives in
+ * the database — it's recomputed on every read. `current_step_index` is -1
+ * when the lead's stage isn't represented as a step (e.g. terminal `lost`),
+ * in which case `current_step` is null.
+ */
+export interface WorkflowExecutionState {
+  workflow_slug: string;
+  current_step_index: number;
+  current_step: WorkflowStep | null;
+  next_step: WorkflowStep | null;
+  is_terminal: boolean;
+  progress_percent: number;
+}
+
+/**
+ * Pure function — given a workflow definition and a lead stage, compute the
+ * execution cursor. No I/O, no DB. Server uses it to power
+ * GET /api/leads/:id/execution; clients can mirror it for optimistic UI.
+ */
+export function computeWorkflowExecution(
+  workflow: WorkflowDefinition,
+  leadStage: LeadStage,
+): WorkflowExecutionState {
+  const isTerminal = workflow.terminalStages.includes(leadStage);
+  const currentStepIndex = workflow.steps.findIndex((step) => step.stage === leadStage);
+  const currentStep = currentStepIndex >= 0 ? (workflow.steps[currentStepIndex] ?? null) : null;
+  const nextStep =
+    currentStepIndex >= 0 && currentStepIndex < workflow.steps.length - 1
+      ? (workflow.steps[currentStepIndex + 1] ?? null)
+      : null;
+  const progressPercent =
+    currentStepIndex >= 0
+      ? Math.round(((currentStepIndex + 1) / workflow.steps.length) * 100)
+      : 0;
+  return {
+    workflow_slug: workflow.slug,
+    current_step_index: currentStepIndex,
+    current_step: currentStep,
+    next_step: nextStep,
+    is_terminal: isTerminal,
+    progress_percent: progressPercent,
+  };
+}

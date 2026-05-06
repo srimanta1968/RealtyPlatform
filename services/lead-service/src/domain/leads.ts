@@ -1,9 +1,14 @@
 import {
+  LEAD_TO_CUSTOMER_WORKFLOW,
   LeadCreateRequestSchema,
   LeadSourceSchema,
   LeadUpdateRequestSchema,
+  WORKFLOW_CATALOG,
+  computeWorkflowExecution,
   type LeadRecord,
   type LeadSourceSummary,
+  type WorkflowDefinition,
+  type WorkflowExecutionState,
 } from '@kiana/contracts';
 
 import type { LeadRepository } from '../infra/leadRepository.js';
@@ -20,6 +25,39 @@ export class BudgetRangeError extends Error {
     super('budget_min_minor cannot exceed budget_max_minor.');
     this.name = 'BudgetRangeError';
   }
+}
+
+export class WorkflowNotRegisteredError extends Error {
+  constructor(slug: string) {
+    super(`Workflow ${slug} is not registered.`);
+    this.name = 'WorkflowNotRegisteredError';
+  }
+}
+
+export class WorkflowAtTerminalError extends Error {
+  constructor(stage: string) {
+    super(`Lead is at terminal stage '${stage}' and cannot be advanced.`);
+    this.name = 'WorkflowAtTerminalError';
+  }
+}
+
+export class WorkflowAtFinalStepError extends Error {
+  constructor(stepKey: string) {
+    super(`Lead is on final workflow step '${stepKey}' — already at the end.`);
+    this.name = 'WorkflowAtFinalStepError';
+  }
+}
+
+export interface WorkflowExecutionResult {
+  lead: LeadRecord;
+  execution: WorkflowExecutionState;
+}
+
+function resolveWorkflow(slug?: string): WorkflowDefinition {
+  if (!slug) return LEAD_TO_CUSTOMER_WORKFLOW;
+  const workflow = WORKFLOW_CATALOG[slug];
+  if (!workflow) throw new WorkflowNotRegisteredError(slug);
+  return workflow;
 }
 
 export interface LeadDomainOptions {
@@ -91,5 +129,37 @@ export class LeadDomain {
     const lead = await this.options.repository.updateStage(id, parsed.stage);
     if (!lead) throw new LeadNotFoundError(id);
     return lead;
+  }
+
+  /**
+   * Read-only view of a lead alongside its computed workflow execution cursor.
+   * `slug` selects which workflow to compute against; defaults to the
+   * lead-to-customer pipeline.
+   */
+  async getWorkflowExecution(id: string, slug?: string): Promise<WorkflowExecutionResult> {
+    const lead = await this.options.repository.findById(id);
+    if (!lead) throw new LeadNotFoundError(id);
+    const workflow = resolveWorkflow(slug);
+    return { lead, execution: computeWorkflowExecution(workflow, lead.stage) };
+  }
+
+  /**
+   * Persist the lead onto the next workflow step's stage. Refuses when the
+   * lead has already reached a terminal stage or the final step.
+   */
+  async advanceWorkflow(id: string, slug?: string): Promise<WorkflowExecutionResult> {
+    const lead = await this.options.repository.findById(id);
+    if (!lead) throw new LeadNotFoundError(id);
+    const workflow = resolveWorkflow(slug);
+    if (workflow.terminalStages.includes(lead.stage)) {
+      throw new WorkflowAtTerminalError(lead.stage);
+    }
+    const execution = computeWorkflowExecution(workflow, lead.stage);
+    if (!execution.next_step) {
+      throw new WorkflowAtFinalStepError(execution.current_step?.key ?? 'unknown');
+    }
+    const updated = await this.options.repository.updateStage(id, execution.next_step.stage);
+    if (!updated) throw new LeadNotFoundError(id);
+    return { lead: updated, execution: computeWorkflowExecution(workflow, updated.stage) };
   }
 }

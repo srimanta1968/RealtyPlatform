@@ -4,6 +4,7 @@ import {
   LeadClient,
   WorkflowClient,
   createBrowserTokenStorage,
+  type LeadWorkflowExecution,
 } from '@kiana/sdk';
 import type {
   LeadRecord,
@@ -50,4 +51,20 @@ export async function listWorkflows(): Promise<WorkflowSummary[]> {
 /** GET /api/workflows/:slug — fetch a workflow definition with its full step list. */
 export async function fetchWorkflow(slug: string): Promise<WorkflowDefinition> {
   return workflowClient.get(slug);
+}
+
+/** GET /api/leads/:id/execution — read a lead's workflow execution cursor. */
+export async function fetchLeadExecution(
+  id: string,
+  workflowSlug?: string,
+): Promise<LeadWorkflowExecution> {
+  return leadClient.getExecution(id, workflowSlug);
+}
+
+/** POST /api/leads/:id/advance — advance a lead to the next workflow step. */
+export async function advanceLead(
+  id: string,
+  workflowSlug?: string,
+): Promise<LeadWorkflowExecution> {
+  return leadClient.advance(id, workflowSlug);
 }

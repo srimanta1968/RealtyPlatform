@@ -4,7 +4,13 @@ import type {
   LeadRecord,
   LeadSourceSummary,
   LeadUpdateRequest,
+  WorkflowExecutionState,
 } from '@kiana/contracts';
+
+export interface LeadWorkflowExecution {
+  lead: LeadRecord;
+  execution: WorkflowExecutionState;
+}
 
 import { HttpClient } from '../../core/http-client.js';
 import { SdkError } from '../../core/errors.js';
@@ -52,6 +58,27 @@ export class LeadClient {
       { method: 'PATCH', body: input },
     );
     return unwrap(response).lead;
+  }
+
+  /** GET /api/leads/:id/execution — read the workflow cursor (current step + next step + progress). */
+  async getExecution(id: string, workflowSlug?: string): Promise<LeadWorkflowExecution> {
+    const path = workflowSlug
+      ? `/api/leads/${encodeURIComponent(id)}/execution?workflow=${encodeURIComponent(workflowSlug)}`
+      : `/api/leads/${encodeURIComponent(id)}/execution`;
+    const response = await this.http.request<ApiResponse<LeadWorkflowExecution>>(path);
+    return unwrap(response);
+  }
+
+  /** POST /api/leads/:id/advance — move the lead to its next workflow step. */
+  async advance(id: string, workflowSlug?: string): Promise<LeadWorkflowExecution> {
+    const path = workflowSlug
+      ? `/api/leads/${encodeURIComponent(id)}/advance?workflow=${encodeURIComponent(workflowSlug)}`
+      : `/api/leads/${encodeURIComponent(id)}/advance`;
+    const response = await this.http.request<ApiResponse<LeadWorkflowExecution>>(path, {
+      method: 'POST',
+      body: {},
+    });
+    return unwrap(response);
   }
 }
 

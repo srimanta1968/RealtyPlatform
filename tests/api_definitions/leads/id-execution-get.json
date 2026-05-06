@@ -1,0 +1,38 @@
+{
+  "name": "GET /api/leads/:id/execution - Read a lead's workflow execution cursor",
+  "endpoint": "/api/leads/:id/execution",
+  "method": "GET",
+  "taskId": "cf1f6f08-2f88-46f4-bbe5-872823218d9b",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 55,
+  "description": "Operator-facing read endpoint that returns the canonical lead record alongside its WorkflowExecutionState — current step + next step + progress percent — for the lead-to-customer workflow (default; the optional ?workflow=<slug> query selects another). Powers the Workflow card on the admin-cockpit Lead Detail screen.",
+  "dependsOn": ["POST /api/auth/register", "POST /api/leads"],
+  "testCases": [
+    {
+      "name": "Read execution state for a freshly captured lead",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "pathParams": {
+        "id": "{{cache:leads.create.response.data.lead.id}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "lead": {
+            "id": "<string>",
+            "stage": "<string>"
+          },
+          "execution": {
+            "workflow_slug": "<string>",
+            "current_step_index": "<number>",
+            "is_terminal": "<boolean>",
+            "progress_percent": "<number>"
+          }
+        }
+      }
+    }
+  ]
+}
