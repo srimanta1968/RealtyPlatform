@@ -1,0 +1,39 @@
+{
+  "name": "POST /api/leads - Capture a new lead from any source",
+  "endpoint": "/api/leads",
+  "method": "POST",
+  "taskId": "147e3e2c-594c-4085-8db3-114620ef5aec",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": false,
+  "priority": 30,
+  "description": "Public lead-capture endpoint. Anonymous visitors POST from the marketing site; admin tooling POSTs with source='referral' / 'broker' / 'campaign'. owner_id is null until a presales user claims the lead.",
+  "captureResponse": {
+    "leads.create.response.data.lead.id": "data.lead.id",
+    "leads.create.response.data.lead.email": "data.lead.email",
+    "leads.create.response.data.lead.stage": "data.lead.stage"
+  },
+  "testCases": [
+    {
+      "name": "Capture a web-form lead",
+      "payload": {
+        "full_name": "{{dynamic:name}}",
+        "email": "{{dynamic:email}}",
+        "phone": "{{static:+91 90000 12345}}",
+        "source": "{{static:web_form}}",
+        "notes": "{{static:Looking for a 3-bedroom villa in Karjat, move-in ready.}}"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "lead": {
+            "full_name": "<string>",
+            "email": "<string>",
+            "source": "<string>",
+            "stage": "<string>"
+          }
+        }
+      }
+    }
+  ]
+}

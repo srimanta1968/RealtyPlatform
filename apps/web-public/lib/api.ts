@@ -1,7 +1,9 @@
-import { AuthClient, HttpClient, createBrowserTokenStorage } from '@kiana/sdk';
+import { AuthClient, HttpClient, LeadClient, createBrowserTokenStorage } from '@kiana/sdk';
 import type {
   AuthSuccess,
   CurrentSession,
+  LeadCreateRequest,
+  LeadRecord,
   LogoutSuccess,
   ResendVerificationSuccess,
   VerifyEmailSuccess,
@@ -13,6 +15,7 @@ const http = new HttpClient({
 });
 
 const authClient = new AuthClient(http);
+const leadClient = new LeadClient(http);
 
 /** Submit registration credentials and return the issued JWT + canonical user. */
 export async function registerUser(email: string, password: string): Promise<AuthSuccess> {
@@ -42,4 +45,9 @@ export async function verifyEmail(token: string): Promise<VerifyEmailSuccess> {
 /** Re-issue a verification email for the given account. */
 export async function resendVerification(email: string): Promise<ResendVerificationSuccess> {
   return authClient.resendVerification({ email });
+}
+
+/** Submit a public lead-capture form. Source defaults to 'web_form' if omitted. */
+export async function createLead(input: LeadCreateRequest): Promise<LeadRecord> {
+  return leadClient.create(input);
 }

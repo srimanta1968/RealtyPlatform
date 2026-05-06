@@ -52,12 +52,12 @@ export default function HomePage(): JSX.Element {
             >
               Create your account
             </Link>
-            <a
-              href="#features"
+            <Link
+              href="/contact"
               className="rounded-full border border-white/40 px-6 py-3 font-semibold hover:bg-white/10"
             >
-              Learn more
-            </a>
+              Talk to a specialist
+            </Link>
           </div>
         </div>
       </section>

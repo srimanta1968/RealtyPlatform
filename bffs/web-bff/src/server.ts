@@ -83,6 +83,10 @@ export async function buildServer(): Promise<KianaFastify> {
     baseUrl: backends.user,
     serviceToken: SERVICE_TOKEN,
   });
+  const leadClient = createServiceClient({
+    baseUrl: backends.lead,
+    serviceToken: SERVICE_TOKEN,
+  });
 
   return createServer({
     config,
@@ -100,6 +104,9 @@ export async function buildServer(): Promise<KianaFastify> {
         '/api/auth/resend-verification',
         makeProxyHandler(userClient, 'POST', '/api/auth/resend-verification', 200),
       );
+
+      // Leads — public capture (Task 5). Listing / status updates land in Tasks 7-8.
+      app.post('/api/leads', makeProxyHandler(leadClient, 'POST', '/api/leads', 201));
     },
   });
 }
