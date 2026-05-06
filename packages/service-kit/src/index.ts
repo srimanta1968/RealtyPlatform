@@ -3,3 +3,9 @@ export { createLogger, type Logger } from './logger.js';
 export { loadServiceConfig, type ServiceConfig } from './config.js';
 export { registerHealthRoutes } from './health.js';
 export { loadProjectEnv } from './dotenv.js';
+export {
+  authenticate,
+  getSessionClaims,
+  requireRole,
+  type SessionClaims,
+} from './auth.js';

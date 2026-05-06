@@ -205,7 +205,7 @@ export class AuthDomain {
 
   private issueSession(user: PublicUser): AuthSuccess {
     const token = jwt.sign(
-      { sub: user.id, email: user.email },
+      { sub: user.id, email: user.email, role: user.role },
       this.options.jwtSecret,
       { expiresIn: this.options.jwtExpiresIn as jwt.SignOptions['expiresIn'] },
     );
