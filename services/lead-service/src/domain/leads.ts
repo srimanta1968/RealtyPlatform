@@ -141,6 +141,29 @@ export class LeadDomain {
   }
 
   /**
+   * Leads stuck in non-terminal stages — i.e. updated_at older than the
+   * given threshold AND stage NOT in the given workflow's terminal set.
+   * Defaults to the lead-to-customer workflow's terminals. `daysOld` is
+   * clamped to a minimum of 1 day so a stray 0 doesn't flood the
+   * monitoring dashboard with every lead.
+   */
+  async listStaleLeads(daysOld = 7, workflowSlug?: string): Promise<{
+    leads: LeadRecord[];
+    threshold_days: number;
+    older_than: string;
+  }> {
+    const safeDays = Math.max(1, Math.floor(daysOld));
+    const olderThan = new Date(Date.now() - safeDays * 24 * 60 * 60 * 1000);
+    const workflow = resolveWorkflow(workflowSlug);
+    const stale = await this.options.repository.findStale(olderThan, workflow.terminalStages);
+    return {
+      leads: stale,
+      threshold_days: safeDays,
+      older_than: olderThan.toISOString(),
+    };
+  }
+
+  /**
    * Read-only view of a lead alongside its computed workflow execution cursor.
    * `slug` selects which workflow to compute against; defaults to the
    * lead-to-customer pipeline.

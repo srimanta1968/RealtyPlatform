@@ -54,6 +54,30 @@ export async function registerLeadRoutes(
     }
   });
 
+  app.get<{ Querystring: { days?: string; workflow?: string } }>(
+    '/api/leads/stale',
+    async (request, reply) => {
+      try {
+        const days = request.query.days ? Number(request.query.days) : undefined;
+        if (days !== undefined && (Number.isNaN(days) || days <= 0)) {
+          return reply.code(400).send({
+            success: false,
+            error: 'days must be a positive integer.',
+            field: 'days',
+          });
+        }
+        const data = await domain.listStaleLeads(days, request.query.workflow);
+        return reply.code(200).send({ success: true, data });
+      } catch (err) {
+        if (err instanceof WorkflowNotRegisteredError) {
+          return reply.code(400).send({ success: false, error: err.message, field: 'workflow' });
+        }
+        app.log.error({ err }, 'Stale leads listing failed');
+        return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+      }
+    },
+  );
+
   app.get('/api/leads', async (_request, reply) => {
     try {
       const leads = await domain.list();

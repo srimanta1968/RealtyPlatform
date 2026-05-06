@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, lt, notInArray, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from '@kiana/db-kit';
 
 import {
@@ -17,6 +17,7 @@ export interface LeadRepository {
   insert(values: LeadInsert): Promise<LeadRecord>;
   findById(id: string): Promise<LeadRecord | null>;
   list(): Promise<LeadRecord[]>;
+  findStale(olderThan: Date, excludeStages: LeadStage[]): Promise<LeadRecord[]>;
   countBySource(): Promise<LeadSourceCount[]>;
   countByStage(): Promise<LeadStageCount[]>;
   updateStage(id: string, stage: LeadStage): Promise<LeadRecord | null>;
@@ -59,6 +60,15 @@ export function createLeadRepository(db: Db): LeadRepository {
 
     async list() {
       const rows = await db.select().from(leads).orderBy(leads.createdAt);
+      return rows.map(toRecord);
+    },
+
+    async findStale(olderThan, excludeStages) {
+      const where =
+        excludeStages.length > 0
+          ? and(lt(leads.updatedAt, olderThan), notInArray(leads.stage, excludeStages))
+          : lt(leads.updatedAt, olderThan);
+      const rows = await db.select().from(leads).where(where).orderBy(leads.updatedAt);
       return rows.map(toRecord);
     },
 

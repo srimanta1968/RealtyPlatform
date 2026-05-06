@@ -23,10 +23,13 @@ export function AppShell(): JSX.Element {
     <div className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/leads" className="text-lg font-semibold text-slate-900">
+          <Link to="/dashboard" className="text-lg font-semibold text-slate-900">
             Kiana Cockpit
           </Link>
           <nav className="flex items-center gap-6 text-sm">
+            <Link to="/dashboard" className="font-medium text-slate-700 hover:text-kiana-primary">
+              Dashboard
+            </Link>
             <Link to="/leads" className="font-medium text-slate-700 hover:text-kiana-primary">
               Leads
             </Link>

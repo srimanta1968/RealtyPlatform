@@ -1,0 +1,28 @@
+{
+  "name": "GET /api/leads/stale - List leads stuck in non-terminal stages",
+  "endpoint": "/api/leads/stale",
+  "method": "GET",
+  "taskId": "ea5b2a7f-7ab8-48b0-9fca-c7a0ca4ce0a4",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 80,
+  "description": "Operator monitoring endpoint. Returns every lead whose updated_at predates `now - days` (default 7) and whose stage is not in the workflow's terminal stages — i.e. leads that haven't progressed in N days. The ?days=<n> querystring tunes the threshold; the ?workflow=<slug> querystring picks which terminal stages to exclude. Empty result is the success state — no stale leads. Powers the Stale Leads panel on the admin-cockpit Dashboard.",
+  "dependsOn": ["POST /api/auth/register", "POST /api/leads"],
+  "testCases": [
+    {
+      "name": "List stale leads with the default 7-day threshold",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "leads": "<array>",
+          "threshold_days": "<number>",
+          "older_than": "<string>"
+        }
+      }
+    }
+  ]
+}

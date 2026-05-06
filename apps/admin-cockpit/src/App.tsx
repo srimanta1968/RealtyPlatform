@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppShell } from './components/AppShell.js';
 import { RequireAuth } from './components/RequireAuth.js';
+import { DashboardPage } from './pages/DashboardPage.js';
 import { LeadDetailPage } from './pages/LeadDetailPage.js';
 import { LeadInboxPage } from './pages/LeadInboxPage.js';
 import { LoginPage } from './pages/LoginPage.js';
@@ -19,12 +20,13 @@ export function App(): JSX.Element {
           </RequireAuth>
         }
       >
-        <Route index element={<Navigate to="/leads" replace />} />
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/leads" element={<LeadInboxPage />} />
         <Route path="/leads/:id" element={<LeadDetailPage />} />
         <Route path="/workflows" element={<WorkflowsPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/leads" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

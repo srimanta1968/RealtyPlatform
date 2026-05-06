@@ -108,6 +108,30 @@ export async function buildServer(): Promise<KianaFastify> {
       // Leads — public capture (Task 5), admin reads (Task 7), stage updates (Task 8).
       app.post('/api/leads', makeProxyHandler(leadClient, 'POST', '/api/leads', 201));
       app.get('/api/leads/sources', makeProxyHandler(leadClient, 'GET', '/api/leads/sources', 200));
+      app.get<{ Querystring: { days?: string; workflow?: string } }>(
+        '/api/leads/stale',
+        async (request, reply) => {
+          try {
+            const headers = forwardAuthHeaders(request);
+            const params = new URLSearchParams();
+            if (request.query.days) params.set('days', request.query.days);
+            if (request.query.workflow) params.set('workflow', request.query.workflow);
+            const qs = params.toString();
+            const result = await leadClient.get(
+              qs ? `/api/leads/stale?${qs}` : '/api/leads/stale',
+              { headers },
+            );
+            return reply.code(200).send(result);
+          } catch (err) {
+            const status = (err as { status?: number }).status ?? 500;
+            const body = (err as { body?: unknown }).body ?? {
+              success: false,
+              error: 'Upstream lead-service error',
+            };
+            return reply.code(status).send(body);
+          }
+        },
+      );
       app.get('/api/leads', makeProxyHandler(leadClient, 'GET', '/api/leads', 200));
       app.get<{ Params: { id: string } }>('/api/leads/:id', async (request, reply) => {
         try {

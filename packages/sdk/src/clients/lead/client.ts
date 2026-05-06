@@ -12,6 +12,12 @@ export interface LeadWorkflowExecution {
   execution: WorkflowExecutionState;
 }
 
+export interface StaleLeadsReport {
+  leads: LeadRecord[];
+  threshold_days: number;
+  older_than: string;
+}
+
 import { HttpClient } from '../../core/http-client.js';
 import { SdkError } from '../../core/errors.js';
 
@@ -40,6 +46,17 @@ export class LeadClient {
       `/api/leads/${encodeURIComponent(id)}`,
     );
     return unwrap(response).lead;
+  }
+
+  /** GET /api/leads/stale — leads stuck in non-terminal stages older than `days`. */
+  async listStale(days?: number, workflowSlug?: string): Promise<StaleLeadsReport> {
+    const params = new URLSearchParams();
+    if (days !== undefined) params.set('days', String(days));
+    if (workflowSlug) params.set('workflow', workflowSlug);
+    const qs = params.toString();
+    const path = qs ? `/api/leads/stale?${qs}` : '/api/leads/stale';
+    const response = await this.http.request<ApiResponse<StaleLeadsReport>>(path);
+    return unwrap(response);
   }
 
   /** GET /api/leads/sources — catalog of supported sources + per-source lead counts. */

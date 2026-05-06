@@ -5,6 +5,7 @@ import {
   WorkflowClient,
   createBrowserTokenStorage,
   type LeadWorkflowExecution,
+  type StaleLeadsReport,
 } from '@kiana/sdk';
 import type {
   LeadRecord,
@@ -57,6 +58,14 @@ export async function fetchWorkflow(slug: string): Promise<WorkflowDefinition> {
 /** GET /api/workflows/:slug/metrics — funnel + conversion stats for one workflow. */
 export async function fetchWorkflowMetrics(slug: string): Promise<WorkflowMetrics> {
   return workflowClient.getMetrics(slug);
+}
+
+/** GET /api/leads/stale — leads stuck in non-terminal stages older than `days`. */
+export async function fetchStaleLeads(
+  days?: number,
+  workflowSlug?: string,
+): Promise<StaleLeadsReport> {
+  return leadClient.listStale(days, workflowSlug);
 }
 
 /** GET /api/leads/:id/execution — read a lead's workflow execution cursor. */
