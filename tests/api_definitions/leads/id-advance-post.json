@@ -7,6 +7,8 @@
   "requiresAuth": true,
   "priority": 70,
   "description": "Operator-facing workflow execution endpoint behind the admin-cockpit Lead Detail screen. Resolves the lead's current step in the lead-to-customer workflow (default; ?workflow=<slug> picks another) and persists the next step's LeadStage via the same repository path PATCH /api/leads/:id uses. Returns the updated LeadRecord plus the recomputed WorkflowExecutionState. 409 when the lead is already at a terminal stage or on the final step; 404 when the id doesn't resolve.",
+  "testability": "manual",
+  "skipReason": "lead-service runs on port 4011 (per .env MONOREPO PORT MAP); the projexlight test runner targets a single base URL (4010 = user-service). Re-enable once the API gateway/BFF lands or the runner gains per-route base-URL support.",
   "dependsOn": ["POST /api/auth/register", "POST /api/leads"],
   "testCases": [
     {
