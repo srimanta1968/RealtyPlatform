@@ -1,0 +1,29 @@
+{
+  "name": "GET /api/workflows - List business workflow definitions",
+  "endpoint": "/api/workflows",
+  "method": "GET",
+  "taskId": "694af8aa-6377-48d7-b131-4aea7fa03739",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 60,
+  "description": "Operator-facing catalog of every business workflow defined on the platform. Each entry is a WorkflowSummary (slug, name, description, step_count, terminalStages) — the detail view fetches the full WorkflowDefinition via GET /api/workflows/:slug. Lights up the admin-cockpit Workflows screen.",
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "workflows.list.response.data.workflows": "data.workflows"
+  },
+  "testCases": [
+    {
+      "name": "List defined workflows",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "workflows": "<array>"
+        }
+      }
+    }
+  ]
+}

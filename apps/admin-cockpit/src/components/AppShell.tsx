@@ -30,6 +30,9 @@ export function AppShell(): JSX.Element {
             <Link to="/leads" className="font-medium text-slate-700 hover:text-kiana-primary">
               Leads
             </Link>
+            <Link to="/workflows" className="font-medium text-slate-700 hover:text-kiana-primary">
+              Workflows
+            </Link>
             <span className="hidden text-xs text-slate-500 sm:inline">{user?.email}</span>
             <button
               type="button"

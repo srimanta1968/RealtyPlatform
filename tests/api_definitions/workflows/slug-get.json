@@ -1,0 +1,33 @@
+{
+  "name": "GET /api/workflows/:slug - Fetch a workflow definition by slug",
+  "endpoint": "/api/workflows/:slug",
+  "method": "GET",
+  "taskId": "694af8aa-6377-48d7-b131-4aea7fa03739",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 65,
+  "description": "Operator-facing detail endpoint behind the admin-cockpit Workflows screen. Returns the canonical WorkflowDefinition — slug, name, description, ordered steps[], and terminal stages — for the lead-to-customer pipeline (and future workflows as the catalog grows). 404 when the slug does not match a registered workflow.",
+  "dependsOn": ["POST /api/auth/register"],
+  "testCases": [
+    {
+      "name": "Fetch the lead-to-customer workflow",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "pathParams": {
+        "slug": "{{static:lead-to-customer}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "workflow": {
+            "slug": "<string>",
+            "name": "<string>",
+            "steps": "<array>"
+          }
+        }
+      }
+    }
+  ]
+}

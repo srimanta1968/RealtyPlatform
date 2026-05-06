@@ -1,5 +1,17 @@
-import { AuthClient, HttpClient, LeadClient, createBrowserTokenStorage } from '@kiana/sdk';
-import type { LeadRecord, LeadSourceSummary, LeadStage } from '@kiana/contracts';
+import {
+  AuthClient,
+  HttpClient,
+  LeadClient,
+  WorkflowClient,
+  createBrowserTokenStorage,
+} from '@kiana/sdk';
+import type {
+  LeadRecord,
+  LeadSourceSummary,
+  LeadStage,
+  WorkflowDefinition,
+  WorkflowSummary,
+} from '@kiana/contracts';
 
 const http = new HttpClient({
   baseUrl: '',
@@ -8,6 +20,7 @@ const http = new HttpClient({
 
 export const authClient = new AuthClient(http);
 export const leadClient = new LeadClient(http);
+export const workflowClient = new WorkflowClient(http);
 
 /** GET /api/leads — list every captured lead in creation-time order. */
 export async function listLeads(): Promise<LeadRecord[]> {
@@ -27,4 +40,14 @@ export async function fetchLeadSources(): Promise<LeadSourceSummary> {
 /** PATCH /api/leads/:id — advance a lead through the pipeline by setting a new stage. */
 export async function updateLeadStage(id: string, stage: LeadStage): Promise<LeadRecord> {
   return leadClient.update(id, { stage });
+}
+
+/** GET /api/workflows — list every business workflow defined on the platform. */
+export async function listWorkflows(): Promise<WorkflowSummary[]> {
+  return workflowClient.list();
+}
+
+/** GET /api/workflows/:slug — fetch a workflow definition with its full step list. */
+export async function fetchWorkflow(slug: string): Promise<WorkflowDefinition> {
+  return workflowClient.get(slug);
 }

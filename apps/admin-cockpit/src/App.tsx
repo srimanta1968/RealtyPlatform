@@ -5,6 +5,7 @@ import { RequireAuth } from './components/RequireAuth.js';
 import { LeadDetailPage } from './pages/LeadDetailPage.js';
 import { LeadInboxPage } from './pages/LeadInboxPage.js';
 import { LoginPage } from './pages/LoginPage.js';
+import { WorkflowsPage } from './pages/WorkflowsPage.js';
 
 /** Top-level routing for the operator cockpit (Vite + React SPA). */
 export function App(): JSX.Element {
@@ -21,6 +22,7 @@ export function App(): JSX.Element {
         <Route index element={<Navigate to="/leads" replace />} />
         <Route path="/leads" element={<LeadInboxPage />} />
         <Route path="/leads/:id" element={<LeadDetailPage />} />
+        <Route path="/workflows" element={<WorkflowsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/leads" replace />} />
     </Routes>

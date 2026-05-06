@@ -143,6 +143,26 @@ export async function buildServer(): Promise<KianaFastify> {
           return reply.code(status).send(body);
         }
       });
+
+      // Workflows — static catalog hosted by lead-service (Task 9).
+      app.get('/api/workflows', makeProxyHandler(leadClient, 'GET', '/api/workflows', 200));
+      app.get<{ Params: { slug: string } }>('/api/workflows/:slug', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await leadClient.get(
+            `/api/workflows/${encodeURIComponent(request.params.slug)}`,
+            { headers },
+          );
+          return reply.code(200).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream lead-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
     },
   });
 }
