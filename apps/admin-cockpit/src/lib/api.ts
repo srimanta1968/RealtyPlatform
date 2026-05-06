@@ -1,10 +1,15 @@
 import {
   AuthClient,
+  CrmClient,
   HttpClient,
   LeadClient,
+  PropertyClient,
+  UserClient,
   WorkflowClient,
   createBrowserTokenStorage,
   type LeadWorkflowExecution,
+  type PipelineKanban,
+  type PropertyListFilter,
   type StaleLeadsReport,
 } from '@kiana/sdk';
 import type {
@@ -12,6 +17,12 @@ import type {
   LeadRecord,
   LeadSourceSummary,
   LeadStage,
+  PropertyCreateRequest,
+  PropertyRecord,
+  PropertyStatus,
+  PropertyUpdateRequest,
+  StaffInviteIssueResult,
+  StaffInviteRequest,
   WorkflowDefinition,
   WorkflowMetrics,
   WorkflowSummary,
@@ -25,6 +36,9 @@ const http = new HttpClient({
 export const authClient = new AuthClient(http);
 export const leadClient = new LeadClient(http);
 export const workflowClient = new WorkflowClient(http);
+export const propertyClient = new PropertyClient(http);
+export const crmClient = new CrmClient(http);
+export const userClient = new UserClient(http);
 
 /** GET /api/leads — list every captured lead in creation-time order. */
 export async function listLeads(): Promise<LeadRecord[]> {
@@ -98,4 +112,44 @@ export async function advanceLead(
   workflowSlug?: string,
 ): Promise<LeadWorkflowExecution> {
   return leadClient.advance(id, workflowSlug);
+}
+
+/** GET /api/properties — list properties (filters: type / location / price range). */
+export async function listProperties(
+  filter: PropertyListFilter = {},
+): Promise<PropertyRecord[]> {
+  return propertyClient.list(filter);
+}
+
+/** POST /api/properties — admin creates a draft property. */
+export async function createProperty(input: PropertyCreateRequest): Promise<PropertyRecord> {
+  return propertyClient.create(input);
+}
+
+/** PATCH /api/properties/:id — admin partial update. */
+export async function updateProperty(
+  id: string,
+  input: PropertyUpdateRequest,
+): Promise<PropertyRecord> {
+  return propertyClient.update(id, input);
+}
+
+/** PATCH /api/properties/:id/publish — admin moves the publish state machine. */
+export async function publishProperty(
+  id: string,
+  status: PropertyStatus = 'published',
+): Promise<PropertyRecord> {
+  return propertyClient.publish(id, status);
+}
+
+/** GET /api/crm/pipeline — kanban aggregation across the lead pipeline. */
+export async function fetchPipeline(
+  query: { owner_id?: string; per_stage_limit?: number } = {},
+): Promise<PipelineKanban> {
+  return crmClient.getKanban(query);
+}
+
+/** POST /api/users/invite — admin issues a staff invite. */
+export async function inviteStaff(input: StaffInviteRequest): Promise<StaffInviteIssueResult> {
+  return userClient.invite(input);
 }

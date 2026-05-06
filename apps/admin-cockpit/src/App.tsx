@@ -7,6 +7,9 @@ import { DashboardPage } from './pages/DashboardPage.js';
 import { LeadDetailPage } from './pages/LeadDetailPage.js';
 import { LeadInboxPage } from './pages/LeadInboxPage.js';
 import { LoginPage } from './pages/LoginPage.js';
+import { PipelinePage } from './pages/PipelinePage.js';
+import { PropertyManagerPage } from './pages/PropertyManagerPage.js';
+import { UserManagerPage } from './pages/UserManagerPage.js';
 import { WorkflowsPage } from './pages/WorkflowsPage.js';
 
 /** Top-level routing for the operator cockpit (Vite + React SPA). */
@@ -26,6 +29,9 @@ export function App(): JSX.Element {
         <Route path="/leads" element={<LeadInboxPage />} />
         <Route path="/leads/new" element={<CreateLeadPage />} />
         <Route path="/leads/:id" element={<LeadDetailPage />} />
+        <Route path="/pipeline" element={<PipelinePage />} />
+        <Route path="/properties" element={<PropertyManagerPage />} />
+        <Route path="/team" element={<UserManagerPage />} />
         <Route path="/workflows" element={<WorkflowsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -33,6 +33,15 @@ export function AppShell(): JSX.Element {
             <Link to="/leads" className="font-medium text-slate-700 hover:text-kiana-primary">
               Leads
             </Link>
+            <Link to="/pipeline" className="font-medium text-slate-700 hover:text-kiana-primary">
+              Pipeline
+            </Link>
+            <Link to="/properties" className="font-medium text-slate-700 hover:text-kiana-primary">
+              Properties
+            </Link>
+            <Link to="/team" className="font-medium text-slate-700 hover:text-kiana-primary">
+              Team
+            </Link>
             <Link to="/workflows" className="font-medium text-slate-700 hover:text-kiana-primary">
               Workflows
             </Link>
