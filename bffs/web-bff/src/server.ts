@@ -105,7 +105,7 @@ export async function buildServer(): Promise<KianaFastify> {
         makeProxyHandler(userClient, 'POST', '/api/auth/resend-verification', 200),
       );
 
-      // Leads — public capture (Task 5). Status updates land in Task 8.
+      // Leads — public capture (Task 5), admin reads (Task 7), stage updates (Task 8).
       app.post('/api/leads', makeProxyHandler(leadClient, 'POST', '/api/leads', 201));
       app.get('/api/leads/sources', makeProxyHandler(leadClient, 'GET', '/api/leads/sources', 200));
       app.get('/api/leads', makeProxyHandler(leadClient, 'GET', '/api/leads', 200));
@@ -115,6 +115,24 @@ export async function buildServer(): Promise<KianaFastify> {
           const result = await leadClient.get(`/api/leads/${encodeURIComponent(request.params.id)}`, {
             headers,
           });
+          return reply.code(200).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream lead-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
+      app.patch<{ Params: { id: string } }>('/api/leads/:id', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await leadClient.patch(
+            `/api/leads/${encodeURIComponent(request.params.id)}`,
+            request.body,
+            { headers },
+          );
           return reply.code(200).send(result);
         } catch (err) {
           const status = (err as { status?: number }).status ?? 500;

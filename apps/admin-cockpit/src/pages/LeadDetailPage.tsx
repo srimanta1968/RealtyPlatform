@@ -2,15 +2,28 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { Card } from '@kiana/design-system';
-import type { LeadRecord } from '@kiana/contracts';
+import type { LeadRecord, LeadStage } from '@kiana/contracts';
 
-import { fetchLead } from '../lib/api.js';
+import { fetchLead, updateLeadStage } from '../lib/api.js';
 
-/** Detail view for a single captured lead. Status updates land in Task 8. */
+const STAGE_OPTIONS: ReadonlyArray<{ value: LeadStage; label: string }> = [
+  { value: 'new', label: 'New' },
+  { value: 'qualified', label: 'Qualified' },
+  { value: 'contacted', label: 'Contacted' },
+  { value: 'visit_scheduled', label: 'Visit scheduled' },
+  { value: 'visit_completed', label: 'Visit completed' },
+  { value: 'negotiation', label: 'Negotiation' },
+  { value: 'converted', label: 'Converted' },
+  { value: 'lost', label: 'Lost' },
+];
+
+/** Detail view for a single captured lead — operators can advance the stage inline. */
 export function LeadDetailPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const [lead, setLead] = useState<LeadRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [savingStage, setSavingStage] = useState(false);
+  const [stageError, setStageError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -29,6 +42,20 @@ export function LeadDetailPage(): JSX.Element {
       cancelled = true;
     };
   }, [id]);
+
+  async function handleStageChange(next: LeadStage): Promise<void> {
+    if (!lead || next === lead.stage) return;
+    setSavingStage(true);
+    setStageError(null);
+    try {
+      const updated = await updateLeadStage(lead.id, next);
+      setLead(updated);
+    } catch (err) {
+      setStageError(err instanceof Error ? err.message : 'Could not update stage.');
+    } finally {
+      setSavingStage(false);
+    }
+  }
 
   if (error) {
     return (
@@ -73,9 +100,30 @@ export function LeadDetailPage(): JSX.Element {
         </Card>
         <Card>
           <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">Pipeline</h2>
-          <dl className="mt-3 space-y-2 text-sm">
+          <dl className="mt-3 space-y-3 text-sm">
             <Row label="Source" value={lead.source} />
-            <Row label="Stage" value={lead.stage.replace('_', ' ')} />
+            <div className="flex items-baseline gap-3">
+              <dt className="w-24 shrink-0 text-xs font-medium uppercase tracking-wide text-slate-500">
+                Stage
+              </dt>
+              <dd className="flex flex-1 flex-col gap-1">
+                <select
+                  value={lead.stage}
+                  disabled={savingStage}
+                  onChange={(e) => void handleStageChange(e.target.value as LeadStage)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm text-slate-900 focus:border-kiana-primary focus:outline-none focus:ring-2 focus:ring-kiana-primary/30 disabled:cursor-not-allowed disabled:opacity-60"
+                  aria-label="Lead stage"
+                >
+                  {STAGE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {savingStage ? <p className="text-xs text-slate-500">Saving…</p> : null}
+                {stageError ? <p className="text-xs text-red-600">{stageError}</p> : null}
+              </dd>
+            </div>
             <Row
               label="Budget"
               value={formatBudget(lead.budget_min_minor, lead.budget_max_minor)}

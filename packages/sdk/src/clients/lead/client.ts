@@ -3,6 +3,7 @@ import type {
   LeadCreateRequest,
   LeadRecord,
   LeadSourceSummary,
+  LeadUpdateRequest,
 } from '@kiana/contracts';
 
 import { HttpClient } from '../../core/http-client.js';
@@ -42,6 +43,15 @@ export class LeadClient {
       { authenticated: false },
     );
     return unwrap(response);
+  }
+
+  /** PATCH /api/leads/:id — update a lead's stage (and any future mutable fields). */
+  async update(id: string, input: LeadUpdateRequest): Promise<LeadRecord> {
+    const response = await this.http.request<ApiResponse<{ lead: LeadRecord }>>(
+      `/api/leads/${encodeURIComponent(id)}`,
+      { method: 'PATCH', body: input },
+    );
+    return unwrap(response).lead;
   }
 }
 

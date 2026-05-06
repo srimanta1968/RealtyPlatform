@@ -1,0 +1,35 @@
+{
+  "name": "PATCH /api/leads/:id - Advance a captured lead's stage",
+  "endpoint": "/api/leads/:id",
+  "method": "PATCH",
+  "taskId": "5946653d-5bb1-416c-a604-03e1afc596ff",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 50,
+  "description": "Operator status-tracking endpoint behind the admin-cockpit Lead Detail screen. Updates the lead's stage to one of the LeadStage enum values and bumps updated_at via the repository. Payload validated by LeadUpdateRequestSchema (zod) — invalid stage values 400 with the field name in the envelope.",
+  "dependsOn": ["POST /api/auth/register", "POST /api/leads"],
+  "testCases": [
+    {
+      "name": "Mark a captured lead as qualified",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "pathParams": {
+        "id": "{{cache:leads.create.response.data.lead.id}}"
+      },
+      "payload": {
+        "stage": "{{static:qualified}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "lead": {
+            "id": "<string>",
+            "stage": "<string>"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -17,6 +17,7 @@ export interface LeadRepository {
   findById(id: string): Promise<LeadRecord | null>;
   list(): Promise<LeadRecord[]>;
   countBySource(): Promise<LeadSourceCount[]>;
+  updateStage(id: string, stage: LeadStage): Promise<LeadRecord | null>;
 }
 
 type Db = NodePgDatabase<{ leads: typeof leads }>;
@@ -71,6 +72,15 @@ export function createLeadRepository(db: Db): LeadRepository {
         source: row.source as LeadSource,
         count: Number(row.count),
       }));
+    },
+
+    async updateStage(id, stage) {
+      const [row] = await db
+        .update(leads)
+        .set({ stage, updatedAt: new Date() })
+        .where(eq(leads.id, id))
+        .returning();
+      return row ? toRecord(row) : null;
     },
   };
 }

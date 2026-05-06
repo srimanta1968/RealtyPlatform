@@ -1,5 +1,5 @@
 import { AuthClient, HttpClient, LeadClient, createBrowserTokenStorage } from '@kiana/sdk';
-import type { LeadRecord, LeadSourceSummary } from '@kiana/contracts';
+import type { LeadRecord, LeadSourceSummary, LeadStage } from '@kiana/contracts';
 
 const http = new HttpClient({
   baseUrl: '',
@@ -22,4 +22,9 @@ export async function fetchLead(id: string): Promise<LeadRecord> {
 /** GET /api/leads/sources — catalog + per-source counts powering the inbox filter. */
 export async function fetchLeadSources(): Promise<LeadSourceSummary> {
   return leadClient.listSources();
+}
+
+/** PATCH /api/leads/:id — advance a lead through the pipeline by setting a new stage. */
+export async function updateLeadStage(id: string, stage: LeadStage): Promise<LeadRecord> {
+  return leadClient.update(id, { stage });
 }

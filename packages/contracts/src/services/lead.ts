@@ -26,6 +26,22 @@ export const LeadCreateRequestSchema = z.object({
 });
 export type LeadCreateRequest = z.infer<typeof LeadCreateRequestSchema>;
 
+export const LeadStageSchema = z.enum([
+  'new',
+  'qualified',
+  'contacted',
+  'visit_scheduled',
+  'visit_completed',
+  'negotiation',
+  'converted',
+  'lost',
+]);
+
+export const LeadUpdateRequestSchema = z.object({
+  stage: LeadStageSchema,
+});
+export type LeadUpdateRequest = z.infer<typeof LeadUpdateRequestSchema>;
+
 export interface LeadRecord {
   id: LeadId;
   owner_id: UserId | null;

@@ -1,6 +1,7 @@
 import {
   LeadCreateRequestSchema,
   LeadSourceSchema,
+  LeadUpdateRequestSchema,
   type LeadRecord,
   type LeadSourceSummary,
 } from '@kiana/contracts';
@@ -77,5 +78,18 @@ export class LeadDomain {
       all_sources: [...LeadSourceSchema.options],
       sources,
     };
+  }
+
+  /**
+   * Advance a lead through the pipeline by setting a new stage. Validates
+   * the payload with LeadUpdateRequestSchema; throws LeadNotFoundError when
+   * the id does not resolve to a row. Free transitions for now — workflow
+   * gates (e.g. "qualified → visit_scheduled requires owner_id") land later.
+   */
+  async updateStage(id: string, input: unknown): Promise<LeadRecord> {
+    const parsed = LeadUpdateRequestSchema.parse(input);
+    const lead = await this.options.repository.updateStage(id, parsed.stage);
+    if (!lead) throw new LeadNotFoundError(id);
+    return lead;
   }
 }
