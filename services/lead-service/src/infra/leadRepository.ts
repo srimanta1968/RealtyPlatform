@@ -17,6 +17,8 @@ export interface LeadFieldUpdate {
   stage?: LeadStage;
   /** notes can be set to null explicitly to clear it. */
   notes?: string | null;
+  /** owner_id can be set to null explicitly to unassign. */
+  ownerId?: string | null;
 }
 
 export interface LeadRepository {
@@ -113,6 +115,7 @@ export function createLeadRepository(db: Db): LeadRepository {
       const set: Record<string, unknown> = { updatedAt: new Date() };
       if (fields.stage !== undefined) set.stage = fields.stage;
       if (fields.notes !== undefined) set.notes = fields.notes;
+      if (fields.ownerId !== undefined) set.ownerId = fields.ownerId;
       const [row] = await db.update(leads).set(set).where(eq(leads.id, id)).returning();
       return row ? toRecord(row) : null;
     },

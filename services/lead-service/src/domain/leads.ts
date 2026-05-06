@@ -1,18 +1,23 @@
 import {
   LEAD_TO_CUSTOMER_WORKFLOW,
   LeadCreateRequestSchema,
+  LeadNoteCreateRequestSchema,
+  LeadOwnerUpdateRequestSchema,
   LeadSourceSchema,
   LeadUpdateRequestSchema,
   WORKFLOW_CATALOG,
+  asUserId,
   computeWorkflowExecution,
   type LeadRecord,
   type LeadSourceSummary,
+  type LeadTimelineEvent,
   type WorkflowDefinition,
   type WorkflowExecutionState,
 } from '@kiana/contracts';
 
 import type { LeadRepository } from '../infra/leadRepository.js';
 import type { AuditRepository } from '../infra/auditRepository.js';
+import type { TimelineRepository } from '../infra/timelineRepository.js';
 import { makeEnvelope, type EventPublisher } from '../infra/eventPublisher.js';
 
 /** Captured at the route boundary and threaded through mutating domain calls. */
@@ -74,6 +79,8 @@ export interface LeadDomainOptions {
   audit?: AuditRepository;
   /** When provided, mutating methods emit envelope events on create / stage change. */
   events?: EventPublisher;
+  /** When provided, getTimeline() / addNote() are available. */
+  timeline?: TimelineRepository;
 }
 
 export class LeadDomain {
@@ -208,6 +215,108 @@ export class LeadDomain {
   async deleteLead(id: string): Promise<void> {
     const removed = await this.options.repository.delete(id);
     if (!removed) throw new LeadNotFoundError(id);
+  }
+
+  /**
+   * Read the append-only event timeline for a lead. Returns rows in
+   * reverse-chronological order; throws LeadNotFoundError when the
+   * lead row itself is gone (the timeline cascades on lead delete).
+   */
+  async getTimeline(id: string): Promise<LeadTimelineEvent[]> {
+    if (!this.options.timeline) {
+      throw new Error('LeadDomain.getTimeline() requires a TimelineRepository');
+    }
+    const lead = await this.options.repository.findById(id);
+    if (!lead) throw new LeadNotFoundError(id);
+    const rows = await this.options.timeline.listForLead(id);
+    return rows.map((row) => ({
+      id: row.id,
+      lead_id: row.leadId,
+      type: row.type,
+      payload: (row.payload ?? {}) as Record<string, unknown>,
+      actor_id: row.actorId,
+      occurred_at: row.occurredAt.toISOString(),
+    }));
+  }
+
+  /**
+   * Append an operator-authored note to the lead timeline. Stored as a
+   * `lead.note` event with payload {body}; the existing GET
+   * /api/leads/:id/timeline surfaces it alongside system events.
+   */
+  async addNote(
+    id: string,
+    input: unknown,
+    context: AuditContext = {},
+  ): Promise<LeadTimelineEvent> {
+    if (!this.options.timeline) {
+      throw new Error('LeadDomain.addNote() requires a TimelineRepository');
+    }
+    const parsed = LeadNoteCreateRequestSchema.parse(input);
+    const lead = await this.options.repository.findById(id);
+    if (!lead) throw new LeadNotFoundError(id);
+    const row = await this.options.timeline.append({
+      leadId: id,
+      type: 'lead.note',
+      payload: { body: parsed.body },
+      actorId: context.actorId ?? null,
+    });
+    return {
+      id: row.id,
+      lead_id: row.leadId,
+      type: row.type,
+      payload: (row.payload ?? {}) as Record<string, unknown>,
+      actor_id: row.actorId,
+      occurred_at: row.occurredAt.toISOString(),
+    };
+  }
+
+  /**
+   * Reassign a lead to a different presales owner. Records an audit
+   * row + emits a `lead.assigned` envelope event so notification
+   * subscribers can ping the new owner. No-op when the supplied owner
+   * already matches (still emits the event for downstream
+   * idempotency).
+   */
+  async reassignOwner(
+    id: string,
+    input: unknown,
+    context: AuditContext = {},
+  ): Promise<LeadRecord> {
+    const parsed = LeadOwnerUpdateRequestSchema.parse(input);
+    const before = await this.options.repository.findById(id);
+    if (!before) throw new LeadNotFoundError(id);
+    const after = await this.options.repository.updateFields(id, {
+      ownerId: parsed.owner_id,
+    });
+    if (!after) throw new LeadNotFoundError(id);
+    if (before.owner_id !== after.owner_id) {
+      if (this.options.audit) {
+        await this.options.audit.record({
+          actorId: context.actorId,
+          action: 'lead.assigned',
+          entityType: 'lead',
+          entityId: id,
+          before: { owner_id: before.owner_id },
+          after: { owner_id: after.owner_id },
+          requestId: context.requestId,
+        });
+      }
+      if (this.options.events) {
+        await this.options.events.publish(
+          makeEnvelope(
+            'lead.assigned',
+            {
+              lead_id: after.id,
+              from_owner_id: before.owner_id,
+              to_owner_id: asUserId(parsed.owner_id),
+            },
+            context,
+          ),
+        );
+      }
+    }
+    return after;
   }
 
   /**

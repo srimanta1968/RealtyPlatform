@@ -182,4 +182,63 @@ export async function registerLeadRoutes(
       }
     },
   );
+
+  app.get<{ Params: { id: string } }>('/api/leads/:id/timeline', async (request, reply) => {
+    try {
+      const events = await domain.getTimeline(request.params.id);
+      return reply.code(200).send({ success: true, data: { events } });
+    } catch (err) {
+      if (err instanceof LeadNotFoundError) {
+        return reply.code(404).send({ success: false, error: err.message });
+      }
+      app.log.error({ err, id: request.params.id }, 'Lead timeline read failed');
+      return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+    }
+  });
+
+  app.post<{ Params: { id: string } }>('/api/leads/:id/notes', async (request, reply) => {
+    try {
+      const event = await domain.addNote(request.params.id, request.body, {
+        requestId: request.id,
+      });
+      return reply.code(201).send({ success: true, data: { event } });
+    } catch (err) {
+      if (err instanceof ZodError) {
+        const first = err.issues[0];
+        return reply.code(400).send({
+          success: false,
+          error: first?.message ?? 'Invalid note payload.',
+          field: first?.path.join('.') || undefined,
+        });
+      }
+      if (err instanceof LeadNotFoundError) {
+        return reply.code(404).send({ success: false, error: err.message });
+      }
+      app.log.error({ err, id: request.params.id }, 'Lead note append failed');
+      return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+    }
+  });
+
+  app.patch<{ Params: { id: string } }>('/api/leads/:id/owner', async (request, reply) => {
+    try {
+      const lead = await domain.reassignOwner(request.params.id, request.body, {
+        requestId: request.id,
+      });
+      return reply.code(200).send({ success: true, data: { lead } });
+    } catch (err) {
+      if (err instanceof ZodError) {
+        const first = err.issues[0];
+        return reply.code(400).send({
+          success: false,
+          error: first?.message ?? 'Invalid owner payload.',
+          field: first?.path.join('.') || undefined,
+        });
+      }
+      if (err instanceof LeadNotFoundError) {
+        return reply.code(404).send({ success: false, error: err.message });
+      }
+      app.log.error({ err, id: request.params.id }, 'Lead owner reassign failed');
+      return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+    }
+  });
 }

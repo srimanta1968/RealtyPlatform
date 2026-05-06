@@ -52,6 +52,27 @@ export const LeadUpdateRequestSchema = z
   );
 export type LeadUpdateRequest = z.infer<typeof LeadUpdateRequestSchema>;
 
+/** POST /api/leads/:id/notes — operator timeline note appended to lead_timeline_events. */
+export const LeadNoteCreateRequestSchema = z.object({
+  body: z.string().trim().min(1).max(5000),
+});
+export type LeadNoteCreateRequest = z.infer<typeof LeadNoteCreateRequestSchema>;
+
+/** PATCH /api/leads/:id/owner — reassign a lead to a different presales owner. */
+export const LeadOwnerUpdateRequestSchema = z.object({
+  owner_id: z.string().uuid(),
+});
+export type LeadOwnerUpdateRequest = z.infer<typeof LeadOwnerUpdateRequestSchema>;
+
+export interface LeadTimelineEvent {
+  id: string;
+  lead_id: string;
+  type: string;
+  payload: Record<string, unknown>;
+  actor_id: string | null;
+  occurred_at: string;
+}
+
 export interface LeadRecord {
   id: LeadId;
   owner_id: UserId | null;

@@ -39,7 +39,7 @@ export async function buildServer(): Promise<KianaFastify> {
     },
     registerRoutes: async (server) => {
       const events = createDefaultEventPublisher({ timeline, logger: server.log });
-      const domain = new LeadDomain({ repository, audit, events });
+      const domain = new LeadDomain({ repository, audit, events, timeline });
       await registerLeadRoutes(server, { domain });
       await registerWorkflowRoutes(server, { leadDomain: domain });
     },
