@@ -40,6 +40,36 @@ export async function buildServer(): Promise<KianaFastify> {
           },
         };
       });
+
+      server.get<{ Querystring: { owner_id?: string; per_stage_limit?: string } }>(
+        '/api/crm/pipeline',
+        async (request, reply) => {
+          try {
+            const ownerId = request.query.owner_id;
+            const limitRaw = request.query.per_stage_limit;
+            const perStageLimit =
+              limitRaw === undefined ? undefined : Number(limitRaw);
+            if (
+              perStageLimit !== undefined &&
+              (!Number.isInteger(perStageLimit) || perStageLimit < 1)
+            ) {
+              return reply.code(400).send({
+                success: false,
+                error: 'per_stage_limit must be a positive integer.',
+                field: 'per_stage_limit',
+              });
+            }
+            const kanban = await domain.getKanban({
+              ...(ownerId ? { ownerId } : {}),
+              ...(perStageLimit !== undefined ? { perStageLimit } : {}),
+            });
+            return reply.code(200).send({ success: true, data: kanban });
+          } catch (err) {
+            server.log.error({ err }, 'CRM pipeline read failed');
+            return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+          }
+        },
+      );
     },
   });
 
