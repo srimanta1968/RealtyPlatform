@@ -4,8 +4,11 @@ import { Link, useParams } from 'react-router-dom';
 import { Button, Card } from '@kiana/design-system';
 import type { LeadRecord, LeadStage, WorkflowExecutionState } from '@kiana/contracts';
 
+import { useNavigate } from 'react-router-dom';
+
 import {
   advanceLead,
+  deleteLead,
   fetchLead,
   fetchLeadExecution,
   updateLeadNotes,
@@ -26,6 +29,7 @@ const STAGE_OPTIONS: ReadonlyArray<{ value: LeadStage; label: string }> = [
 /** Detail view for a single captured lead — operators can advance the stage inline. */
 export function LeadDetailPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [lead, setLead] = useState<LeadRecord | null>(null);
   const [execution, setExecution] = useState<WorkflowExecutionState | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +41,8 @@ export function LeadDetailPage(): JSX.Element {
   const [notesEditing, setNotesEditing] = useState(false);
   const [savingNotes, setSavingNotes] = useState(false);
   const [notesError, setNotesError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const refresh = useCallback(async (leadId: string): Promise<void> => {
     const next = await fetchLeadExecution(leadId);
@@ -115,6 +121,23 @@ export function LeadDetailPage(): JSX.Element {
     setNotesEditing(false);
   }
 
+  async function handleDelete(): Promise<void> {
+    if (!lead) return;
+    const confirmed = window.confirm(
+      `Delete ${lead.full_name}? This permanently removes the lead from the database.`,
+    );
+    if (!confirmed) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteLead(lead.id);
+      navigate('/leads', { replace: true });
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Could not delete the lead.');
+      setDeleting(false);
+    }
+  }
+
   if (error) {
     return (
       <div>
@@ -141,11 +164,24 @@ export function LeadDetailPage(): JSX.Element {
         ← Back to inbox
       </Link>
 
-      <header className="mt-4 mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">{lead.full_name}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Captured {captured} · last updated {updated}
-        </p>
+      <header className="mt-4 mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">{lead.full_name}</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Captured {captured} · last updated {updated}
+          </p>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <button
+            type="button"
+            onClick={() => void handleDelete()}
+            disabled={deleting}
+            className="rounded-full border border-red-200 bg-white px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {deleting ? 'Deleting…' : 'Delete lead'}
+          </button>
+          {deleteError ? <p className="text-xs text-red-600">{deleteError}</p> : null}
+        </div>
       </header>
 
       {execution ? (

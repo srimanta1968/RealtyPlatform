@@ -77,6 +77,15 @@ export class LeadClient {
     return unwrap(response).lead;
   }
 
+  /** DELETE /api/leads/:id — hard-delete a captured lead. */
+  async delete(id: string): Promise<void> {
+    const response = await this.http.request<ApiResponse<{ id: string }>>(
+      `/api/leads/${encodeURIComponent(id)}`,
+      { method: 'DELETE' },
+    );
+    unwrap(response);
+  }
+
   /** GET /api/leads/:id/execution — read the workflow cursor (current step + next step + progress). */
   async getExecution(id: string, workflowSlug?: string): Promise<LeadWorkflowExecution> {
     const path = workflowSlug

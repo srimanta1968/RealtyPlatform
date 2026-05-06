@@ -167,6 +167,23 @@ export async function buildServer(): Promise<KianaFastify> {
           return reply.code(status).send(body);
         }
       });
+      app.delete<{ Params: { id: string } }>('/api/leads/:id', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await leadClient.delete(
+            `/api/leads/${encodeURIComponent(request.params.id)}`,
+            { headers },
+          );
+          return reply.code(200).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream lead-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
       app.get<{ Params: { id: string }; Querystring: { workflow?: string } }>(
         '/api/leads/:id/execution',
         async (request, reply) => {

@@ -133,6 +133,16 @@ export class LeadDomain {
   }
 
   /**
+   * Hard-delete a lead. Throws LeadNotFoundError when the id doesn't
+   * resolve to a row so the route can map onto a 404. Soft-delete /
+   * archival lands when audit history becomes a real concern (P2+).
+   */
+  async deleteLead(id: string): Promise<void> {
+    const removed = await this.options.repository.delete(id);
+    if (!removed) throw new LeadNotFoundError(id);
+  }
+
+  /**
    * Raw per-stage lead counts, used by the workflow metrics endpoint to
    * compose funnel statistics. Delegates straight to the repository — kept
    * on the domain so the route handler doesn't reach past it into infra.

@@ -1,0 +1,29 @@
+{
+  "name": "DELETE /api/leads/:id - Hard-delete a captured lead",
+  "endpoint": "/api/leads/:id",
+  "method": "DELETE",
+  "taskId": "2b1c1364-664e-44c7-9979-2eaf6053c700",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": true,
+  "priority": 90,
+  "description": "Operator hard-delete endpoint behind the admin-cockpit Lead Detail screen's Delete button. Removes the row outright (no soft-delete in P1) and echoes the id back so the client can confirm. 404 when the id doesn't resolve. Priority 90 keeps it last in the leads test chain so all upstream reads / updates / advance / metrics calls run against a live row before we tear it down.",
+  "dependsOn": ["POST /api/auth/register", "POST /api/leads"],
+  "testCases": [
+    {
+      "name": "Delete the lead created by the POST /api/leads chain",
+      "headers": {
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "pathParams": {
+        "id": "{{cache:leads.create.response.data.lead.id}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "id": "<string>"
+        }
+      }
+    }
+  ]
+}

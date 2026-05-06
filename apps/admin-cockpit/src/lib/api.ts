@@ -56,6 +56,11 @@ export async function updateLeadNotes(id: string, notes: string | null): Promise
   return leadClient.update(id, { notes });
 }
 
+/** DELETE /api/leads/:id — hard-delete a captured lead. */
+export async function deleteLead(id: string): Promise<void> {
+  return leadClient.delete(id);
+}
+
 /** GET /api/workflows — list every business workflow defined on the platform. */
 export async function listWorkflows(): Promise<WorkflowSummary[]> {
   return workflowClient.list();

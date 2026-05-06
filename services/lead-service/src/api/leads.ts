@@ -122,6 +122,19 @@ export async function registerLeadRoutes(
     }
   });
 
+  app.delete<{ Params: { id: string } }>('/api/leads/:id', async (request, reply) => {
+    try {
+      await domain.deleteLead(request.params.id);
+      return reply.code(200).send({ success: true, data: { id: request.params.id } });
+    } catch (err) {
+      if (err instanceof LeadNotFoundError) {
+        return reply.code(404).send({ success: false, error: err.message });
+      }
+      app.log.error({ err }, 'Lead delete failed');
+      return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+    }
+  });
+
   app.get<{ Params: { id: string }; Querystring: { workflow?: string } }>(
     '/api/leads/:id/execution',
     async (request, reply) => {
