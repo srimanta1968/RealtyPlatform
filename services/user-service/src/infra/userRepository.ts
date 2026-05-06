@@ -10,6 +10,7 @@ import {
 import { asUserId, type PublicUser } from '@kiana/contracts';
 
 export interface CreateUserInput {
+  fullName: string;
   email: string;
   passwordHash: string;
 }
@@ -40,6 +41,7 @@ export function createUserRepository(db: Db): UserRepository {
   function toPublic(row: UserRow): PublicUser {
     return {
       id: asUserId(row.id),
+      full_name: row.fullName,
       email: row.email,
       created_at: row.createdAt.toISOString(),
       email_verified_at: row.emailVerifiedAt ? row.emailVerifiedAt.toISOString() : null,
@@ -59,10 +61,10 @@ export function createUserRepository(db: Db): UserRepository {
       return row ?? null;
     },
 
-    async create({ email, passwordHash }) {
+    async create({ fullName, email, passwordHash }) {
       const [row] = await db
         .insert(users)
-        .values({ email, passwordHash })
+        .values({ fullName, email, passwordHash })
         .returning();
       if (!row) {
         throw new Error('Failed to insert user — no row returned');

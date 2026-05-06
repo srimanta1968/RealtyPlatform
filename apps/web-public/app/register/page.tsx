@@ -10,6 +10,7 @@ import { useAuth } from '@kiana/ui-kit';
 import { registerUser } from '../../lib/api';
 
 interface FieldErrors {
+  fullName?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -21,6 +22,7 @@ const MIN_PASSWORD_LENGTH = 8;
 export default function RegisterPage(): JSX.Element {
   const router = useRouter();
   const { setSession } = useAuth();
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -30,7 +32,12 @@ export default function RegisterPage(): JSX.Element {
 
   function validate(): FieldErrors {
     const next: FieldErrors = {};
+    const trimmedFullName = fullName.trim();
     const trimmedEmail = email.trim();
+
+    if (!trimmedFullName) {
+      next.fullName = 'Please tell us your name.';
+    }
 
     if (!trimmedEmail) {
       next.email = 'Email is required.';
@@ -65,7 +72,7 @@ export default function RegisterPage(): JSX.Element {
 
     setSubmitting(true);
     try {
-      const result = await registerUser(email.trim(), password);
+      const result = await registerUser(fullName.trim(), email.trim(), password);
       setSession(result.token, result.user);
       router.push('/welcome');
     } catch (err) {
@@ -87,6 +94,18 @@ export default function RegisterPage(): JSX.Element {
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5" noValidate>
+            <TextField
+              label="Full name"
+              id="fullName"
+              name="fullName"
+              type="text"
+              autoComplete="name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              error={errors.fullName}
+              required
+            />
+
             <TextField
               label="Email"
               id="email"

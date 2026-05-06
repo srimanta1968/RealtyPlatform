@@ -6,6 +6,7 @@ import { registerWorkflowRoutes } from './api/workflows.js';
 import { LeadDomain } from './domain/leads.js';
 import { createLeadRepository } from './infra/leadRepository.js';
 import { leads } from '../db/schema.js';
+import { LEAD_SERVICE_BOOTSTRAP_SQL } from '../db/bootstrap.js';
 
 const SERVICE_NAME = 'lead-service';
 const DEFAULT_PORT = 4011;
@@ -26,6 +27,7 @@ export async function buildServer(): Promise<KianaFastify> {
     version: '0.1.0',
     ready: async () => {
       await data.ping();
+      await data.query(LEAD_SERVICE_BOOTSTRAP_SQL);
     },
     registerRoutes: async (server) => {
       const domain = new LeadDomain({ repository });

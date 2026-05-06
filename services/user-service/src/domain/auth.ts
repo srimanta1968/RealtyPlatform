@@ -1,6 +1,8 @@
 import { randomBytes } from 'node:crypto';
 
-import { compare, hash } from 'bcryptjs';
+import bcrypt from 'bcryptjs';
+
+const { compare, hash } = bcrypt;
 import jwt from 'jsonwebtoken';
 
 import {
@@ -90,7 +92,11 @@ export class AuthDomain {
     }
 
     const passwordHash = await hash(parsed.password, this.options.bcryptRounds);
-    const user = await this.options.repository.create({ email, passwordHash });
+    const user = await this.options.repository.create({
+      fullName: parsed.full_name,
+      email,
+      passwordHash,
+    });
     const verification = await this.issueVerification(user);
     return { ...this.issueSession(user), verification };
   }

@@ -2,3 +2,4 @@ export { createServer, type CreateServerOptions, type KianaFastify } from './ser
 export { createLogger, type Logger } from './logger.js';
 export { loadServiceConfig, type ServiceConfig } from './config.js';
 export { registerHealthRoutes } from './health.js';
+export { loadProjectEnv } from './dotenv.js';

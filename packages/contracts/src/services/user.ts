@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { UserId } from '../primitives/ids.js';
 
 export const RegisterRequestSchema = z.object({
+  full_name: z.string().trim().min(1).max(200),
   email: z.string().trim().email(),
   password: z.string().min(8).max(200),
 });
@@ -26,6 +27,7 @@ export type ResendVerificationRequest = z.infer<typeof ResendVerificationRequest
 
 export interface PublicUser {
   id: UserId;
+  full_name: string;
   email: string;
   created_at: string;
   email_verified_at: string | null;

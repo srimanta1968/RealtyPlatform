@@ -1,4 +1,8 @@
-import { buildServer } from './server.js';
+import { loadProjectEnv } from '@kiana/service-kit';
+
+loadProjectEnv(import.meta.url);
+
+const { buildServer } = await import('./server.js');
 
 async function main(): Promise<void> {
   const app = await buildServer();

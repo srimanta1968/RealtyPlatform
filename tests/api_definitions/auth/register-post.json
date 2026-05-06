@@ -17,6 +17,7 @@
     {
       "name": "Register a new user with email and password",
       "payload": {
+        "full_name": "{{dynamic:name}}",
         "email": "{{dynamic:email}}",
         "password": "{{static:KianaTest_2025!}}"
       },

@@ -19,8 +19,12 @@ const authClient = new AuthClient(http);
 const leadClient = new LeadClient(http);
 
 /** Submit registration credentials and return the issued JWT + canonical user. */
-export async function registerUser(email: string, password: string): Promise<AuthSuccess> {
-  return authClient.register({ email, password });
+export async function registerUser(
+  fullName: string,
+  email: string,
+  password: string,
+): Promise<AuthSuccess> {
+  return authClient.register({ full_name: fullName, email, password });
 }
 
 /** Authenticate with registered credentials and return the issued JWT + user. */

@@ -5,6 +5,7 @@ import { registerInternalRoutes } from './api/internal.js';
 import { EmailDomain } from './domain/email.js';
 import { createNotificationRepository } from './infra/notificationRepository.js';
 import { notificationSends, notificationTemplates } from '../db/schema.js';
+import { NOTIFICATION_SERVICE_BOOTSTRAP_SQL } from '../db/bootstrap.js';
 
 const SERVICE_NAME = 'notification-service';
 const DEFAULT_PORT = 4014;
@@ -25,6 +26,7 @@ export async function buildServer(): Promise<KianaFastify> {
     version: '0.1.0',
     ready: async () => {
       await data.ping();
+      await data.query(NOTIFICATION_SERVICE_BOOTSTRAP_SQL);
     },
     registerRoutes: async (server) => {
       const emailDomain = new EmailDomain({ repository, logger: server.log, logOnly });

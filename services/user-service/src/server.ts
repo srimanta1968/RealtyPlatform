@@ -6,6 +6,7 @@ import { AuthDomain } from './domain/auth.js';
 import { createUserRepository } from './infra/userRepository.js';
 import { createNotificationDispatcher } from './infra/notificationDispatcher.js';
 import { emailVerifications, users } from '../db/schema.js';
+import { USER_SERVICE_BOOTSTRAP_SQL } from '../db/bootstrap.js';
 
 const SERVICE_NAME = 'user-service';
 const DEFAULT_PORT = 4010;
@@ -32,6 +33,7 @@ export async function buildServer(options: BuildServerOptions = {}): Promise<Kia
     version: '0.1.0',
     ready: async () => {
       await data.ping();
+      await data.query(USER_SERVICE_BOOTSTRAP_SQL);
     },
     registerRoutes: async (server) => {
       const notifications = createNotificationDispatcher({
