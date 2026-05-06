@@ -4,3 +4,6 @@ export * from './core/auth.js';
 export * from './clients/auth/client.js';
 export * from './clients/lead/client.js';
 export * from './clients/workflow/client.js';
+export * from './clients/property/client.js';
+export * from './clients/crm/client.js';
+export * from './clients/users/client.js';

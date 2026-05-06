@@ -1,4 +1,11 @@
-import { AuthClient, HttpClient, LeadClient, createBrowserTokenStorage } from '@kiana/sdk';
+import {
+  AuthClient,
+  HttpClient,
+  LeadClient,
+  PropertyClient,
+  createBrowserTokenStorage,
+  type PropertyListFilter,
+} from '@kiana/sdk';
 import type {
   AuthSuccess,
   CurrentSession,
@@ -6,6 +13,7 @@ import type {
   LeadRecord,
   LeadSourceSummary,
   LogoutSuccess,
+  PropertyRecord,
   ResendVerificationSuccess,
   VerifyEmailSuccess,
 } from '@kiana/contracts';
@@ -17,6 +25,7 @@ const http = new HttpClient({
 
 const authClient = new AuthClient(http);
 const leadClient = new LeadClient(http);
+const propertyClient = new PropertyClient(http);
 
 /** Submit registration credentials and return the issued JWT + canonical user. */
 export async function registerUser(
@@ -60,4 +69,14 @@ export async function createLead(input: LeadCreateRequest): Promise<LeadRecord> 
 /** Discover the catalog of accepted sources + current per-source lead counts. */
 export async function listLeadSources(): Promise<LeadSourceSummary> {
   return leadClient.listSources();
+}
+
+/** GET /api/properties — public list of published properties (with optional filters). */
+export async function listProperties(filter: PropertyListFilter = {}): Promise<PropertyRecord[]> {
+  return propertyClient.list(filter);
+}
+
+/** GET /api/properties/:slug — public property detail by URL slug. */
+export async function getPropertyBySlug(slug: string): Promise<PropertyRecord> {
+  return propertyClient.getBySlug(slug);
 }
