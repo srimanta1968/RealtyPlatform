@@ -1,15 +1,19 @@
 import { createDataService } from '@kiana/db-kit';
+import { createEventBus, type EventBus } from '@kiana/event-bus';
 import { createServer, loadServiceConfig, type KianaFastify } from '@kiana/service-kit';
+import type { LeadCreated, LeadStageChanged } from '@kiana/contracts';
 
 import { registerInternalRoutes } from './api/internal.js';
 import { registerTemplateRoutes } from './api/templates.js';
 import { EmailDomain } from './domain/email.js';
 import { LeadCreatedSubscriber } from './domain/leadEvents.js';
+import { LeadStageChangedSubscriber } from './domain/leadStageEvents.js';
 import { TemplateDomain } from './domain/templates.js';
+import { createLeadLookupRepository } from './infra/leadLookupRepository.js';
 import { createNotificationRepository } from './infra/notificationRepository.js';
 import {
-  startLeadCreatedSubscription,
-  type LeadCreatedSubscriptionHandle,
+  startEventSubscription,
+  type EventSubscriptionHandle,
 } from './infra/eventSubscriptions.js';
 import { notificationSends, notificationTemplates } from '../db/schema.js';
 import { NOTIFICATION_SERVICE_BOOTSTRAP_SQL } from '../db/bootstrap.js';
@@ -19,6 +23,7 @@ const DEFAULT_PORT = 4014;
 const DEFAULT_PRESALES_RECIPIENT = 'presales@kiana.local';
 const DEFAULT_LEAD_URL_BASE = 'http://localhost:3001/admin/leads';
 const LEAD_CREATED_CONSUMER_GROUP = 'notification-service.lead-created';
+const LEAD_STAGE_CHANGED_CONSUMER_GROUP = 'notification-service.lead-stage-changed';
 
 /** Bootstrap notification-service with email-verification handler wired up. */
 export async function buildServer(): Promise<KianaFastify> {
@@ -28,6 +33,7 @@ export async function buildServer(): Promise<KianaFastify> {
     { notificationSends, notificationTemplates },
   );
   const repository = createNotificationRepository(data.db);
+  const leadLookup = createLeadLookupRepository(data);
   const serviceToken = process.env.SERVICE_TOKEN ?? 'dev-shared-secret';
   const logOnly = (process.env.NOTIFICATION_LOG_ONLY ?? 'true') === 'true';
   const presalesRecipient =
@@ -35,7 +41,8 @@ export async function buildServer(): Promise<KianaFastify> {
   const leadDetailUrlBase = process.env.NOTIFICATION_LEAD_URL_BASE ?? DEFAULT_LEAD_URL_BASE;
   const eventBusUrl = process.env.EVENT_BUS_REDIS_URL;
 
-  let leadCreatedSubscription: LeadCreatedSubscriptionHandle | null = null;
+  let bus: EventBus | null = null;
+  const subscriptions: EventSubscriptionHandle[] = [];
 
   const app = await createServer({
     config,
@@ -55,24 +62,44 @@ export async function buildServer(): Promise<KianaFastify> {
         leadDetailUrlBase,
         logOnly,
       });
+      const leadStageChangedSubscriber = new LeadStageChangedSubscriber({
+        repository,
+        templateDomain,
+        leadLookup,
+        logger: server.log,
+        logOnly,
+      });
 
       await registerInternalRoutes(server, { emailDomain, serviceToken });
       await registerTemplateRoutes(server, { domain: templateDomain });
 
       if (eventBusUrl) {
-        leadCreatedSubscription = startLeadCreatedSubscription({
-          redisUrl: eventBusUrl,
-          consumerGroup: LEAD_CREATED_CONSUMER_GROUP,
-          subscriber: leadCreatedSubscriber,
-          logger: server.log,
-        });
+        bus = createEventBus({ redisUrl: eventBusUrl });
+        subscriptions.push(
+          startEventSubscription<LeadCreated>({
+            bus,
+            eventType: 'lead.created',
+            consumerGroup: LEAD_CREATED_CONSUMER_GROUP,
+            handler: (event) => leadCreatedSubscriber.handle(event),
+            logger: server.log,
+          }),
+          startEventSubscription<LeadStageChanged>({
+            bus,
+            eventType: 'lead.stage_changed',
+            consumerGroup: LEAD_STAGE_CHANGED_CONSUMER_GROUP,
+            handler: (event) => leadStageChangedSubscriber.handle(event),
+            logger: server.log,
+          }),
+        );
         server.log.info(
-          { consumerGroup: LEAD_CREATED_CONSUMER_GROUP },
-          'lead.created subscription started',
+          {
+            consumerGroups: [LEAD_CREATED_CONSUMER_GROUP, LEAD_STAGE_CHANGED_CONSUMER_GROUP],
+          },
+          'event-bus subscriptions started',
         );
       } else {
         server.log.warn(
-          'EVENT_BUS_REDIS_URL not set — lead.created subscription is disabled (Phase-1 dev mode)',
+          'EVENT_BUS_REDIS_URL not set — lead.created / lead.stage_changed subscriptions are disabled (Phase-1 dev mode)',
         );
       }
 
@@ -84,6 +111,7 @@ export async function buildServer(): Promise<KianaFastify> {
           logOnly,
           subscriptions: {
             'lead.created': eventBusUrl ? 'enabled' : 'disabled',
+            'lead.stage_changed': eventBusUrl ? 'enabled' : 'disabled',
           },
         },
       }));
@@ -91,8 +119,11 @@ export async function buildServer(): Promise<KianaFastify> {
   });
 
   app.addHook('onClose', async () => {
-    if (leadCreatedSubscription) {
-      await leadCreatedSubscription.stop();
+    for (const sub of subscriptions) {
+      await sub.stop();
+    }
+    if (bus) {
+      await bus.close();
     }
     await data.close();
   });

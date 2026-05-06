@@ -1,48 +1,47 @@
-import { createEventBus, type EventBus } from '@kiana/event-bus';
-import type { LeadCreated } from '@kiana/contracts';
+import type { EventBus } from '@kiana/event-bus';
+import type { DomainEvent } from '@kiana/contracts';
 import type { Logger } from '@kiana/service-kit';
 
-import type { LeadCreatedSubscriber } from '../domain/leadEvents.js';
-
-export interface LeadCreatedSubscriptionOptions {
-  redisUrl: string;
+export interface EventSubscriptionOptions<E extends DomainEvent> {
+  bus: EventBus;
+  eventType: E['event_type'];
   consumerGroup: string;
-  subscriber: LeadCreatedSubscriber;
+  handler: (event: E) => Promise<unknown>;
   logger: Logger;
-  /** How long to wait before polling again after subscribe() returns. */
+  /** How long to wait before polling again after a subscribe() error. */
   pollIntervalMs?: number;
 }
 
-export interface LeadCreatedSubscriptionHandle {
-  bus: EventBus;
+export interface EventSubscriptionHandle {
   stop(): Promise<void>;
 }
 
 /**
- * Wire the lead.created subscriber to @kiana/event-bus. Phase-1 spins a
- * polling loop on top of the single-shot subscribe primitive — each call
- * blocks for up to 5s waiting for new entries, processes them, and returns;
- * the loop immediately re-subscribes. Task 13 (Redis Streams adapter)
- * replaces this with a proper long-running consumer + DLQ semantics.
+ * Generic poll-based subscription wrapper around @kiana/event-bus. Each
+ * call to bus.subscribe() blocks for up to 5s waiting for stream entries,
+ * processes them, and returns; this loop immediately re-subscribes so
+ * delivery is continuous. Task 13's Redis Streams adapter swaps this
+ * skeleton for a long-running consumer with retry + DLQ semantics — at
+ * which point the loop here collapses to a single subscribe() call.
  *
- * The handler swallows per-event errors so a single bad envelope cannot
- * tear down the loop — failures are already captured in notification_sends
- * by the subscriber itself.
+ * Per-event errors from `handler` are caught and logged so a single bad
+ * envelope cannot tear the loop down — the message is xack'd by the bus
+ * adapter only after the handler resolves, so failed deliveries naturally
+ * end up in the consumer-group pending list for redelivery.
  */
-export function startLeadCreatedSubscription(
-  options: LeadCreatedSubscriptionOptions,
-): LeadCreatedSubscriptionHandle {
-  const { redisUrl, consumerGroup, subscriber, logger, pollIntervalMs = 1000 } = options;
-  const bus = createEventBus({ redisUrl });
+export function startEventSubscription<E extends DomainEvent>(
+  options: EventSubscriptionOptions<E>,
+): EventSubscriptionHandle {
+  const { bus, eventType, consumerGroup, handler, logger, pollIntervalMs = 1000 } = options;
   let stopped = false;
 
-  const handler = async (event: LeadCreated): Promise<void> => {
+  const wrappedHandler = async (event: E): Promise<void> => {
     try {
-      await subscriber.handle(event);
+      await handler(event);
     } catch (err) {
       logger.error(
-        { err, event_id: event.event_id, lead_id: event.payload.lead_id },
-        'lead.created handler raised — event will redeliver via consumer-group pending list',
+        { err, eventType, event_id: event.event_id },
+        `${eventType} handler raised — event will redeliver via consumer-group pending list`,
       );
     }
   };
@@ -50,20 +49,18 @@ export function startLeadCreatedSubscription(
   void (async () => {
     while (!stopped) {
       try {
-        await bus.subscribe<LeadCreated>('lead.created', consumerGroup, handler);
+        await bus.subscribe<E>(eventType, consumerGroup, wrappedHandler);
       } catch (err) {
         if (stopped) break;
-        logger.error({ err }, 'event-bus subscribe failed; backing off');
+        logger.error({ err, eventType }, 'event-bus subscribe failed; backing off');
         await delay(pollIntervalMs);
       }
     }
   })();
 
   return {
-    bus,
     async stop() {
       stopped = true;
-      await bus.close();
     },
   };
 }
