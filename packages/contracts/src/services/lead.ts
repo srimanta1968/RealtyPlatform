@@ -37,9 +37,15 @@ export const LeadStageSchema = z.enum([
   'lost',
 ]);
 
-export const LeadUpdateRequestSchema = z.object({
-  stage: LeadStageSchema,
-});
+export const LeadUpdateRequestSchema = z
+  .object({
+    stage: LeadStageSchema.optional(),
+    notes: z.string().max(2000).nullable().optional(),
+  })
+  .refine(
+    (data) => data.stage !== undefined || data.notes !== undefined,
+    { message: 'At least one of stage or notes must be provided.' },
+  );
 export type LeadUpdateRequest = z.infer<typeof LeadUpdateRequestSchema>;
 
 export interface LeadRecord {

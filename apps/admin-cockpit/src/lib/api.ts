@@ -51,6 +51,11 @@ export async function updateLeadStage(id: string, stage: LeadStage): Promise<Lea
   return leadClient.update(id, { stage });
 }
 
+/** PATCH /api/leads/:id — overwrite a lead's notes; pass null to clear. */
+export async function updateLeadNotes(id: string, notes: string | null): Promise<LeadRecord> {
+  return leadClient.update(id, { notes });
+}
+
 /** GET /api/workflows — list every business workflow defined on the platform. */
 export async function listWorkflows(): Promise<WorkflowSummary[]> {
   return workflowClient.list();

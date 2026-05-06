@@ -119,14 +119,15 @@ export class LeadDomain {
   }
 
   /**
-   * Advance a lead through the pipeline by setting a new stage. Validates
-   * the payload with LeadUpdateRequestSchema; throws LeadNotFoundError when
-   * the id does not resolve to a row. Free transitions for now — workflow
-   * gates (e.g. "qualified → visit_scheduled requires owner_id") land later.
+   * Apply a partial update to a lead — currently `stage` and/or `notes`.
+   * Validates with LeadUpdateRequestSchema (which requires at least one of
+   * the two), throws LeadNotFoundError when the id does not resolve. Free
+   * transitions for now — workflow gates (e.g. "qualified → visit_scheduled
+   * requires owner_id") land later.
    */
-  async updateStage(id: string, input: unknown): Promise<LeadRecord> {
+  async updateLead(id: string, input: unknown): Promise<LeadRecord> {
     const parsed = LeadUpdateRequestSchema.parse(input);
-    const lead = await this.options.repository.updateStage(id, parsed.stage);
+    const lead = await this.options.repository.updateFields(id, parsed);
     if (!lead) throw new LeadNotFoundError(id);
     return lead;
   }
@@ -190,7 +191,9 @@ export class LeadDomain {
     if (!execution.next_step) {
       throw new WorkflowAtFinalStepError(execution.current_step?.key ?? 'unknown');
     }
-    const updated = await this.options.repository.updateStage(id, execution.next_step.stage);
+    const updated = await this.options.repository.updateFields(id, {
+      stage: execution.next_step.stage,
+    });
     if (!updated) throw new LeadNotFoundError(id);
     return { lead: updated, execution: computeWorkflowExecution(workflow, updated.stage) };
   }

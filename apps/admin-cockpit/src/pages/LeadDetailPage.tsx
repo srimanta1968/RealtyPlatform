@@ -4,7 +4,13 @@ import { Link, useParams } from 'react-router-dom';
 import { Button, Card } from '@kiana/design-system';
 import type { LeadRecord, LeadStage, WorkflowExecutionState } from '@kiana/contracts';
 
-import { advanceLead, fetchLead, fetchLeadExecution, updateLeadStage } from '../lib/api.js';
+import {
+  advanceLead,
+  fetchLead,
+  fetchLeadExecution,
+  updateLeadNotes,
+  updateLeadStage,
+} from '../lib/api.js';
 
 const STAGE_OPTIONS: ReadonlyArray<{ value: LeadStage; label: string }> = [
   { value: 'new', label: 'New' },
@@ -27,11 +33,16 @@ export function LeadDetailPage(): JSX.Element {
   const [stageError, setStageError] = useState<string | null>(null);
   const [advancing, setAdvancing] = useState(false);
   const [advanceError, setAdvanceError] = useState<string | null>(null);
+  const [notesDraft, setNotesDraft] = useState('');
+  const [notesEditing, setNotesEditing] = useState(false);
+  const [savingNotes, setSavingNotes] = useState(false);
+  const [notesError, setNotesError] = useState<string | null>(null);
 
   const refresh = useCallback(async (leadId: string): Promise<void> => {
     const next = await fetchLeadExecution(leadId);
     setLead(next.lead);
     setExecution(next.execution);
+    setNotesDraft(next.lead.notes ?? '');
   }, []);
 
   useEffect(() => {
@@ -73,11 +84,35 @@ export function LeadDetailPage(): JSX.Element {
       const next = await advanceLead(lead.id);
       setLead(next.lead);
       setExecution(next.execution);
+      setNotesDraft(next.lead.notes ?? '');
     } catch (err) {
       setAdvanceError(err instanceof Error ? err.message : 'Could not advance the lead.');
     } finally {
       setAdvancing(false);
     }
+  }
+
+  async function handleSaveNotes(): Promise<void> {
+    if (!lead) return;
+    setSavingNotes(true);
+    setNotesError(null);
+    try {
+      const trimmed = notesDraft.trim();
+      const updated = await updateLeadNotes(lead.id, trimmed.length > 0 ? trimmed : null);
+      setLead(updated);
+      setNotesDraft(updated.notes ?? '');
+      setNotesEditing(false);
+    } catch (err) {
+      setNotesError(err instanceof Error ? err.message : 'Could not save notes.');
+    } finally {
+      setSavingNotes(false);
+    }
+  }
+
+  function handleCancelNotes(): void {
+    setNotesDraft(lead?.notes ?? '');
+    setNotesError(null);
+    setNotesEditing(false);
   }
 
   if (error) {
@@ -205,10 +240,57 @@ export function LeadDetailPage(): JSX.Element {
           </dl>
         </Card>
         <Card className="md:col-span-2">
-          <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">Notes</h2>
-          <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
-            {lead.notes ?? <span className="text-slate-400">No notes captured.</span>}
-          </p>
+          <header className="flex items-baseline justify-between">
+            <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">Notes</h2>
+            {!notesEditing ? (
+              <button
+                type="button"
+                onClick={() => setNotesEditing(true)}
+                className="text-xs font-medium text-kiana-primary hover:underline"
+              >
+                Edit
+              </button>
+            ) : null}
+          </header>
+          {notesEditing ? (
+            <div className="mt-3 space-y-2">
+              <textarea
+                value={notesDraft}
+                onChange={(e) => setNotesDraft(e.target.value)}
+                rows={5}
+                maxLength={2000}
+                disabled={savingNotes}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-kiana-primary focus:outline-none focus:ring-2 focus:ring-kiana-primary/30 disabled:cursor-not-allowed disabled:opacity-60"
+                placeholder="Bedrooms, locality, broker context, anything useful for follow-up."
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => void handleSaveNotes()}
+                  disabled={savingNotes}
+                  className="rounded-full bg-kiana-primary px-3 py-1 text-xs font-semibold text-white transition hover:bg-kiana-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {savingNotes ? 'Saving…' : 'Save notes'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelNotes}
+                  disabled={savingNotes}
+                  className="text-xs font-medium text-slate-600 hover:text-kiana-primary disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <span className="ml-auto text-xs text-slate-400">
+                  {notesDraft.length} / 2000
+                </span>
+              </div>
+              {notesError ? <p className="text-xs text-red-600">{notesError}</p> : null}
+            </div>
+          ) : (
+            <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
+              {lead.notes ?? <span className="text-slate-400">No notes captured.</span>}
+            </p>
+          )}
         </Card>
       </div>
     </div>

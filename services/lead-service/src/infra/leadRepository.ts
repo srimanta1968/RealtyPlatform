@@ -13,6 +13,12 @@ import {
 
 import { leads, type LeadInsert, type LeadRow } from '../../db/schema.js';
 
+export interface LeadFieldUpdate {
+  stage?: LeadStage;
+  /** notes can be set to null explicitly to clear it. */
+  notes?: string | null;
+}
+
 export interface LeadRepository {
   insert(values: LeadInsert): Promise<LeadRecord>;
   findById(id: string): Promise<LeadRecord | null>;
@@ -20,7 +26,7 @@ export interface LeadRepository {
   findStale(olderThan: Date, excludeStages: LeadStage[]): Promise<LeadRecord[]>;
   countBySource(): Promise<LeadSourceCount[]>;
   countByStage(): Promise<LeadStageCount[]>;
-  updateStage(id: string, stage: LeadStage): Promise<LeadRecord | null>;
+  updateFields(id: string, fields: LeadFieldUpdate): Promise<LeadRecord | null>;
 }
 
 type Db = NodePgDatabase<{ leads: typeof leads }>;
@@ -100,12 +106,11 @@ export function createLeadRepository(db: Db): LeadRepository {
       }));
     },
 
-    async updateStage(id, stage) {
-      const [row] = await db
-        .update(leads)
-        .set({ stage, updatedAt: new Date() })
-        .where(eq(leads.id, id))
-        .returning();
+    async updateFields(id, fields) {
+      const set: Record<string, unknown> = { updatedAt: new Date() };
+      if (fields.stage !== undefined) set.stage = fields.stage;
+      if (fields.notes !== undefined) set.notes = fields.notes;
+      const [row] = await db.update(leads).set(set).where(eq(leads.id, id)).returning();
       return row ? toRecord(row) : null;
     },
   };

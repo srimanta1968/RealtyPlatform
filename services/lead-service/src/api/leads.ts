@@ -103,7 +103,7 @@ export async function registerLeadRoutes(
 
   app.patch<{ Params: { id: string } }>('/api/leads/:id', async (request, reply) => {
     try {
-      const lead = await domain.updateStage(request.params.id, request.body);
+      const lead = await domain.updateLead(request.params.id, request.body);
       return reply.code(200).send({ success: true, data: { lead } });
     } catch (err) {
       if (err instanceof ZodError) {
@@ -117,7 +117,7 @@ export async function registerLeadRoutes(
       if (err instanceof LeadNotFoundError) {
         return reply.code(404).send({ success: false, error: err.message });
       }
-      app.log.error({ err }, 'Lead status update failed');
+      app.log.error({ err }, 'Lead update failed');
       return reply.code(500).send({ success: false, error: 'Internal Server Error' });
     }
   });
