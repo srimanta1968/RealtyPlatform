@@ -1,0 +1,24 @@
+{
+  "name": "GET /api/properties/_status - property-service readiness probe",
+  "endpoint": "/api/properties/_status",
+  "method": "GET",
+  "taskId": "f4fe8bb1-aad5-4068-9090-ec151c364e77",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": false,
+  "priority": 5,
+  "description": "Operator-readable status route confirming property-service has booted with DataService + PropertyDomain wired up. Lives until the real Phase-1 CRUD routes (POST /api/properties + PATCH /api/properties/:id + GET /api/properties + GET /api/properties/:slug + PATCH /api/properties/:id/publish) land in the next Phase 1 tasks.",
+  "testCases": [
+    {
+      "name": "Service reports ready with domain constructed",
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "service": "<string>",
+          "ready": "<boolean>",
+          "domain_constructed": "<boolean>"
+        }
+      }
+    }
+  ]
+}
