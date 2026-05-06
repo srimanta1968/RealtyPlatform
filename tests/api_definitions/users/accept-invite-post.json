@@ -1,0 +1,35 @@
+{
+  "name": "POST /api/users/accept-invite - Redeem an invite token + finish onboarding",
+  "endpoint": "/api/users/accept-invite",
+  "method": "POST",
+  "taskId": "ad563107-0910-415e-bd6b-af73a612eb99",
+  "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
+  "requiresAuth": false,
+  "priority": 85,
+  "description": "Public consumer endpoint. Token IS the auth here — pass it alongside a password to create the User row at the role baked into the invite. Returns a fresh JWT so the new account can sign in immediately. 400 on expired / unknown / already-used tokens; 409 if the invite email collides with an existing user (race).",
+  "testability": "manual",
+  "skipReason": "Depends on POST /api/users/invite (admin-gated and currently manual). Re-enable in lockstep with the invite test once the runner has an admin bootstrap.",
+  "dependsOn": ["POST /api/users/invite"],
+  "testCases": [
+    {
+      "name": "Accept invite with the captured dev token",
+      "payload": {
+        "token": "{{cache:users.invite.response.data.token}}",
+        "password": "{{static:NewStaffPass123!}}",
+        "full_name": "{{dynamic:name}}"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "token": "<string>",
+          "user": {
+            "id": "<string>",
+            "email": "<string>",
+            "role": "<string>"
+          }
+        }
+      }
+    }
+  ]
+}

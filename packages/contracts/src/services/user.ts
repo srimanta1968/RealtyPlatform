@@ -1,7 +1,15 @@
 import { z } from 'zod';
 
-import type { UserRole } from '../enums/index.js';
+import { UserRole } from '../enums/index.js';
 import type { UserId } from '../primitives/ids.js';
+
+const UserRoleSchema = z.enum([
+  UserRole.ADMIN,
+  UserRole.PRESALES,
+  UserRole.FIELD_AGENT,
+  UserRole.MARKETER,
+  UserRole.CUSTOMER,
+]);
 
 export const RegisterRequestSchema = z.object({
   full_name: z.string().trim().min(1).max(200),
@@ -83,3 +91,43 @@ export interface ApiOk<T> {
 }
 
 export type ApiResponse<T> = ApiOk<T> | ApiError;
+
+/**
+ * Phase-1 Task #22 — admin invites a future staff member. Role is
+ * baked into the invite so the accept handler can't be tricked into
+ * creating an admin account from a presales invite (or vice-versa).
+ * `customer` role is rejected; customers self-register.
+ */
+export const StaffInviteRequestSchema = z.object({
+  email: z.string().trim().email(),
+  role: UserRoleSchema.refine((r) => r !== 'customer', {
+    message: 'Customer accounts self-register; pick a staff role.',
+  }),
+  full_name: z.string().trim().min(1).max(200).optional(),
+});
+export type StaffInviteRequest = z.infer<typeof StaffInviteRequestSchema>;
+
+export const StaffInviteAcceptRequestSchema = z.object({
+  token: z.string().min(20).max(200),
+  password: z.string().min(8).max(200),
+  full_name: z.string().trim().min(1).max(200).optional(),
+});
+export type StaffInviteAcceptRequest = z.infer<typeof StaffInviteAcceptRequestSchema>;
+
+export interface StaffInvite {
+  id: string;
+  email: string;
+  role: UserRole;
+  full_name: string | null;
+  invited_by: string | null;
+  expires_at: string;
+  accepted_at: string | null;
+  revoked_at: string | null;
+  created_at: string;
+}
+
+export interface StaffInviteIssueResult {
+  invite: StaffInvite;
+  /** Populated only outside production so dev / tests can chain. */
+  token?: string;
+}

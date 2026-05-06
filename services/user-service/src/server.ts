@@ -2,10 +2,13 @@ import { createDataService } from '@kiana/db-kit';
 import { createServer, loadServiceConfig, type KianaFastify } from '@kiana/service-kit';
 
 import { registerAuthRoutes } from './api/auth.js';
+import { registerInviteRoutes } from './api/invites.js';
 import { AuthDomain } from './domain/auth.js';
+import { InviteDomain } from './domain/invites.js';
 import { createUserRepository } from './infra/userRepository.js';
+import { createStaffInviteRepository } from './infra/staffInviteRepository.js';
 import { createNotificationDispatcher } from './infra/notificationDispatcher.js';
-import { emailVerifications, users } from '../db/schema.js';
+import { emailVerifications, staffInvites, users } from '../db/schema.js';
 import { USER_SERVICE_BOOTSTRAP_SQL } from '../db/bootstrap.js';
 
 const SERVICE_NAME = 'user-service';
@@ -18,8 +21,12 @@ export interface BuildServerOptions {
 /** Bootstrap the user-service Fastify instance with DataService + AuthDomain wired up. */
 export async function buildServer(options: BuildServerOptions = {}): Promise<KianaFastify> {
   const config = loadServiceConfig({ service: SERVICE_NAME, defaultPort: DEFAULT_PORT });
-  const data = createDataService({ databaseUrl: config.databaseUrl }, { users, emailVerifications });
+  const data = createDataService(
+    { databaseUrl: config.databaseUrl },
+    { users, emailVerifications, staffInvites },
+  );
   const repository = createUserRepository(data.db);
+  const invitesRepository = createStaffInviteRepository(data.db);
 
   const notificationBaseUrl = process.env.NOTIFICATION_SERVICE_URL ?? 'http://localhost:4014';
   const serviceToken = process.env.SERVICE_TOKEN ?? 'dev-shared-secret';
@@ -50,7 +57,19 @@ export async function buildServer(options: BuildServerOptions = {}): Promise<Kia
         publicBaseUrl,
         exposeVerificationToken,
       });
+      const inviteDomain = new InviteDomain({
+        invites: invitesRepository,
+        users: repository,
+        notifications,
+        authDomain: domain,
+        jwtSecret: config.jwtSecret,
+        jwtExpiresIn: config.jwtExpiresIn,
+        bcryptRounds: options.bcryptRounds ?? Number(process.env.BCRYPT_ROUNDS ?? 10),
+        publicBaseUrl,
+        exposeInviteToken: exposeVerificationToken,
+      });
       await registerAuthRoutes(server, { domain });
+      await registerInviteRoutes(server, { domain: inviteDomain });
     },
   });
 

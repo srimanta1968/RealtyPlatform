@@ -47,4 +47,22 @@ CREATE TABLE IF NOT EXISTS email_verifications (
 );
 CREATE INDEX IF NOT EXISTS email_verifications_token_idx ON email_verifications(token);
 CREATE INDEX IF NOT EXISTS email_verifications_user_idx ON email_verifications(user_id);
+
+-- Phase-1 Task #22 — admin-issued invitations for new staff accounts.
+-- Invite carries the future role + email and a one-shot token; accepting
+-- consumes it and creates the user row at the role baked into the invite.
+CREATE TABLE IF NOT EXISTS staff_invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL,
+  full_name VARCHAR(200),
+  invited_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  token VARCHAR(128) NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  accepted_at TIMESTAMPTZ,
+  revoked_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+CREATE INDEX IF NOT EXISTS staff_invites_token_idx ON staff_invites(token);
+CREATE INDEX IF NOT EXISTS staff_invites_email_idx ON staff_invites(email);
 `;
