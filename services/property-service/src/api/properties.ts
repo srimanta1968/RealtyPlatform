@@ -1,4 +1,4 @@
-// @governance-tracked — API definitions added: properties/create-post.json, properties/id-patch.json
+// @governance-tracked — API definitions added: properties/create-post.json, properties/id-patch.json, properties/id-publish-patch.json
 import type { FastifyInstance } from 'fastify';
 import { ZodError } from 'zod';
 
@@ -10,6 +10,7 @@ import {
   PropertyNotFoundError,
   PropertySlugTakenError,
 } from '../domain/properties.js';
+import type { PropertyStatus } from '@kiana/contracts';
 
 export interface PropertyRoutesOptions {
   domain: PropertyDomain;
@@ -76,6 +77,38 @@ export async function registerPropertyAdminRoutes(
           return reply.code(400).send({ success: false, error: err.message });
         }
         app.log.error({ err, id: request.params.id }, 'Property update failed');
+        return reply.code(500).send({ success: false, error: 'Internal Server Error' });
+      }
+    },
+  );
+
+  /**
+   * Publish workflow — DRAFT → PUBLISHED. Optional body lets admins
+   * route directly to a non-default terminal state ({status:'hold'} or
+   * {status:'sold'}) without an extra trip through PATCH /:id; absent
+   * body defaults to 'published' which is the common case.
+   */
+  app.patch<{ Params: { id: string }; Body?: { status?: PropertyStatus } }>(
+    '/api/properties/:id/publish',
+    { preHandler: requireRole('admin') },
+    async (request, reply) => {
+      try {
+        const next: PropertyStatus = request.body?.status ?? 'published';
+        const property = await domain.setStatus(request.params.id, next);
+        return reply.code(200).send({ success: true, data: { property } });
+      } catch (err) {
+        if (err instanceof ZodError) {
+          const first = err.issues[0];
+          return reply.code(400).send({
+            success: false,
+            error: first?.message ?? 'Invalid status value.',
+            field: first?.path.join('.') || undefined,
+          });
+        }
+        if (err instanceof PropertyNotFoundError) {
+          return reply.code(404).send({ success: false, error: err.message });
+        }
+        app.log.error({ err, id: request.params.id }, 'Property publish failed');
         return reply.code(500).send({ success: false, error: 'Internal Server Error' });
       }
     },
