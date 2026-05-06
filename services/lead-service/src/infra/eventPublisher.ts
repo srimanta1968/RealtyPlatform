@@ -1,7 +1,5 @@
-import { randomUUID } from 'node:crypto';
-
 import type { DomainEvent, EventEnvelope } from '@kiana/contracts';
-import { asEventId } from '@kiana/contracts';
+import { makeEnvelope, type MakeEnvelopeContext } from '@kiana/contracts';
 
 import type { TimelineRepository } from './timelineRepository.js';
 
@@ -17,27 +15,9 @@ export interface EventPublisher {
   ): Promise<void>;
 }
 
-export interface PublishContext {
-  actorId?: string | null;
-  requestId?: string | null;
-}
+export type PublishContext = MakeEnvelopeContext;
 
-/** Helper for building envelopes with the canonical Phase-1 shape. */
-export function makeEnvelope<TName extends string, TPayload>(
-  event_type: TName,
-  payload: TPayload,
-  context: PublishContext = {},
-): EventEnvelope<TName, TPayload> {
-  return {
-    event_id: asEventId(randomUUID()),
-    event_type,
-    version: '1',
-    occurred_at: new Date().toISOString(),
-    actor: { type: context.actorId ? 'user' : 'system', id: context.actorId ?? null },
-    payload,
-    correlation_id: context.requestId ?? undefined,
-  };
-}
+export { makeEnvelope } from '@kiana/contracts';
 
 export interface DefaultEventPublisherOptions {
   timeline: TimelineRepository;
