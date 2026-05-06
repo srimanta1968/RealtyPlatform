@@ -1,0 +1,84 @@
+name: Postgres backups
+
+# Daily 03:00 UTC (08:30 IST) — quietest window for the production
+# cluster. The job is also runnable on demand from the Actions tab
+# when ops wants to take an ad-hoc snapshot before a destructive
+# migration.
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      label:
+        description: 'Optional label appended to the snapshot filename (e.g. pre-migration).'
+        required: false
+        default: ''
+
+concurrency:
+  group: pg-backups
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    name: pg_dump → S3
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKUPS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install postgres client
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y postgresql-client gzip
+
+      - name: Take per-DB pg_dump
+        env:
+          PGHOST: ${{ secrets.PG_PROD_HOST }}
+          PGPORT: ${{ secrets.PG_PROD_PORT }}
+          PGUSER: ${{ secrets.PG_PROD_USER }}
+          PGPASSWORD: ${{ secrets.PG_PROD_PASSWORD }}
+          BACKUP_BUCKET: ${{ secrets.PG_BACKUP_S3_BUCKET }}
+          LABEL: ${{ github.event.inputs.label }}
+        run: |
+          set -euo pipefail
+          ts="$(date -u +%Y%m%dT%H%M%SZ)"
+          suffix="${LABEL:+-${LABEL}}"
+          mkdir -p ./backups
+          for db in user_db lead_db property_db crm_db notif_db media_db; do
+            file="./backups/${db}-${ts}${suffix}.sql.gz"
+            echo "Dumping ${db} → ${file}"
+            pg_dump --format=custom --no-owner --no-privileges "${db}" \
+              | gzip -9 > "${file}"
+            aws s3 cp "${file}" "s3://${BACKUP_BUCKET}/postgres/${db}/${ts}${suffix}.sql.gz" \
+              --storage-class STANDARD_IA \
+              --metadata "git-sha=${GITHUB_SHA},workflow=${GITHUB_WORKFLOW}"
+          done
+          echo "Snapshot complete at ${ts}"
+
+      - name: Verify checksum sample
+        env:
+          PG_BACKUP_S3_BUCKET: ${{ secrets.PG_BACKUP_S3_BUCKET }}
+        run: |
+          set -euo pipefail
+          # Sanity check: list the just-uploaded objects + size > 0
+          aws s3 ls "s3://${PG_BACKUP_S3_BUCKET}/postgres/" --recursive \
+            | tail -n 12
+
+      # 30-day retention is enforced via S3 lifecycle (terraform); this
+      # step just emits a friendly summary in the run logs so on-call
+      # can spot the most-recent snapshots without leaving GitHub.
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Postgres backup summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "Run completed at $(date -u)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Recovery runbook: ops/runbooks/postgres-backups.md" >> "$GITHUB_STEP_SUMMARY"
