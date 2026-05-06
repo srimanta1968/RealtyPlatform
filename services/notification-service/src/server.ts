@@ -15,6 +15,7 @@ import {
   startEventSubscription,
   type EventSubscriptionHandle,
 } from './infra/eventSubscriptions.js';
+import { createEmailProvider } from './transport/index.js';
 import { notificationSends, notificationTemplates } from '../db/schema.js';
 import { NOTIFICATION_SERVICE_BOOTSTRAP_SQL } from '../db/bootstrap.js';
 
@@ -54,20 +55,29 @@ export async function buildServer(): Promise<KianaFastify> {
     registerRoutes: async (server) => {
       const emailDomain = new EmailDomain({ repository, logger: server.log, logOnly });
       const templateDomain = new TemplateDomain({ repository });
+      const emailProvider = createEmailProvider({
+        provider: process.env.EMAIL_PROVIDER,
+        logger: server.log,
+        fromAddress: process.env.NOTIFICATION_FROM_ADDRESS,
+        awsRegion: process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION,
+        awsConfigurationSet: process.env.AWS_SES_CONFIGURATION_SET,
+        sendgridApiKey: process.env.SENDGRID_API_KEY,
+      });
+      server.log.info({ provider: emailProvider.name }, 'email provider initialised');
       const leadCreatedSubscriber = new LeadCreatedSubscriber({
         repository,
         templateDomain,
+        emailProvider,
         logger: server.log,
         presalesRecipient,
         leadDetailUrlBase,
-        logOnly,
       });
       const leadStageChangedSubscriber = new LeadStageChangedSubscriber({
         repository,
         templateDomain,
         leadLookup,
+        emailProvider,
         logger: server.log,
-        logOnly,
       });
 
       await registerInternalRoutes(server, { emailDomain, serviceToken });
@@ -109,6 +119,7 @@ export async function buildServer(): Promise<KianaFastify> {
           service: SERVICE_NAME,
           scaffolded: false,
           logOnly,
+          emailProvider: emailProvider.name,
           subscriptions: {
             'lead.created': eventBusUrl ? 'enabled' : 'disabled',
             'lead.stage_changed': eventBusUrl ? 'enabled' : 'disabled',

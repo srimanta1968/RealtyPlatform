@@ -2,6 +2,7 @@ import type { LeadCreated } from '@kiana/contracts';
 import type { Logger } from '@kiana/service-kit';
 
 import type { NotificationRepository } from '../infra/notificationRepository.js';
+import type { EmailProvider } from '../transport/index.js';
 import { TemplateDomain, TemplateNotFoundError } from './templates.js';
 import { renderTemplate, type RenderContext } from './render.js';
 
@@ -11,13 +12,12 @@ const PRESALES_TEMPLATE_SLUG = 'lead_created_presales';
 export interface LeadCreatedSubscriberOptions {
   repository: NotificationRepository;
   templateDomain: TemplateDomain;
+  emailProvider: EmailProvider;
   logger: Logger;
   /** Distribution-list address that receives the presales email. */
   presalesRecipient: string;
   /** Base URL the presales email links back to (lead detail in admin cockpit). */
   leadDetailUrlBase: string;
-  /** When true, dispatch is log-only (Phase-1 default). */
-  logOnly?: boolean;
 }
 
 export interface LeadCreatedHandleResult {
@@ -86,32 +86,39 @@ export class LeadCreatedSubscriber {
     eventId: string;
   }): Promise<string> {
     const { slug, recipient, context, eventId } = args;
-    const { repository, templateDomain, logger, logOnly = true } = this.options;
+    const { repository, templateDomain, emailProvider, logger } = this.options;
 
     try {
       const template = await templateDomain.getBySlug(slug);
       const rendered = renderTemplate(template, context);
 
-      if (logOnly) {
-        logger.info(
-          { event_id: eventId, slug, recipient, subject: rendered.subject },
-          `[lead.created] (logged) — would dispatch ${slug} to ${recipient}`,
-        );
-      }
+      await emailProvider.send({
+        to: recipient,
+        subject: rendered.subject ?? '',
+        body: rendered.body,
+        templateSlug: slug,
+        eventId,
+      });
 
       const row = await repository.recordSend({
         templateSlug: slug,
         recipient,
         channel: 'email',
         status: 'dispatched',
-        payload: { event_id: eventId, subject: rendered.subject, body: rendered.body, ...context },
+        payload: {
+          event_id: eventId,
+          provider: emailProvider.name,
+          subject: rendered.subject,
+          body: rendered.body,
+          ...context,
+        },
         sentAt: new Date(),
       });
       return row.id;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown dispatch error';
       logger.error(
-        { err, event_id: eventId, slug, recipient },
+        { err, event_id: eventId, slug, recipient, provider: emailProvider.name },
         `[lead.created] failed to dispatch ${slug}`,
       );
       // For TemplateNotFoundError the template slug is missing from the
@@ -122,7 +129,7 @@ export class LeadCreatedSubscriber {
         recipient,
         channel: 'email',
         status: 'failed',
-        payload: { event_id: eventId, ...context },
+        payload: { event_id: eventId, provider: emailProvider.name, ...context },
         error: err instanceof TemplateNotFoundError ? `Template '${slug}' not registered` : message,
         sentAt: new Date(),
       });

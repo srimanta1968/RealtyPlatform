@@ -3,6 +3,7 @@ import type { Logger } from '@kiana/service-kit';
 
 import type { NotificationRepository } from '../infra/notificationRepository.js';
 import type { LeadLookupRepository } from '../infra/leadLookupRepository.js';
+import type { EmailProvider } from '../transport/index.js';
 import { TemplateDomain, TemplateNotFoundError } from './templates.js';
 import { renderTemplate, type RenderContext } from './render.js';
 
@@ -12,9 +13,8 @@ export interface LeadStageChangedSubscriberOptions {
   repository: NotificationRepository;
   templateDomain: TemplateDomain;
   leadLookup: LeadLookupRepository;
+  emailProvider: EmailProvider;
   logger: Logger;
-  /** When true, dispatch is log-only (Phase-1 default). */
-  logOnly?: boolean;
 }
 
 export interface LeadStageChangedHandleResult {
@@ -40,7 +40,7 @@ export class LeadStageChangedSubscriber {
 
   async handle(envelope: LeadStageChanged): Promise<LeadStageChangedHandleResult> {
     const { payload, event_id } = envelope;
-    const { repository, templateDomain, leadLookup, logger, logOnly = true } = this.options;
+    const { repository, templateDomain, leadLookup, emailProvider, logger } = this.options;
 
     const lead = await leadLookup.findById(payload.lead_id);
     if (!lead) {
@@ -68,17 +68,13 @@ export class LeadStageChangedSubscriber {
       const template = await templateDomain.getBySlug(STAGE_CHANGED_TEMPLATE_SLUG);
       const rendered = renderTemplate(template, context);
 
-      if (logOnly) {
-        logger.info(
-          {
-            event_id,
-            slug: STAGE_CHANGED_TEMPLATE_SLUG,
-            recipient: lead.email,
-            subject: rendered.subject,
-          },
-          `[lead.stage_changed] (logged) — would dispatch ${STAGE_CHANGED_TEMPLATE_SLUG}`,
-        );
-      }
+      await emailProvider.send({
+        to: lead.email,
+        subject: rendered.subject ?? '',
+        body: rendered.body,
+        templateSlug: STAGE_CHANGED_TEMPLATE_SLUG,
+        eventId: event_id,
+      });
 
       const row = await repository.recordSend({
         templateSlug: STAGE_CHANGED_TEMPLATE_SLUG,
@@ -87,6 +83,7 @@ export class LeadStageChangedSubscriber {
         status: 'dispatched',
         payload: {
           event_id,
+          provider: emailProvider.name,
           subject: rendered.subject,
           body: rendered.body,
           ...context,
@@ -97,7 +94,13 @@ export class LeadStageChangedSubscriber {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown dispatch error';
       logger.error(
-        { err, event_id, slug: STAGE_CHANGED_TEMPLATE_SLUG, recipient: lead.email },
+        {
+          err,
+          event_id,
+          slug: STAGE_CHANGED_TEMPLATE_SLUG,
+          recipient: lead.email,
+          provider: emailProvider.name,
+        },
         '[lead.stage_changed] failed to dispatch',
       );
       const failedRow = await repository.recordSend({
@@ -105,7 +108,7 @@ export class LeadStageChangedSubscriber {
         recipient: lead.email,
         channel: 'email',
         status: 'failed',
-        payload: { event_id, ...context },
+        payload: { event_id, provider: emailProvider.name, ...context },
         error:
           err instanceof TemplateNotFoundError
             ? `Template '${STAGE_CHANGED_TEMPLATE_SLUG}' not registered`
