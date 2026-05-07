@@ -1,0 +1,7 @@
+# GitHub auto-requests these owners as reviewers on every PR that
+# touches a matching path. The single catch-all rule below means I
+# review everything — pair it with branch-protection's "Require review
+# from Code Owners" toggle to make the auto-request mandatory for
+# contributors, not just a nudge.
+
+*       @srimanta1968
