@@ -3,7 +3,8 @@ import Link from 'next/link';
 
 import type { PropertyRecord, PropertyType } from '@kiana/contracts';
 
-import { LifestyleFilter, LIFESTYLE_FILTERS } from '../../components/LifestyleFilter';
+import { LifestyleFilter } from '../../components/LifestyleFilter';
+import { LIFESTYLE_FILTERS } from '../../lib/lifestyle-filters';
 import { PropertyCard } from '../../components/PropertyCard';
 import { listProperties } from '../../lib/api';
 

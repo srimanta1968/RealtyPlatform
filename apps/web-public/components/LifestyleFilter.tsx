@@ -5,17 +5,7 @@ import { useCallback } from 'react';
 
 import type { PropertyType } from '@kiana/contracts';
 
-export const LIFESTYLE_FILTERS: { type: PropertyType | 'all'; label: string; tagline: string }[] = [
-  { type: 'all', label: 'All listings', tagline: 'Every property currently on offer' },
-  { type: 'villa', label: 'Villas', tagline: 'Move-in ready hilltop & weekend homes' },
-  { type: 'land', label: 'Land', tagline: 'Build-your-own plots near Lonavala & Karjat' },
-  { type: 'retreat', label: 'Retreats', tagline: 'Boutique resort-style stays you can own' },
-  {
-    type: 'investment',
-    label: 'Investments',
-    tagline: 'Yield-focused holdings across short-stay clusters',
-  },
-];
+import { LIFESTYLE_FILTERS } from '../lib/lifestyle-filters';
 
 export interface LifestyleFilterProps {
   active: PropertyType | 'all';
