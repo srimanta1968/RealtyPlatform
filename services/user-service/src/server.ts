@@ -70,6 +70,56 @@ export async function buildServer(options: BuildServerOptions = {}): Promise<Kia
       });
       await registerAuthRoutes(server, { domain });
       await registerInviteRoutes(server, { domain: inviteDomain });
+
+      // 404-fallback proxy → web-bff. The projexlight test runner pins
+      // localServerPort to user-service (4010) and hits every Phase-1
+      // route there; in dev that means we forward anything user-service
+      // doesn't own to the BFF, which then routes to the right service.
+      // No-op in production: WEB_BFF_URL is unset, registerNotFound is
+      // skipped, and the default Fastify 404 handler kicks in.
+      const webBffUrl = process.env.WEB_BFF_URL;
+      if (webBffUrl) {
+        server.setNotFoundHandler(async (request, reply) => {
+          if (!request.url.startsWith('/api/')) {
+            return reply.code(404).send({ success: false, error: 'Not Found' });
+          }
+          try {
+            const target = `${webBffUrl.replace(/\/+$/, '')}${request.url}`;
+            const headers: Record<string, string> = {};
+            for (const [k, v] of Object.entries(request.headers)) {
+              if (typeof v === 'string') headers[k] = v;
+            }
+            // Strip hop-by-hop + the Fastify-set host so undici picks the
+            // upstream host. Host mismatch breaks fastify's host check.
+            delete headers.host;
+            delete headers['content-length'];
+            const init: RequestInit = {
+              method: request.method,
+              headers,
+            };
+            if (request.method !== 'GET' && request.method !== 'HEAD') {
+              init.body =
+                request.body == null
+                  ? undefined
+                  : typeof request.body === 'string'
+                    ? request.body
+                    : JSON.stringify(request.body);
+              if (init.body && !headers['content-type']) {
+                headers['content-type'] = 'application/json';
+              }
+            }
+            const upstream = await fetch(target, init);
+            const text = await upstream.text();
+            reply.status(upstream.status);
+            const ct = upstream.headers.get('content-type');
+            if (ct) reply.header('content-type', ct);
+            return reply.send(text);
+          } catch (err) {
+            server.log.error({ err, url: request.url }, '[user-service 404→bff] proxy failed');
+            return reply.code(502).send({ success: false, error: 'Upstream BFF unreachable' });
+          }
+        });
+      }
     },
   });
 

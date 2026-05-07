@@ -5,12 +5,15 @@
   "taskId": "a9dba0f3-0c12-4d68-82dd-8758ced22f31",
   "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
   "requiresAuth": true,
-  "requiresRole": ["admin"],
+  "requiresRole": [
+    "admin"
+  ],
   "priority": 30,
   "description": "Admin-only create endpoint. Persists a new property row in DRAFT (publish flips status via PATCH /:id/publish in Phase 1 Task #16). Validates with PropertyCreateRequestSchema; rejects duplicate slugs with 409 and inverted price ranges with 400.",
-  "testability": "manual",
-  "skipReason": "property-service runs on port 4012 (per .env MONOREPO PORT MAP); the projexlight test runner targets a single base URL (4010 = user-service). Re-enable once the API gateway/BFF lands or the runner gains per-route base-URL support.",
-  "dependsOn": ["POST /api/auth/register", "POST /api/auth/login"],
+  "dependsOn": [
+    "POST /api/auth/register",
+    "POST /api/auth/login"
+  ],
   "captureResponse": {
     "properties.create.response.data.property.id": "data.property.id",
     "properties.create.response.data.property.slug": "data.property.slug"
@@ -23,12 +26,15 @@
       },
       "payload": {
         "title": "{{static:Lonavala Hilltop Villa}}",
-        "slug": "{{dynamic:text}}",
+        "slug": "{{dynamic:number}}",
         "type": "{{static:villa}}",
         "location": "{{static:Lonavala}}",
         "price_min_minor": 12500000000,
         "price_max_minor": 14000000000,
-        "tags": ["villa", "lonavala"],
+        "tags": [
+          "villa",
+          "lonavala"
+        ],
         "media": []
       },
       "expectedStatus": 201,

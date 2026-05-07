@@ -10,8 +10,8 @@
   "environments": {
     "development": {
       "baseUrl": "http://localhost:3000",
-      "apiUrl": "http://localhost:3000",
-      "description": "Local development - localhost URLs are auto-translated to host.docker.internal in Docker"
+      "apiUrl": "http://localhost:4000",
+      "description": "Local development - apiUrl points at web-bff (4000) which proxies to all services. baseUrl stays on web-public (3000) for UI tests. localhost is auto-translated to host.docker.internal inside the runner."
     },
     "staging": {
       "baseUrl": "https://staging.example.com",
@@ -47,9 +47,14 @@
   },
   "testCredentials": {
     "default": {
-      "email": "default_test_user@example.com",
+      "email": "kiana_e2e_default@kiana.test",
       "password": "DefaultTestPass123!",
-      "description": "Fallback credentials when registration fails or for login-only tests"
+      "description": "Fallback credentials when registration fails or for login-only tests. Rotated to a fresh address so the runner re-executes register and captures the latest response shape (data.verification.token)."
+    },
+    "admin": {
+      "email": "admin@kiana.test",
+      "password": "AdminPass123!",
+      "description": "Pre-seeded admin user used by tests with requiresRole=['admin']."
     },
     "registered": null,
     "_usage": {

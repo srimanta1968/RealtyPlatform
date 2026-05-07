@@ -5,12 +5,16 @@
   "taskId": "267b5e3f-1070-4c02-bb97-6ec1a4a4bd87",
   "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
   "requiresAuth": true,
-  "requiresRole": ["admin"],
+  "requiresRole": [
+    "admin"
+  ],
   "priority": 40,
   "description": "Admin-only state transition. Empty body defaults to status='published' (DRAFT → PUBLISHED, the common case); pass {status: 'hold' | 'sold'} to route directly to a post-publish terminal. Validates against PropertyStatusSchema; 404 when the id is gone.",
-  "testability": "manual",
-  "skipReason": "property-service runs on port 4012 (per .env MONOREPO PORT MAP); the projexlight test runner targets a single base URL (4010 = user-service). Re-enable once the API gateway/BFF lands or the runner gains per-route base-URL support.",
-  "dependsOn": ["POST /api/auth/register", "POST /api/auth/login", "POST /api/properties"],
+  "dependsOn": [
+    "POST /api/auth/register",
+    "POST /api/auth/login",
+    "POST /api/properties"
+  ],
   "testCases": [
     {
       "name": "Publish a draft property",

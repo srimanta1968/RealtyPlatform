@@ -7,9 +7,9 @@
   "requiresAuth": false,
   "priority": 85,
   "description": "Public consumer endpoint. Token IS the auth here — pass it alongside a password to create the User row at the role baked into the invite. Returns a fresh JWT so the new account can sign in immediately. 400 on expired / unknown / already-used tokens; 409 if the invite email collides with an existing user (race).",
-  "testability": "manual",
-  "skipReason": "Depends on POST /api/users/invite (admin-gated and currently manual). Re-enable in lockstep with the invite test once the runner has an admin bootstrap.",
-  "dependsOn": ["POST /api/users/invite"],
+  "dependsOn": [
+    "POST /api/users/invite"
+  ],
   "testCases": [
     {
       "name": "Accept invite with the captured dev token",

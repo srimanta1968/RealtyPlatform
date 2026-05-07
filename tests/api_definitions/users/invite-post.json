@@ -5,12 +5,15 @@
   "taskId": "ad563107-0910-415e-bd6b-af73a612eb99",
   "sprintId": "a5c410ab-2b62-45f5-9190-8b601499f543",
   "requiresAuth": true,
-  "requiresRole": ["admin"],
+  "requiresRole": [
+    "admin"
+  ],
   "priority": 80,
   "description": "Admin-only invite issue. Persists a one-shot token in staff_invites with the future role baked in (so the accept handler can't be tricked into elevating role), then dispatches an invite email through the existing notification path. Customer role is rejected (customers self-register).",
-  "testability": "manual",
-  "skipReason": "Requires an admin token (Task 11 added the role claim) but the test runner's seeded user defaults to 'presales' — re-enable once the runner gains a per-role token bootstrap or a SQL seed for an admin account.",
-  "dependsOn": ["POST /api/auth/register", "POST /api/auth/login"],
+  "dependsOn": [
+    "POST /api/auth/register",
+    "POST /api/auth/login"
+  ],
   "captureResponse": {
     "users.invite.response.data.invite.id": "data.invite.id",
     "users.invite.response.data.token": "data.token"

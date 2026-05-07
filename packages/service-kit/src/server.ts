@@ -82,6 +82,29 @@ export async function createServer(options: CreateServerOptions): Promise<KianaF
   await app.register(sensible);
   await app.register(jwt, { secret: config.jwtSecret });
 
+  // Tolerant application/json parser. Fastify's default rejects an empty
+  // body with FST_ERR_CTP_EMPTY_JSON_BODY (400) when Content-Type is set
+  // to application/json — but stateless POSTs like /api/auth/logout are
+  // legitimately body-less. Treat empty / whitespace-only bodies as `{}`
+  // so the route handler can branch on its own.
+  app.removeContentTypeParser('application/json');
+  app.addContentTypeParser(
+    'application/json',
+    { parseAs: 'string' },
+    (_req, body, done) => {
+      const raw = typeof body === 'string' ? body.trim() : '';
+      if (raw.length === 0) {
+        done(null, {});
+        return;
+      }
+      try {
+        done(null, JSON.parse(raw));
+      } catch (err) {
+        done(err as Error, undefined);
+      }
+    },
+  );
+
   registerHealthRoutes(app, { service: config.service, version, ready });
 
   if (!disableObservability) {

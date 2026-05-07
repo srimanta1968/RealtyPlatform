@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const { hash } = bcrypt;
 
@@ -121,16 +122,13 @@ export class InviteDomain {
   }
 
   private signSessionToken(user: PublicUser): AuthSuccess {
-    // The AuthDomain owns the canonical JWT signing — but injecting it
-    // here would create a circular dep. The narrow signing logic is
-    // duplicated here, kept in lockstep with auth.ts via the shared
-    // PublicUser shape. (Phase-2: lift signing into a shared helper.)
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const jwt = require('jsonwebtoken') as typeof import('jsonwebtoken');
+    // Narrow signing logic duplicated from AuthDomain.issueSession (P2:
+    // lift into a shared helper once we have a JwtSigner abstraction).
+    // Kept in lockstep via the shared PublicUser shape.
     const token = jwt.sign(
       { sub: user.id, email: user.email, role: user.role },
       this.options.jwtSecret,
-      { expiresIn: this.options.jwtExpiresIn as import('jsonwebtoken').SignOptions['expiresIn'] },
+      { expiresIn: this.options.jwtExpiresIn as jwt.SignOptions['expiresIn'] },
     );
     return { token, user };
   }

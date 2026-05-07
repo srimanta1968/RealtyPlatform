@@ -7,9 +7,9 @@
   "requiresAuth": true,
   "priority": 90,
   "description": "Stateless JWT logout — the server acknowledges; the client discards its token. A token-revocation list is a Phase-2 addition (see services/user-service/openapi.yaml).",
-  "testability": "manual",
-  "skipReason": "Handler reads no body, but the test runner sends Content-Type: application/json with payload {} which Fastify's default JSON parser rejects (FST_ERR_CTP_EMPTY_JSON_BODY → 400). Re-enable after @kiana/service-kit registers a custom application/json parser that maps empty body → {}.",
-  "dependsOn": ["POST /api/auth/register"],
+  "dependsOn": [
+    "POST /api/auth/register"
+  ],
   "testCases": [
     {
       "name": "Sign out the user issued by /api/auth/register",

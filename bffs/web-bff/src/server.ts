@@ -95,6 +95,10 @@ export async function buildServer(): Promise<KianaFastify> {
     baseUrl: backends.crm,
     serviceToken: SERVICE_TOKEN,
   });
+  const notificationClient = createServiceClient({
+    baseUrl: backends.notification,
+    serviceToken: SERVICE_TOKEN,
+  });
 
   return createServer({
     config,
@@ -498,6 +502,30 @@ export async function buildServer(): Promise<KianaFastify> {
           return reply.code(status).send(body);
         }
       });
+
+      // Service _status probes — diagnostic endpoints, also used by the
+      // test runner to confirm each service booted with its domain wired.
+      app.get('/api/notifications/_status', makeProxyHandler(notificationClient, 'GET', '/api/notifications/_status', 200));
+      app.post('/api/notifications/templates', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await notificationClient.post(
+            '/api/notifications/templates',
+            request.body,
+            { headers },
+          );
+          return reply.code(200).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream notification-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
+      app.get('/api/crm/_status', makeProxyHandler(crmClient, 'GET', '/api/crm/_status', 200));
+      app.get('/api/properties/_status', makeProxyHandler(propertyClient, 'GET', '/api/properties/_status', 200));
     },
   });
 }
