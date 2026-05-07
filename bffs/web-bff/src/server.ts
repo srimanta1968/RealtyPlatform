@@ -87,6 +87,14 @@ export async function buildServer(): Promise<KianaFastify> {
     baseUrl: backends.lead,
     serviceToken: SERVICE_TOKEN,
   });
+  const propertyClient = createServiceClient({
+    baseUrl: backends.property,
+    serviceToken: SERVICE_TOKEN,
+  });
+  const crmClient = createServiceClient({
+    baseUrl: backends.crm,
+    serviceToken: SERVICE_TOKEN,
+  });
 
   return createServer({
     config,
@@ -271,6 +279,225 @@ export async function buildServer(): Promise<KianaFastify> {
           }
         },
       );
+
+      // Lead :id sub-routes (Phase-1 Tasks 18 / 19 / 20).
+      app.get<{ Params: { id: string } }>(
+        '/api/leads/:id/timeline',
+        async (request, reply) => {
+          try {
+            const headers = forwardAuthHeaders(request);
+            const result = await leadClient.get(
+              `/api/leads/${encodeURIComponent(request.params.id)}/timeline`,
+              { headers },
+            );
+            return reply.code(200).send(result);
+          } catch (err) {
+            const status = (err as { status?: number }).status ?? 500;
+            const body = (err as { body?: unknown }).body ?? {
+              success: false,
+              error: 'Upstream lead-service error',
+            };
+            return reply.code(status).send(body);
+          }
+        },
+      );
+      app.post<{ Params: { id: string } }>('/api/leads/:id/notes', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await leadClient.post(
+            `/api/leads/${encodeURIComponent(request.params.id)}/notes`,
+            request.body,
+            { headers },
+          );
+          return reply.code(201).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream lead-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
+      app.patch<{ Params: { id: string } }>('/api/leads/:id/owner', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await leadClient.patch(
+            `/api/leads/${encodeURIComponent(request.params.id)}/owner`,
+            request.body,
+            { headers },
+          );
+          return reply.code(200).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream lead-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
+
+      // Properties — public reads (Task 17), admin CRUD + publish (Tasks 15/16).
+      app.get<{
+        Querystring: {
+          type?: string;
+          location?: string;
+          price_min_minor?: string;
+          price_max_minor?: string;
+        };
+      }>('/api/properties', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const params = new URLSearchParams();
+          for (const k of ['type', 'location', 'price_min_minor', 'price_max_minor'] as const) {
+            const v = request.query[k];
+            if (v !== undefined && v !== '') params.set(k, v);
+          }
+          const qs = params.toString();
+          const result = await propertyClient.get(
+            qs ? `/api/properties?${qs}` : '/api/properties',
+            { headers },
+          );
+          return reply.code(200).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream property-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
+      app.post('/api/properties', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await propertyClient.post('/api/properties', request.body, { headers });
+          return reply.code(201).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream property-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
+      app.patch<{ Params: { id: string } }>(
+        '/api/properties/:id/publish',
+        async (request, reply) => {
+          try {
+            const headers = forwardAuthHeaders(request);
+            const result = await propertyClient.patch(
+              `/api/properties/${encodeURIComponent(request.params.id)}/publish`,
+              request.body,
+              { headers },
+            );
+            return reply.code(200).send(result);
+          } catch (err) {
+            const status = (err as { status?: number }).status ?? 500;
+            const body = (err as { body?: unknown }).body ?? {
+              success: false,
+              error: 'Upstream property-service error',
+            };
+            return reply.code(status).send(body);
+          }
+        },
+      );
+      app.patch<{ Params: { id: string } }>('/api/properties/:id', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await propertyClient.patch(
+            `/api/properties/${encodeURIComponent(request.params.id)}`,
+            request.body,
+            { headers },
+          );
+          return reply.code(200).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream property-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
+      // Slug detail — must be registered AFTER /:id/publish + /:id so Fastify
+      // doesn't match the literal "publish" as a slug.
+      app.get<{ Params: { slug: string } }>('/api/properties/:slug', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await propertyClient.get(
+            `/api/properties/${encodeURIComponent(request.params.slug)}`,
+            { headers },
+          );
+          return reply.code(200).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream property-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
+
+      // CRM kanban (Task 21) — owner_id + per_stage_limit are optional.
+      app.get<{ Querystring: { owner_id?: string; per_stage_limit?: string } }>(
+        '/api/crm/pipeline',
+        async (request, reply) => {
+          try {
+            const headers = forwardAuthHeaders(request);
+            const params = new URLSearchParams();
+            if (request.query.owner_id) params.set('owner_id', request.query.owner_id);
+            if (request.query.per_stage_limit) {
+              params.set('per_stage_limit', request.query.per_stage_limit);
+            }
+            const qs = params.toString();
+            const result = await crmClient.get(
+              qs ? `/api/crm/pipeline?${qs}` : '/api/crm/pipeline',
+              { headers },
+            );
+            return reply.code(200).send(result);
+          } catch (err) {
+            const status = (err as { status?: number }).status ?? 500;
+            const body = (err as { body?: unknown }).body ?? {
+              success: false,
+              error: 'Upstream crm-service error',
+            };
+            return reply.code(status).send(body);
+          }
+        },
+      );
+
+      // Staff invites (Task 22).
+      app.post('/api/users/invite', async (request, reply) => {
+        try {
+          const headers = forwardAuthHeaders(request);
+          const result = await userClient.post('/api/users/invite', request.body, { headers });
+          return reply.code(201).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream user-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
+      app.post('/api/users/accept-invite', async (request, reply) => {
+        try {
+          const result = await userClient.post('/api/users/accept-invite', request.body);
+          return reply.code(201).send(result);
+        } catch (err) {
+          const status = (err as { status?: number }).status ?? 500;
+          const body = (err as { body?: unknown }).body ?? {
+            success: false,
+            error: 'Upstream user-service error',
+          };
+          return reply.code(status).send(body);
+        }
+      });
     },
   });
 }
